@@ -1,11 +1,12 @@
-﻿using RestauranteUni.Domain.ValuesObjects;
+﻿using RestauranteUni.Domain.Authentication.Roles;
+using RestauranteUni.Domain.ValuesObjects;
 
 namespace RestauranteUni.Domain.Authentication
 {
     public class Account : BaseDomain<long>
     {
-        public Email Email { get; set; }
-        public string Password { get; set; }
-        //public virtual List<Roles> Roles { get; set; }
+        public Email Email { get; set; } = null!;
+        public string Password { get; set; } = null!;
+        public virtual List<RoleAccount> Roles { get; set; } = [];
     }
 }
