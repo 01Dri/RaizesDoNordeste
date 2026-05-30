@@ -1,4 +1,4 @@
 <Solution>
   <Project Path="src/RestauranteUni.API/RestauranteUni.API.csproj" />
-  <Project Path="test/RestaurenteUnit.Test/RestaurenteUnit.Test.csproj" />
+  <Project Path="test/RestaurenteUnit.Test/RestaurenteUni.Test.csproj" />
 </Solution>
