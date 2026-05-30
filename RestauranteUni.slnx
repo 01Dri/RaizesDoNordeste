@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="src/RestauranteUni.API/RestauranteUni.API.csproj" />
+  <Project Path="src/RestauranteUni.Domain/RestauranteUni.Domain.csproj" Id="76a844ac-6db3-4ec5-9e96-7c61341f248a" />
   <Project Path="test/RestaurenteUni.Test/RestaurenteUni.Test.csproj" />
 </Solution>
