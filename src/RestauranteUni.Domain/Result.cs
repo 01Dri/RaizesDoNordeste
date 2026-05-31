@@ -4,7 +4,7 @@
     {
         public T? Data { get; } 
         public bool IsSuccess { get; }
-        public List<Validation> Validations { get; }
+        public List<Validation> Validations { get; } = [];
 
         public Result(T? data, bool isSuccess)
         {
@@ -26,7 +26,7 @@
     public class Result
     {
         public bool IsSuccess { get; }
-        public List<Validation> Validations { get; }
+        public List<Validation> Validations { get; } = [];
 
         public Result()
         {
@@ -46,14 +46,13 @@
 
     public class Validation
     {
-        public Validation(string property, string errorMessage)
+        public Validation(string property, List<string> errorMessage)
         {
             Property = property;
-            ErrorMessage = errorMessage;
+            ErrorsMessage = errorMessage;
         }
-
         public string Property { get; set; }
-        public string ErrorMessage { get; set; }
+        public List<string> ErrorsMessage { get; set; }
 
     }
 }

@@ -16,12 +16,13 @@
             Value = value.ToLowerInvariant();
         }
 
-        private static bool IsValid(string email)
+        public static bool IsValid(string email)
         {
             try
             {
                 var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
+                return addr.Address == email
+                       && addr.Host.Contains('.');
             }
             catch
             {
