@@ -1,19 +1,13 @@
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using RestauranteUni.Application.UseCases.Accounts;
-using RestauranteUni.Application.UseCases.Accounts.Validations;
+using RestauranteUni.API.Extensions;
+using RestauranteUni.Application;
 using RestauranteUni.Application.Utils;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Accounts.DTO;
-using RestauranteUni.Domain.UseCases;
 using RestauranteUni.Domain.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IHasher, Hasher>();
-builder.Services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidation>();
-builder.Services.AddScoped<
-        IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto>,
-        CreateAccountUseCaseHandler>();
+builder.Services.AddApplicationServices(typeof(ApplicationAssemblyReference));
 
 
 // Add services to the container.
