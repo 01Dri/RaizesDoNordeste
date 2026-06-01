@@ -16,7 +16,7 @@ namespace RestaurenteUni.Test.UseCases.Account
     {
 
         private IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto> _handler;
-        private Mock<IEcrypter> _passwordEncrypter;
+        private Mock<IHasher> _passwordEncrypter;
         private ApplicationDbContext _context;
 
         [SetUp]
@@ -26,7 +26,7 @@ namespace RestaurenteUni.Test.UseCases.Account
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
-            _passwordEncrypter = new Mock<IEcrypter>();
+            _passwordEncrypter = new Mock<IHasher>();
             _passwordEncrypter.Setup(x => x.HashPassword(It.IsAny<string>()))
                 .Returns("hash_password");
             _context = new ApplicationDbContext(options);

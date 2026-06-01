@@ -14,7 +14,7 @@ namespace RestaurenteUni.Test.UseCases.Account
     public class CreateAcountUseCaseTest
     {
         private IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto> _handler;
-        private Mock<IEcrypter> _passwordEncrypter;
+        private Mock<IHasher> _passwordEncrypter;
         private Mock<IValidator<CreateAccountDto>> _validator;
         private ApplicationDbContext _context;
 
@@ -25,7 +25,7 @@ namespace RestaurenteUni.Test.UseCases.Account
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
-            _passwordEncrypter = new Mock<IEcrypter>();
+            _passwordEncrypter = new Mock<IHasher>();
             _validator = new Mock<IValidator<CreateAccountDto>>();
             _context = new ApplicationDbContext(options);
             _context.Database.EnsureCreated();

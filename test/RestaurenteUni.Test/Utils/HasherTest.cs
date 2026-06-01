@@ -3,14 +3,14 @@ using RestauranteUni.Domain.Utils;
 
 namespace RestaurenteUni.Test.Utils
 {
-    public sealed class EcrypterTest
+    public sealed class HasherTest
     {
 
-        private IEcrypter _crypter;
+        private IHasher _crypter;
         [SetUp]
         public void Setup()
         {
-            _crypter = new Ecrypter();
+            _crypter = new Hasher();
         }
         [TestCase("")]
         [TestCase(null)]
