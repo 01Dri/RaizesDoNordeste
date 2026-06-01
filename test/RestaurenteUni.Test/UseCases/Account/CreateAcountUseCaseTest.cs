@@ -13,7 +13,7 @@ namespace RestaurenteUni.Test.UseCases.Account
 {
     public class CreateAcountUseCaseTest
     {
-        private IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto> _handler;
+        private IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto> _handler;
         private Mock<IHasher> _passwordEncrypter;
         private Mock<IValidator<CreateAccountDto>> _validator;
         private ApplicationDbContext _context;

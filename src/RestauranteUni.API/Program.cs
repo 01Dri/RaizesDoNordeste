@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IHasher, Hasher>();
 builder.Services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidation>();
 builder.Services.AddScoped<
-        IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto>,
+        IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto>,
         CreateAccountUseCaseHandler>();
 
 

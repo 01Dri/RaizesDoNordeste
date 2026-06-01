@@ -15,7 +15,7 @@ namespace RestaurenteUni.Test.UseCases.Account
     public class CreateAccountUseCaseValidationsTest
     {
 
-        private IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto> _handler;
+        private IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto> _handler;
         private Mock<IHasher> _passwordEncrypter;
         private ApplicationDbContext _context;
 

@@ -9,9 +9,9 @@ namespace RestauranteUni.API.Controllers
     public class AccountController : ControllerBase
     {
 
-        private readonly IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto> _handler;
+        private readonly IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto> _handler;
 
-        public AccountController(IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto> handler)
+        public AccountController(IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto> handler)
         {
             _handler = handler;
         }

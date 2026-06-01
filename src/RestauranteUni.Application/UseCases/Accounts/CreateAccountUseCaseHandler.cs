@@ -11,7 +11,7 @@ using RestauranteUni.Domain.ValuesObjects;
 
 namespace RestauranteUni.Application.UseCases.Accounts
 {
-    public class CreateAccountUseCaseHandler : IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto>
+    public class CreateAccountUseCaseHandler : IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto>
     {
         private readonly ApplicationDbContext _context;
         private readonly IValidator<CreateAccountDto> _validator;
@@ -24,12 +24,12 @@ namespace RestauranteUni.Application.UseCases.Accounts
             _hasher = hasher;
         }
 
-        public async Task<Result<CreateAccountResponseDto>> HandleAsync(CreateAccountDto parameter, CancellationToken cancellation = default)
+        public async Task<Result<CreateAccountUseCaseResponseDto>> HandleAsync(CreateAccountDto parameter, CancellationToken cancellation = default)
         {
             var validations = await _validator.ValidateAsync(parameter, cancellation);
             if (validations != null && validations.Errors.Count > 0)
             {
-                return validations.ToResultFailure<CreateAccountResponseDto>();
+                return validations.ToResultFailure<CreateAccountUseCaseResponseDto>();
             }
 
             var email = new Email(parameter.Email);
@@ -45,7 +45,7 @@ namespace RestauranteUni.Application.UseCases.Accounts
 
             await _context.Accounts.AddAsync(account, cancellation);
             await _context.SaveChangesAsync(cancellation);
-            return Result<CreateAccountResponseDto>.Success(new CreateAccountResponseDto()
+            return Result<CreateAccountUseCaseResponseDto>.Success(new CreateAccountUseCaseResponseDto()
             {
                 Id = account.Id,
                 Email = account.Email,

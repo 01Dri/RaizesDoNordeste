@@ -1,6 +1,6 @@
 ﻿namespace RestauranteUni.Domain.UseCases
 {
-    public interface IResponse<TId> : IResponse
+    public interface IUseCaseResponse<TId> : IUseCaseResponse
     {
         public TId Id { get; set; }
     }
