@@ -15,13 +15,13 @@ namespace RestauranteUni.Application.UseCases.Accounts
     {
         private readonly ApplicationDbContext _context;
         private readonly IValidator<CreateAccountDto> _validator;
-        private readonly IEcrypter _ecrypter;
+        private readonly IHasher _hasher;
 
-        public CreateAccountUseCaseHandler(ApplicationDbContext context, IValidator<CreateAccountDto> validator, IEcrypter ecrypter)
+        public CreateAccountUseCaseHandler(ApplicationDbContext context, IValidator<CreateAccountDto> validator, IHasher hasher)
         {
             _context = context;
             _validator = validator;
-            _ecrypter = ecrypter;
+            _hasher = hasher;
         }
 
         public async Task<Result<CreateAccountResponseDto>> HandleAsync(CreateAccountDto parameter, CancellationToken cancellation = default)
@@ -36,7 +36,7 @@ namespace RestauranteUni.Application.UseCases.Accounts
             var account = new Account()
             {
                 Email = email,
-                Password = _ecrypter.HashPassword(parameter.Password),
+                Password = _hasher.HashPassword(parameter.Password),
                 RoleAccounts =
                 [
                     RoleAccount.Create(RoleType.Customer, RoleStatus.Enable)

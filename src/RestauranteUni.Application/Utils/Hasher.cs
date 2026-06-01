@@ -2,7 +2,7 @@
 
 namespace RestauranteUni.Application.Utils
 {
-    public sealed class Ecrypter : IEcrypter
+    public sealed class Hasher : IHasher
     {
         public string HashPassword(string value)
         {

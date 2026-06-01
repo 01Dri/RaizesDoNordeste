@@ -9,7 +9,7 @@ using RestauranteUni.Domain.UseCases;
 using RestauranteUni.Domain.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddScoped<IEcrypter, Ecrypter>();
+builder.Services.AddScoped<IHasher, Hasher>();
 builder.Services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidation>();
 builder.Services.AddScoped<
         IUseCaseHandler<CreateAccountDto, CreateAccountResponseDto>,

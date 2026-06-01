@@ -1,6 +1,6 @@
 ﻿namespace RestauranteUni.Domain.Utils
 {
-    public interface IEcrypter
+    public interface IHasher
     {
         string HashPassword(string value);
     }
