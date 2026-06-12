@@ -65,11 +65,7 @@ namespace RestauranteUni.Application.UseCases.Login
 
             if (restaurant == null)
             {
-                return Result<LoginResponseDto>.Failure
-                (
-                    [new Validation("Restaurant not found")],
-                    HttpStatusCode.NotFound
-                );
+                return Result<LoginResponseDto>.FailureNotFound("Restaurant not found.");
             }
 
             var claims = MountRolesClaims(account);

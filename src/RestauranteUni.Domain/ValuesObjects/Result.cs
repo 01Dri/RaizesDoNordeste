@@ -82,6 +82,9 @@ namespace RestauranteUni.Domain.ValuesObjects
             IEnumerable<Validation> validations,
             HttpStatusCode statusCode = HttpStatusCode.BadRequest)
             => new(default, false, validations.ToList(), statusCode);
+
+        public static Result<T> FailureNotFound(string errorMessage)
+            => new(default, false, [new Validation(errorMessage)], HttpStatusCode.NotFound);
     }
 
     public sealed record Validation(

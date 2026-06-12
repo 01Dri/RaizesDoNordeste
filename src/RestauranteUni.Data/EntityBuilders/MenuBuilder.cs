@@ -42,6 +42,8 @@ namespace RestauranteUni.Data.EntityBuilders
                 CreatedAt = new DateTime(2026, 1, 1),
                 Active = true,
             });
+
+
         }
     }
 }

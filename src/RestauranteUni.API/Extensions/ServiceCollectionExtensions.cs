@@ -14,6 +14,7 @@ namespace RestauranteUni.API.Extensions
                 .Distinct()
                 .ToArray();
 
+            services.RegisterImplementations(typeof(IUseCaseHandler<>), assemblies);
             services.RegisterImplementations(typeof(IUseCaseHandler<,>), assemblies);
             services.RegisterImplementations(typeof(IValidator<>), assemblies);
 
