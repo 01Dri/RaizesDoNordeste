@@ -5,7 +5,7 @@ using Moq;
 using RestauranteUni.Application.UseCases.Accounts;
 using RestauranteUni.Application.UseCases.Accounts.Validations;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Accounts.DTO;
+using RestauranteUni.Domain.Core.Accounts.DTO;
 using RestauranteUni.Domain.Services;
 using RestauranteUni.Domain.UseCases;
 

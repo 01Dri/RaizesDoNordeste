@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RestauranteUni.Domain.Ingredients;
+using RestauranteUni.Domain.Core.Ingredients;
 
 namespace RestauranteUni.Data.EntityBuilders
 {

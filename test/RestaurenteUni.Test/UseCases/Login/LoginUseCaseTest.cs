@@ -2,7 +2,6 @@
 using RestauranteUni.Application.UseCases.Login;
 using RestauranteUni.Application.UseCases.Login.Validations;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Login;
 using RestauranteUni.Domain.UseCases;
 using System.Net;
 using Moq;
@@ -10,6 +9,7 @@ using RestauranteUni.Application.Services;
 using RestauranteUni.Domain.ValuesObjects;
 using RestauranteUni.Domain.Services;
 using System.Security.Claims;
+using RestauranteUni.Domain.Core.Login;
 
 namespace RestaurenteUni.Test.UseCases.Login
 {
@@ -197,7 +197,7 @@ namespace RestaurenteUni.Test.UseCases.Login
 
         private void InsertAccount()
         {
-            _context.Accounts.Add(new RestauranteUni.Domain.Accounts.Account
+            _context.Accounts.Add(new RestauranteUni.Domain.Core.Accounts.Account
             {
                 Email = new Email("diego@gmail.com"),
                 Password = HashedPassword

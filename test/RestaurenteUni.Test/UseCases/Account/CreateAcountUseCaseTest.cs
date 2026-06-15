@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using RestauranteUni.Application.UseCases.Accounts;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Accounts.DTO;
-using RestauranteUni.Domain.Accounts.Roles;
+using RestauranteUni.Domain.Core.Accounts.DTO;
+using RestauranteUni.Domain.Core.Accounts.Roles;
 using RestauranteUni.Domain.Services;
 using RestauranteUni.Domain.UseCases;
 
@@ -112,8 +112,8 @@ namespace RestaurenteUni.Test.UseCases.Account
             Assert.Multiple(() =>
             {
                 Assert.That(account.RoleAccounts, Has.Count.EqualTo(1));
-                Assert.That(account.RoleAccounts[0].Role!.Id, Is.EqualTo(RoleType.Customer));
-                Assert.That(account.RoleAccounts[0].RoleStatus, Is.EqualTo(RoleStatus.Enable));
+                Assert.That(account.RoleAccounts.First().Role!.Id, Is.EqualTo(RoleType.Customer));
+                Assert.That(account.RoleAccounts.First().RoleStatus, Is.EqualTo(RoleStatus.Enable));
             });
         }
 

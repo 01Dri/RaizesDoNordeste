@@ -8,9 +8,9 @@ using RestauranteUni.Application;
 using RestauranteUni.Application.Services;
 using RestauranteUni.Data;
 using RestauranteUni.Domain.Services;
-using RestauranteUni.Domain.Users;
 using Scalar.AspNetCore;
 using System.Text;
+using RestauranteUni.Domain.Core.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 

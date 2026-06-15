@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 using RestauranteUni.Application.Extensions;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Accounts;
-using RestauranteUni.Domain.Accounts.DTO;
-using RestauranteUni.Domain.Accounts.Roles;
+using RestauranteUni.Domain.Core.Accounts;
+using RestauranteUni.Domain.Core.Accounts.DTO;
+using RestauranteUni.Domain.Core.Accounts.Roles;
 using RestauranteUni.Domain.Services;
 using RestauranteUni.Domain.UseCases;
 using RestauranteUni.Domain.ValuesObjects;

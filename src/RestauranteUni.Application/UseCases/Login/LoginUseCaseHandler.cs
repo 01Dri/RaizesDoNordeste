@@ -2,13 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Application.Extensions;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Accounts;
-using RestauranteUni.Domain.Login;
 using RestauranteUni.Domain.Services;
 using RestauranteUni.Domain.UseCases;
 using RestauranteUni.Domain.ValuesObjects;
 using System.Net;
 using System.Security.Claims;
+using RestauranteUni.Domain.Core.Accounts;
+using RestauranteUni.Domain.Core.Login;
 
 namespace RestauranteUni.Application.UseCases.Login
 {

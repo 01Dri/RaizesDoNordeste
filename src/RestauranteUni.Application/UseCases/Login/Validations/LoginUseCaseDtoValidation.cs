@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using RestauranteUni.Application.Validations;
-using RestauranteUni.Domain.Login;
+using RestauranteUni.Domain.Core.Login;
 
 namespace RestauranteUni.Application.UseCases.Login.Validations
 {

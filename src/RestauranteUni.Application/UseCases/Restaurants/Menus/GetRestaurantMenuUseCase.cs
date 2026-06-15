@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Menus.DTO;
+using RestauranteUni.Domain.Core.Menus.DTO;
+using RestauranteUni.Domain.Core.Users;
 using RestauranteUni.Domain.UseCases;
-using RestauranteUni.Domain.Users;
 using RestauranteUni.Domain.ValuesObjects;
 
 namespace RestauranteUni.Application.UseCases.Restaurants.Menus

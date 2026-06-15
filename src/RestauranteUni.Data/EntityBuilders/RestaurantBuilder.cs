@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RestauranteUni.Domain.Restaurants;
+using RestauranteUni.Domain.Core.Restaurants;
 using RestauranteUni.Domain.ValuesObjects;
 
 namespace RestauranteUni.Data.EntityBuilders
 {
     internal sealed class RestaurantBuilder : BaseEntityBuilder<Guid, Restaurant>
     {
-        private static readonly Guid RestauranteUniversitarioId = Guid.Parse("9a88024d-2618-4e25-87f5-35217f7a7c8a");
+            private static readonly Guid RestauranteUniversitarioId = Guid.Parse("9a88024d-2618-4e25-87f5-35217f7a7c8a");
         private static readonly Guid CantinaCentralId = Guid.Parse("f02884ad-1725-4fcb-9bb6-cbf0b8f5fef6");
         private static readonly Guid BistroDoCampusId = Guid.Parse("be0b1f01-0d0f-43e6-9575-b1e117ad62cb");
         private static readonly DateTime SeedCreatedAt = new(2026, 6, 5, 0, 0, 0, DateTimeKind.Utc);

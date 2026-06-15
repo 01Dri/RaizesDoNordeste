@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Menus.DTO;
+using RestauranteUni.Domain.Core.Menus.DTO;
 using RestauranteUni.Domain.UseCases;
-using RestauranteUni.Domain.Users;
 
 namespace RestauranteUni.API.Controllers
 {

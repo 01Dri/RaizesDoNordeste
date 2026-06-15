@@ -17,7 +17,7 @@ namespace RestauranteUni.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.8");
 
-            modelBuilder.Entity("RestauranteUni.Domain.Accounts.Account", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Accounts.Account", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,7 +59,7 @@ namespace RestauranteUni.Data.Migrations
                     b.ToTable("accounts", (string)null);
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Accounts.Roles.Role", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Accounts.Roles.Role", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("INTEGER")
@@ -107,7 +107,7 @@ namespace RestauranteUni.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Accounts.Roles.RoleAccount", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Accounts.Roles.RoleAccount", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,7 +135,7 @@ namespace RestauranteUni.Data.Migrations
                     b.ToTable("role_accounts", (string)null);
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Ingredients.Ingredient", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Ingredients.Ingredient", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -178,7 +178,7 @@ namespace RestauranteUni.Data.Migrations
                     b.ToTable("Ingredients");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Menus.Menu", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Menus.Menu", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -235,7 +235,7 @@ namespace RestauranteUni.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Menus.MenuItem", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Menus.MenuItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -375,7 +375,7 @@ namespace RestauranteUni.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Menus.MenuItemIngredient", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Menus.MenuItemIngredient", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -419,7 +419,104 @@ namespace RestauranteUni.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Restaurants.Restaurant", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Orders.Order", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
+
+                    b.Property<long>("AccountId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("account_id");
+
+                    b.Property<bool>("Active")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true)
+                        .HasColumnName("active");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("PublicId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("public_id");
+
+                    b.Property<Guid>("RestaurantId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("restaurant_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("RestaurantId");
+
+                    b.ToTable("orders", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            AccountId = 1L,
+                            Active = true,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PublicId = new Guid("9a88024d-2618-4e25-87f5-35217f7a7c8c"),
+                            RestaurantId = new Guid("9a88024d-2618-4e25-87f5-35217f7a7c8a")
+                        });
+                });
+
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Orders.OrderItem", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
+
+                    b.Property<long>("MenuItemId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("menu_item_id");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("order_id");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("quantity");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuItemId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("order_items", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            MenuItemId = 1L,
+                            OrderId = 1L,
+                            Quantity = 2m
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            MenuItemId = 2L,
+                            OrderId = 1L,
+                            Quantity = 1m
+                        });
+                });
+
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Restaurants.Restaurant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -518,7 +615,7 @@ namespace RestauranteUni.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Stocks.Stock", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Stocks.Stock", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -568,7 +665,7 @@ namespace RestauranteUni.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Stocks.StockIngredient", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Stocks.StockIngredient", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -645,15 +742,15 @@ namespace RestauranteUni.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Accounts.Roles.RoleAccount", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Accounts.Roles.RoleAccount", b =>
                 {
-                    b.HasOne("RestauranteUni.Domain.Accounts.Account", "Account")
+                    b.HasOne("RestauranteUni.Domain.Core.Accounts.Account", "Account")
                         .WithMany("RoleAccounts")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RestauranteUni.Domain.Accounts.Roles.Role", "Role")
+                    b.HasOne("RestauranteUni.Domain.Core.Accounts.Roles.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -664,20 +761,20 @@ namespace RestauranteUni.Data.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Menus.Menu", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Menus.Menu", b =>
                 {
-                    b.HasOne("RestauranteUni.Domain.Restaurants.Restaurant", "Restaurant")
+                    b.HasOne("RestauranteUni.Domain.Core.Restaurants.Restaurant", "Restaurant")
                         .WithOne("Menu")
-                        .HasForeignKey("RestauranteUni.Domain.Menus.Menu", "RestaurantId")
+                        .HasForeignKey("RestauranteUni.Domain.Core.Menus.Menu", "RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Menus.MenuItem", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Menus.MenuItem", b =>
                 {
-                    b.HasOne("RestauranteUni.Domain.Menus.Menu", "Menu")
+                    b.HasOne("RestauranteUni.Domain.Core.Menus.Menu", "Menu")
                         .WithMany("Items")
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -686,13 +783,13 @@ namespace RestauranteUni.Data.Migrations
                     b.Navigation("Menu");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Menus.MenuItemIngredient", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Menus.MenuItemIngredient", b =>
                 {
-                    b.HasOne("RestauranteUni.Domain.Menus.MenuItem", "MenuItem")
+                    b.HasOne("RestauranteUni.Domain.Core.Menus.MenuItem", "MenuItem")
                         .WithMany("Ingredients")
                         .HasForeignKey("MenuItemId");
 
-                    b.HasOne("RestauranteUni.Domain.Stocks.StockIngredient", "StockIngredient")
+                    b.HasOne("RestauranteUni.Domain.Core.Stocks.StockIngredient", "StockIngredient")
                         .WithMany("MenuItemIngredients")
                         .HasForeignKey("StockIngredientId");
 
@@ -701,7 +798,45 @@ namespace RestauranteUni.Data.Migrations
                     b.Navigation("StockIngredient");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Restaurants.Restaurant", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Orders.Order", b =>
+                {
+                    b.HasOne("RestauranteUni.Domain.Core.Accounts.Account", "Account")
+                        .WithMany("Orders")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RestauranteUni.Domain.Core.Restaurants.Restaurant", "Restaurant")
+                        .WithMany("Orders")
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Restaurant");
+                });
+
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Orders.OrderItem", b =>
+                {
+                    b.HasOne("RestauranteUni.Domain.Core.Menus.MenuItem", "MenuItem")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RestauranteUni.Domain.Core.Orders.Order", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuItem");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Restaurants.Restaurant", b =>
                 {
                     b.OwnsOne("RestauranteUni.Domain.ValuesObjects.Address", "Address", b1 =>
                         {
@@ -796,18 +931,18 @@ namespace RestauranteUni.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Stocks.Stock", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Stocks.Stock", b =>
                 {
-                    b.HasOne("RestauranteUni.Domain.Restaurants.Restaurant", "Restaurant")
+                    b.HasOne("RestauranteUni.Domain.Core.Restaurants.Restaurant", "Restaurant")
                         .WithOne("Stock")
-                        .HasForeignKey("RestauranteUni.Domain.Stocks.Stock", "RestaurantId");
+                        .HasForeignKey("RestauranteUni.Domain.Core.Stocks.Stock", "RestaurantId");
 
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Stocks.StockIngredient", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Stocks.StockIngredient", b =>
                 {
-                    b.HasOne("RestauranteUni.Domain.Stocks.Stock", "Stock")
+                    b.HasOne("RestauranteUni.Domain.Core.Stocks.Stock", "Stock")
                         .WithMany("Items")
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -816,35 +951,46 @@ namespace RestauranteUni.Data.Migrations
                     b.Navigation("Stock");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Accounts.Account", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Accounts.Account", b =>
                 {
+                    b.Navigation("Orders");
+
                     b.Navigation("RoleAccounts");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Menus.Menu", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Menus.Menu", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Menus.MenuItem", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Menus.MenuItem", b =>
                 {
                     b.Navigation("Ingredients");
+
+                    b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Restaurants.Restaurant", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Orders.Order", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Restaurants.Restaurant", b =>
                 {
                     b.Navigation("Menu");
+
+                    b.Navigation("Orders");
 
                     b.Navigation("Stock")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Stocks.Stock", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Stocks.Stock", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("RestauranteUni.Domain.Stocks.StockIngredient", b =>
+            modelBuilder.Entity("RestauranteUni.Domain.Core.Stocks.StockIngredient", b =>
                 {
                     b.Navigation("MenuItemIngredients");
                 });

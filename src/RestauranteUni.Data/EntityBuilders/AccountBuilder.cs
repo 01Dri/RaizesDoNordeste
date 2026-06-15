@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RestauranteUni.Domain.Accounts;
+using RestauranteUni.Domain.Core.Accounts;
 using RestauranteUni.Domain.ValuesObjects;
 
 namespace RestauranteUni.Data.EntityBuilders
@@ -27,6 +27,10 @@ namespace RestauranteUni.Data.EntityBuilders
                 .HasColumnName("password")
                 .HasMaxLength(255)
                 .IsRequired();
+            
+            builder.Navigation(x => x.RoleAccounts);
+            builder.Navigation(x => x.Orders);
+            
         }
     }
 }

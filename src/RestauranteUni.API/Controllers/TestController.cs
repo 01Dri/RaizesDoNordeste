@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Users;
+using RestauranteUni.Domain.Core.Users;
 
 namespace RestauranteUni.API.Controllers
 {
@@ -28,7 +28,7 @@ namespace RestauranteUni.API.Controllers
         }
         
         [HttpGet]
-        [Route("cahorro")]
+        [Route("Stock")]
         public IActionResult Test()
         {
             var menu = _context.Menus.Include(x => x.Items).
@@ -44,5 +44,43 @@ namespace RestauranteUni.API.Controllers
                 .ToList();
             return Ok(items);
         }
+        
+        [HttpGet]
+        [Route("orders")]
+        public IActionResult Orders()
+        {
+            var orders = _context.Orders
+                .Include(x => x.Items)
+                .ThenInclude(x
+                    => x.MenuItem)
+                .Select(x => new OrderResponseDto
+                {
+                    Id = x.PublicId,
+                    AccountId = x.AccountId,
+                    RestaurantId = x.RestaurantId,
+                    Items = x.Items.Select(i => new OrderItemResponseDto
+                    {
+                        MenuItemName = i.MenuItem.Title,
+                        Quantity = i.Quantity
+                    }).ToList()
+                })
+                .FirstOrDefault(x => x.AccountId == _currentUser.AccountId && x.RestaurantId == _currentUser.RestaurantId);
+            
+            return Ok(orders);
+        }
+    }
+
+    class OrderResponseDto
+    {
+        public Guid Id { get; set; }
+        public long? AccountId { get; set; }
+        public Guid? RestaurantId { get; set; }
+        public List<OrderItemResponseDto> Items { get; set; } = [];
+    }
+    
+    class OrderItemResponseDto
+    {
+        public string MenuItemName { get; set; } = null!;
+        public decimal Quantity { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using RestauranteUni.Domain.Users;
+using RestauranteUni.Domain.Core.Users;
 
 namespace RestauranteUni.API
 {
