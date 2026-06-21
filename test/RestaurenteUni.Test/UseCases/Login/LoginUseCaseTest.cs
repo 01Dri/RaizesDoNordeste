@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Application.UseCases.Login;
 using RestauranteUni.Application.UseCases.Login.Validations;
 using RestauranteUni.Data;
@@ -56,8 +56,9 @@ namespace RestaurenteUni.Test.UseCases.Login
             Assert.Multiple(() =>
             {
                 Assert.That(result.IsSuccess, Is.False);
-                Assert.That(result.Validations.Count, Is.EqualTo(1));
-                Assert.That(result.Validations.First().Errors, Contains.Item("Restaurant not found"));
+                Assert.That(result.Validations, Is.Empty);
+                Assert.That(result.ErrorData, Is.Not.Null);
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Restaurant not found."));
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             });
 

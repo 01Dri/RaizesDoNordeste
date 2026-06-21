@@ -1,6 +1,9 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using RestauranteUni.Application.Extensions;
 using RestauranteUni.Data;
+using RestauranteUni.Domain.Core.Accounts.DTO;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
 using RestauranteUni.Domain.Core.Menus;
 using RestauranteUni.Domain.Core.Orders;
@@ -16,16 +19,23 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ICurrentUser _currentUser;
+    private readonly IValidator<CreateOrderDto> _validator;
 
-    public CreateOrderUseCaseHandler(ApplicationDbContext dbContext, ICurrentUser currentUser)
+    public CreateOrderUseCaseHandler(ApplicationDbContext dbContext, ICurrentUser currentUser, IValidator<CreateOrderDto> validator)
     {
         _dbContext = dbContext;
         _currentUser = currentUser;
+        _validator = validator;
     }
 
     public async Task<Result<OrderResponseDto>> HandleAsync(CreateOrderDto parameter,
         CancellationToken cancellation = default)
     {
+        var validation = await _validator.ValidateAsync(parameter, cancellation);
+        if (validation.ContainsErrors())
+        {
+            return validation.ToResultFailure<OrderResponseDto>();
+        }
 
         /**
          * Fluxo criação de pedido
@@ -47,6 +57,11 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
         if (menuItems.Count == 0)
         {
             return Result<OrderResponseDto>.FailureNotFound("Menu items not found");
+        }
+
+        if (menuItems.Count != itemsPublicIds.Count)
+        {
+            return Result<OrderResponseDto>.FailureNotFound("Some menu items not found");
         }
 
         var menuItemsNotAvailable = menuItems.Where(x => !x.IsAvailable)

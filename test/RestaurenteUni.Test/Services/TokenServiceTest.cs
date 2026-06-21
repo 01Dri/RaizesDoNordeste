@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using RestauranteUni.Application.Services;
 using RestauranteUni.Domain.Services;
 using System.IdentityModel.Tokens.Jwt;
@@ -66,7 +66,7 @@ namespace RestaurenteUni.Test.Services
             {
                 Assert.That(jwtToken, Is.Not.Null);
                 Assert.That(jwtToken!.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value, Is.EqualTo(userId.ToString()));
-                Assert.That(jwtToken.Claims.FirstOrDefault(x => x.Type == "sub")?.Value, Is.EqualTo(sub));
+                Assert.That(jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value, Is.EqualTo(sub));
                 Assert.That(jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value, Is.EqualTo("Admin"));
                 Assert.That(jwtToken.Claims.FirstOrDefault(x => x.Type == "custom")?.Value, Is.EqualTo("value"));
             });
