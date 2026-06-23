@@ -13,7 +13,7 @@ namespace RestauranteUni.API.Controllers
         public readonly IConfiguration _configuration;
 
         public LoginController(IUseCaseHandler<LoginDto, LoginResponseDto> handler, IConfiguration configuration)
-        {
+        {   
             _handler = handler;
             _configuration = configuration;
         }
@@ -33,7 +33,7 @@ namespace RestauranteUni.API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [Route("Developer")]
         public async Task<IActionResult> LoginDeveloperAsync(CancellationToken cancellation)
         {

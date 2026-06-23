@@ -26,6 +26,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlite("Data Source=app.db");
 });
+builder.Services.AddPatterns();
+
 
 builder.Services.AddControllers();
 

@@ -1,14 +1,15 @@
-﻿using FluentValidation;
+﻿using System.Net;
+using System.Security.Claims;
+using System.Text.Json;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Application.Extensions;
 using RestauranteUni.Data;
+using RestauranteUni.Domain.Core.Accounts;
+using RestauranteUni.Domain.Core.Login;
 using RestauranteUni.Domain.Services;
 using RestauranteUni.Domain.UseCases;
 using RestauranteUni.Domain.ValuesObjects;
-using System.Net;
-using System.Security.Claims;
-using RestauranteUni.Domain.Core.Accounts;
-using RestauranteUni.Domain.Core.Login;
 
 namespace RestauranteUni.Application.UseCases.Login
 {
@@ -79,12 +80,18 @@ namespace RestauranteUni.Application.UseCases.Login
 
         private static List<Claim> MountRolesClaims(Account account)
         {
-            var roles = account.RoleAccounts.Select(x => x.RoleId);
+            var roles = account.RoleAccounts;
             var claims = new List<Claim>();
 
             foreach (var roleType in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, roleType.ToString()!));
+                var value = new
+                {
+                    roleType.RoleId,
+                    roleType.RoleStatus,
+                    roleType.AccountId
+                };
+                claims.Add(new Claim(ClaimTypes.Role, JsonSerializer.Serialize(value)));
             }
 
             return claims;

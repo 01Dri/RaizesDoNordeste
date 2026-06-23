@@ -3,7 +3,6 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Application.Extensions;
 using RestauranteUni.Data;
-using RestauranteUni.Domain.Core.Accounts.DTO;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
 using RestauranteUni.Domain.Core.Menus;
 using RestauranteUni.Domain.Core.Orders;
@@ -142,10 +141,10 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
     }
 
 
-    private List<MenuItemOrderConsumption>? BuildOrderStockConsumption(List<MenuItem> menuItems,
+    private List<MenuItemOrderConsumptionDto>? BuildOrderStockConsumption(List<MenuItem> menuItems,
         CreateOrderDto parameter)
     {
-        var result = new List<MenuItemOrderConsumption>();
+        var result = new List<MenuItemOrderConsumptionDto>();
 
         // Saldo temporário para simular consumo
         var availableStock = menuItems
@@ -165,7 +164,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
                 return null;
             }
 
-            var menuItemConsumption = new MenuItemOrderConsumption()
+            var menuItemConsumption = new MenuItemOrderConsumptionDto()
             {
                 ItemId = menuItem.Id,
                 Item = menuItem,
@@ -193,7 +192,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
                 availableStock[stockIngredient.Id] -= quantityToConsume;
 
                 menuItemConsumption.IngredientConsumptions.Add(
-                    new IngredientOrderConsumption()
+                    new IngredientOrderConsumptionDto()
                     {
                         Ingredient = ingredient,
                         QuantityToUseInOrder = quantityToConsume,
@@ -207,7 +206,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
     }
 
 
-    private async Task HandleMenuItemsAsync(List<MenuItemOrderConsumption> menuItems, Order order)
+    private async Task HandleMenuItemsAsync(List<MenuItemOrderConsumptionDto> menuItems, Order order)
     {
         foreach (var menuItem in menuItems)
         {
@@ -245,41 +244,4 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
         }
         
     }
-    
-    private Result<OrderResponseDto> ToResponse(string message, string? error = null)
-    {
-        Validation validation = null;
-
-        if (!string.IsNullOrEmpty(error))
-        {
-            validation = new Validation(message, error);
-        }
-        else
-        {
-            validation = new Validation(message);
-        }
-        return Result<OrderResponseDto>.Failure(new[]
-        {
-            validation
-        });
-    }
 }
-
-class MenuItemOrderConsumption
-{
-    public long ItemId { get; set; }
-    public MenuItem Item { get; set; }
-    public List<IngredientOrderConsumption> IngredientConsumptions { get; set; } = [];
-    public decimal TotalPrice { get; set; }
-    public decimal TotalQuantity { get; set; }
-    public bool HaveIngredientStock { get; set; } = true;
-    public List<string> IngredientsWithoutStock { get; set; } = [];
-}
-
-
-class IngredientOrderConsumption
-{
-    public MenuItemIngredient Ingredient { get; set; }
-    public decimal QuantityToUseInOrder { get; set; }
-    
-} 
