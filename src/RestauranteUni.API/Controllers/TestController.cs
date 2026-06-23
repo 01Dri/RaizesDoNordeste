@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Data;
@@ -8,7 +8,7 @@ namespace RestauranteUni.API.Controllers
 {
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("teste")]
     [Authorize]
     public class TestController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace RestauranteUni.API.Controllers
         }
         
         [HttpGet]
-        [Route("Stock")]
+        [Route("estoque")]
         public IActionResult Test()
         {
             var menu = _context.Menus.Include(x => x.Items).

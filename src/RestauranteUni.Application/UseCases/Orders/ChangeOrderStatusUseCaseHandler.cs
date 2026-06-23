@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Application.Patterns.Dispatchers;
 using RestauranteUni.Data;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
@@ -36,7 +36,7 @@ public sealed class ChangeOrderStatusUseCaseHandler : IUseCaseHandler<ChangeOrde
 
         if (order == null)
         {
-            return Result<OrderStatusChangeResponseDto>.FailureNotFound("Order not found.");
+            return Result<OrderStatusChangeResponseDto>.FailureNotFound("Pedido não encontrado.");
         }
 
         var result = _orderStatusDispatcher.Handle(parameter.Status, order);

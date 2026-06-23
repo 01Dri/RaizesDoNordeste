@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using RestauranteUni.Domain.Core.Orders.DTO;
 
 namespace RestauranteUni.Application.UseCases.Orders.Validations;
@@ -9,11 +9,11 @@ public sealed class CreateOrderItemValidator : AbstractValidator<CreateOrderItem
     {
         RuleFor(x => x.PublicMenuItemId)
             .NotEmpty()
-            .WithMessage("Menu item id is required.");
+            .WithMessage("O ID do item do cardápio é obrigatório.");
 
         RuleFor(x => x.Quantity)
             .GreaterThan(0)
-            .WithMessage("Quantity must be greater than zero.");
+            .WithMessage("A quantidade deve ser maior que zero.");
         
     }
 }

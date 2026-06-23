@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using RestauranteUni.Domain.Core.Accounts.DTO;
 using RestauranteUni.Domain.UseCases;
 
 namespace RestauranteUni.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("conta")]
     public class AccountController : ControllerBase
     {
 

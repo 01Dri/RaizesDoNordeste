@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace RestauranteUni.Application.Validations
 {
@@ -8,15 +8,15 @@ namespace RestauranteUni.Application.Validations
         {
             RuleFor(x => x)
                 .NotEmpty()
-                .WithMessage("Password is required")
+                .WithMessage("A senha é obrigatória")
                 .MinimumLength(8)
-                .WithMessage("Password must have at least 8 characters")
+                .WithMessage("A senha deve ter pelo menos 8 caracteres")
                 .Matches("[A-Z]")
-                .WithMessage("Password must contain at least one uppercase letter")
+                .WithMessage("A senha deve conter pelo menos uma letra maiúscula")
                 .Matches("[a-z]")
-                .WithMessage("Password must contain at least one lowercase letter")
+                .WithMessage("A senha deve conter pelo menos uma letra minúscula")
                 .Matches("[0-9]")
-                .WithMessage("Password must contain at least one number");
+                .WithMessage("A senha deve conter pelo menos um número");
         }
     }
 }

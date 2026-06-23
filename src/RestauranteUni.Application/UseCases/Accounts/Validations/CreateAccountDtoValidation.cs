@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using RestauranteUni.Application.Validations;
 using RestauranteUni.Domain.Core.Accounts.DTO;
 
@@ -15,9 +15,9 @@ namespace RestauranteUni.Application.UseCases.Accounts.Validations
 
             RuleFor(x => x.BirthDate)
                 .NotEmpty()
-                .WithMessage("Birth date is required")
+                .WithMessage("A data de nascimento é obrigatória")
                 .Must(x => x.Date <= DateTime.Today)
-                .WithMessage("Birth date cannot be in the future");
+                .WithMessage("A data de nascimento não pode ser no futuro");
         }
     }
 }

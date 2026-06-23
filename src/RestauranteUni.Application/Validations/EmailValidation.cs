@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using RestauranteUni.Domain.ValuesObjects;
 
 namespace RestauranteUni.Application.Validations
@@ -9,9 +9,9 @@ namespace RestauranteUni.Application.Validations
         {
             RuleFor(x => x)
                 .NotEmpty()
-                .WithMessage("E-mail is required")
+                .WithMessage("O e-mail é obrigatório")
                 .Must(Email.IsValid)
-                .WithMessage("Invalid e-mail");
+                .WithMessage("E-mail inválido");
         }
     }
 }

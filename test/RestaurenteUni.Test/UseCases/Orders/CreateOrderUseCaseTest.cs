@@ -171,7 +171,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.Validations, Is.Not.Null);
                 var channelValidation = result.Validations!.FirstOrDefault(v => v.Property == nameof(CreateOrderDto.Channel));
                 Assert.That(channelValidation, Is.Not.Null);
-                Assert.That(channelValidation!.Errors, Contains.Item("Invalid order channel."));
+                Assert.That(channelValidation!.Errors, Contains.Item("Canal de pedido inválido."));
             });
         }
 
@@ -192,7 +192,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.Validations, Is.Not.Null);
                 var itemsValidation = result.Validations!.FirstOrDefault(v => v.Property == nameof(CreateOrderDto.Items));
                 Assert.That(itemsValidation, Is.Not.Null);
-                Assert.That(itemsValidation!.Errors, Contains.Item("Items is required."));
+                Assert.That(itemsValidation!.Errors, Contains.Item("Os itens são obrigatórios."));
             });
         }
 
@@ -213,7 +213,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.Validations, Is.Not.Null);
                 var itemsValidation = result.Validations!.FirstOrDefault(v => v.Property == nameof(CreateOrderDto.Items));
                 Assert.That(itemsValidation, Is.Not.Null);
-                Assert.That(itemsValidation!.Errors, Contains.Item("The order must contain at least one item."));
+                Assert.That(itemsValidation!.Errors, Contains.Item("O pedido deve conter pelo menos um item."));
             });
         }
 
@@ -237,7 +237,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.Validations, Is.Not.Null);
                 var itemValidation = result.Validations!.FirstOrDefault(v => v.Property.StartsWith("Items["));
                 Assert.That(itemValidation, Is.Not.Null);
-                Assert.That(itemValidation!.Errors, Contains.Item("Menu item id is required."));
+                Assert.That(itemValidation!.Errors, Contains.Item("O ID do item do cardápio é obrigatório."));
             });
         }
 
@@ -263,7 +263,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.Validations, Is.Not.Null);
                 var itemValidation = result.Validations!.FirstOrDefault(v => v.Property.StartsWith("Items["));
                 Assert.That(itemValidation, Is.Not.Null);
-                Assert.That(itemValidation!.Errors, Contains.Item("Quantity must be greater than zero."));
+                Assert.That(itemValidation!.Errors, Contains.Item("A quantidade deve ser maior que zero."));
             });
         }
 
@@ -286,7 +286,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Menu items not found"));
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Itens do cardápio não encontrados"));
             });
         }
 
@@ -311,7 +311,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Some menu items is not available."));
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Alguns itens do cardápio não estão disponíveis."));
                 
                 var details = result.ErrorData.Details as IEnumerable<object>;
                 Assert.That(details, Is.Not.Null);
@@ -343,7 +343,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Some menu items not have ingredients on stock"));
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Alguns itens do cardápio não possuem ingredientes suficientes em estoque"));
                 
                 var details = result.ErrorData.Details as IEnumerable<object>;
                 Assert.That(details, Is.Not.Null);
@@ -500,7 +500,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Some menu items not found"));
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Alguns itens do cardápio não foram encontrados"));
             });
         }
     }

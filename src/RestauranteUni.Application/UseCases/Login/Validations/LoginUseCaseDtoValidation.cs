@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using RestauranteUni.Application.Validations;
 using RestauranteUni.Domain.Core.Login;
 
@@ -13,11 +13,11 @@ namespace RestauranteUni.Application.UseCases.Login.Validations
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .NotNull()
-                .WithMessage("Password can't be null or empty");
+                .WithMessage("A senha não pode ser nula ou vazia");
 
             RuleFor(x => x.RestaurantId)
                 .NotEmpty()
-                .WithMessage("Restaurant is required");
+                .WithMessage("O restaurante é obrigatório");
         }   
     }
 }

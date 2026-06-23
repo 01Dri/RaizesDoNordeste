@@ -55,12 +55,12 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
             .Where(x => itemsPublicIds.Contains(x.PublicId) && x.Menu.RestaurantId == _currentUser.RestaurantId).ToListAsync(cancellation);
         if (menuItems.Count == 0)
         {
-            return Result<OrderResponseDto>.FailureNotFound("Menu items not found");
+            return Result<OrderResponseDto>.FailureNotFound("Itens do cardápio não encontrados");
         }
 
         if (menuItems.Count != itemsPublicIds.Count)
         {
-            return Result<OrderResponseDto>.FailureNotFound("Some menu items not found");
+            return Result<OrderResponseDto>.FailureNotFound("Alguns itens do cardápio não foram encontrados");
         }
 
         var menuItemsNotAvailable = menuItems.Where(x => !x.IsAvailable)
@@ -70,7 +70,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
         {
             return Result<OrderResponseDto>.Failure(new Error()
             {
-                    Message = "Some menu items is not available.",
+                    Message = "Alguns itens do cardápio não estão disponíveis.",
                     Details = menuItemsNotAvailable.Select(x => new
                     {
                         Item = x,
@@ -84,7 +84,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
         {
             return Result<OrderResponseDto>.Failure(new Error()
             {
-                Message = "Some menu items not have ingredients on stock",
+                Message = "Alguns itens do cardápio não possuem ingredientes suficientes em estoque",
                 Details = menuItemsWithoutIngredientStock.Select(x => new
                 {
                     Item = x.Item.Title,
@@ -224,7 +224,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
                         StockIngredientId = stockIngredient.Id,
                         Type = StockMovementType.Consumption,
                         Quantity = ingredientPreOrder.QuantityToUseInOrder,
-                        Description = "Consumption in an order",
+                        Description = "Consumo em um pedido",
                         CreatedAt = DateTime.UtcNow,
                         Order = order
                     });

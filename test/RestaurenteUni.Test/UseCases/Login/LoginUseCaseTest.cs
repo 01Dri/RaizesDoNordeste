@@ -58,7 +58,7 @@ namespace RestaurenteUni.Test.UseCases.Login
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.Validations, Is.Empty);
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Restaurant not found."));
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Restaurante não encontrado."));
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             });
 
@@ -76,7 +76,7 @@ namespace RestaurenteUni.Test.UseCases.Login
             {
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.Validations.Count, Is.EqualTo(1));
-                Assert.That(result.Validations.First().Errors, Contains.Item("Invalid credentials"));
+                Assert.That(result.Validations.First().Errors, Contains.Item("Credenciais inválidas"));
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
             });
         }
@@ -115,7 +115,7 @@ namespace RestaurenteUni.Test.UseCases.Login
             {
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.Validations.Count, Is.EqualTo(1));
-                Assert.That(result.Validations.First().Errors, Contains.Item($"Invalid {nameof(LoginDto.Email)}"));
+                Assert.That(result.Validations.First().Errors, Contains.Item($"{nameof(LoginDto.Email)} inválido"));
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             });
         }
@@ -132,7 +132,7 @@ namespace RestaurenteUni.Test.UseCases.Login
             {
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.Validations.Count, Is.EqualTo(1));
-                Assert.That(result.Validations.First().Errors, Contains.Item($"Invalid {nameof(LoginDto.Password)}"));
+                Assert.That(result.Validations.First().Errors, Contains.Item($"{nameof(LoginDto.Password)} inválido"));
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             });
         }
@@ -148,7 +148,7 @@ namespace RestaurenteUni.Test.UseCases.Login
             {
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.Validations.Count, Is.EqualTo(1));
-                Assert.That(result.Validations.First().Errors, Contains.Item($"Invalid {nameof(LoginDto.RestaurantId)}"));
+                Assert.That(result.Validations.First().Errors, Contains.Item($"{nameof(LoginDto.RestaurantId)} inválido"));
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             });
         }
@@ -185,7 +185,7 @@ namespace RestaurenteUni.Test.UseCases.Login
             {
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.Validations.Count, Is.EqualTo(1));
-                Assert.That(result.Validations.First().Errors, Contains.Item($"Invalid {nameof(LoginDto.Email)}"));
+                Assert.That(result.Validations.First().Errors, Contains.Item($"{nameof(LoginDto.Email)} inválido"));
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             });
         }

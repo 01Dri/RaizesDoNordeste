@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using RestauranteUni.Data;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
 using RestauranteUni.Domain.Core.Orders;
@@ -30,7 +30,7 @@ public sealed class OrderStatusDispatcher : IDispatcher<OrderStatus, Order>
 
         return Result.Failure(new Error()
         {
-            Message = "This order status not have handler. Please contact a support."
+            Message = "Este status de pedido não possui um tratador. Por favor, contate o suporte."
             
         }, HttpStatusCode.InternalServerError);
     }

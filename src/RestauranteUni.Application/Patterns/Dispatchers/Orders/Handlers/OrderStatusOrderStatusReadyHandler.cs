@@ -1,4 +1,4 @@
-﻿using RestauranteUni.Domain.Core.Accounts.Roles;
+using RestauranteUni.Domain.Core.Accounts.Roles;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
 using RestauranteUni.Domain.Core.Orders;
 using RestauranteUni.Domain.Core.Users;
@@ -17,7 +17,7 @@ public sealed class OrderStatusOrderStatusReadyHandler : IOrderStatusHandler
         {
             if (!user.InRole(RoleType.Professional))
             {
-                return Result.Failure(new Error("User not have permission"));
+                return Result.Failure(new Error("Usuário não possui permissão"));
             }
             if (order.Status == Status)  
             {
@@ -27,7 +27,7 @@ public sealed class OrderStatusOrderStatusReadyHandler : IOrderStatusHandler
             var currentStatus = order.Status;
             if (currentStatus != OrderStatus.Chicken)
             {
-                return Result.Failure(new Error("Order need be in chicken status."));
+                return Result.Failure(new Error("O pedido precisa estar no status de cozinha."));
             }
             order.Status = OrderStatus.Ready;
             return Result.Success();

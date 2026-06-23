@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
 using FluentValidation;
@@ -41,7 +41,7 @@ namespace RestauranteUni.Application.UseCases.Login
                 var propertyName = validation.Errors.First().PropertyName!;
                 return Result<LoginResponseDto>.Failure
                 (
-                    [new Validation(propertyName, $"Invalid {propertyName}")]
+                    [new Validation(propertyName, $"{propertyName} inválido")]
                 );
             } 
              
@@ -52,7 +52,7 @@ namespace RestauranteUni.Application.UseCases.Login
             {
                 return Result<LoginResponseDto>.Failure
                 (
-          [new Validation("Invalid credentials")],
+          [new Validation("Credenciais inválidas")],
                     HttpStatusCode.Unauthorized
                 );
             }
@@ -66,7 +66,7 @@ namespace RestauranteUni.Application.UseCases.Login
 
             if (restaurant == null)
             {
-                return Result<LoginResponseDto>.FailureNotFound("Restaurant not found.");
+                return Result<LoginResponseDto>.FailureNotFound("Restaurante não encontrado.");
             }
 
             var claims = MountRolesClaims(account);

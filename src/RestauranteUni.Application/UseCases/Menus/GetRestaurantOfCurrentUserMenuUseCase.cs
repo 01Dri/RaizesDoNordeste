@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Data;
 using RestauranteUni.Domain.Core.Menus.DTO;
 using RestauranteUni.Domain.Core.Users;
@@ -26,7 +26,7 @@ namespace RestauranteUni.Application.UseCases.Restaurants.Menus
                  .FirstOrDefaultAsync(x => x.RestaurantId == _currentUser.RestaurantId, cancellation);
              if (menu == null)
              {
-                 return Result<MenuResponseDto>.FailureNotFound("Menu not found.");
+                 return Result<MenuResponseDto>.FailureNotFound("Cardápio não encontrado.");
              }
 
              var items = menu

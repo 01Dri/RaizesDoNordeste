@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestauranteUni.Domain.Core.Menus.DTO;
 using RestauranteUni.Domain.UseCases;
@@ -7,7 +7,7 @@ namespace RestauranteUni.API.Controllers
 {
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("restaurante")]
     [Authorize]
     public class RestaurantController : ControllerBase
     {

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using RestauranteUni.Domain.Core.Login;
 using RestauranteUni.Domain.UseCases;
 
@@ -6,7 +6,7 @@ namespace RestauranteUni.API.Controllers
 {
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("login")]
     public class LoginController : ControllerBase
     {
         private readonly IUseCaseHandler<LoginDto, LoginResponseDto> _handler;
@@ -27,14 +27,14 @@ namespace RestauranteUni.API.Controllers
                 return Ok(result);
             }
 
-            var errorResponse = result.ToErrorResponse("Login Error");
+            var errorResponse = result.ToErrorResponse("Erro ao realizar login");
             return StatusCode(errorResponse.Status, errorResponse);
 
         }
 
 
         [HttpGet]
-        [Route("Developer")]
+        [Route("desenvolvedor")]
         public async Task<IActionResult> LoginDeveloperAsync(CancellationToken cancellation)
         {
             var developerCredentials = _configuration
@@ -52,7 +52,7 @@ namespace RestauranteUni.API.Controllers
                 return Ok(result);
             }
 
-            var errorResponse = result.ToErrorResponse("Login Error");
+            var errorResponse = result.ToErrorResponse("Erro ao realizar login");
             return StatusCode(errorResponse.Status, errorResponse);
 
         }

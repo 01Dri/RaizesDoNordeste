@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -137,7 +137,7 @@ namespace RestaurenteUni.Test.UseCases.Account
                     .FirstOrDefault(x => x.Property == "Email");
 
                 Assert.That(emailValidation, Is.Not.Null);
-                Assert.That(emailValidation!.Errors.Contains("Invalid e-mail"), Is.True);
+                Assert.That(emailValidation!.Errors.Contains("E-mail inválido"), Is.True);
             });
         }
 
@@ -166,11 +166,11 @@ namespace RestaurenteUni.Test.UseCases.Account
 
                 Assert.That(
                     emailValidation.Errors,
-                    Contains.Item("E-mail is required"));
+                    Contains.Item("O e-mail é obrigatório"));
 
                 Assert.That(
                     emailValidation.Errors,
-                    Contains.Item("Invalid e-mail"));
+                    Contains.Item("E-mail inválido"));
             });
         }
 
@@ -197,23 +197,23 @@ namespace RestaurenteUni.Test.UseCases.Account
 
                 Assert.That(
                     passwordValidation!.Errors,
-                    Contains.Item("Password is required"));
+                    Contains.Item("A senha é obrigatória"));
 
                 Assert.That(
                     passwordValidation.Errors,
-                    Contains.Item("Password must have at least 8 characters"));
+                    Contains.Item("A senha deve ter pelo menos 8 caracteres"));
 
                 Assert.That(
                     passwordValidation.Errors,
-                    Contains.Item("Password must contain at least one uppercase letter"));
+                    Contains.Item("A senha deve conter pelo menos uma letra maiúscula"));
 
                 Assert.That(
                     passwordValidation.Errors,
-                    Contains.Item("Password must contain at least one lowercase letter"));
+                    Contains.Item("A senha deve conter pelo menos uma letra minúscula"));
 
                 Assert.That(
                     passwordValidation.Errors,
-                    Contains.Item("Password must contain at least one number"));
+                    Contains.Item("A senha deve conter pelo menos um número"));
             });
         }
 
@@ -287,7 +287,7 @@ namespace RestaurenteUni.Test.UseCases.Account
                 Assert.That(birthDateValidation, Is.Not.Null);
                 Assert.That(
                     birthDateValidation!.Errors,
-                    Contains.Item("Birth date is required"));
+                    Contains.Item("A data de nascimento é obrigatória"));
             });
         }
 
@@ -313,7 +313,7 @@ namespace RestaurenteUni.Test.UseCases.Account
                 Assert.That(birthDateValidation, Is.Not.Null);
                 Assert.That(
                     birthDateValidation!.Errors,
-                    Contains.Item("Birth date cannot be in the future"));
+                    Contains.Item("A data de nascimento não pode ser no futuro"));
             });
         }
 

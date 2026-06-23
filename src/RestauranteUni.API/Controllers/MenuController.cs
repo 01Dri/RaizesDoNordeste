@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestauranteUni.Domain.Core.Menus.DTO;
 using RestauranteUni.Domain.UseCases;
@@ -7,7 +7,7 @@ namespace RestauranteUni.API.Controllers;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("cardapio")]
 [Authorize]
 
 public class MenuController : ControllerBase
@@ -18,7 +18,7 @@ public class MenuController : ControllerBase
         _handler = handler;
     }
     [HttpGet]
-    [Route("CurrentUser")]
+    [Route("usuario-atual")]
     public async Task<IActionResult> GetRestaurantMenuOfCurrentUser(CancellationToken cancellation)
     {
         var result = await _handler.HandleAsync(cancellation);
@@ -27,7 +27,7 @@ public class MenuController : ControllerBase
             return Ok(result);
         }
 
-        var errorResponse = result.ToErrorResponse("Test");
+        var errorResponse = result.ToErrorResponse("Erro ao obter o cardápio");
         return StatusCode(errorResponse.Status, errorResponse);
     }
 }

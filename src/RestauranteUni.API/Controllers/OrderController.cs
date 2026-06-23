@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestauranteUni.API.Attributes;
 using RestauranteUni.Domain.Core.Accounts.Roles;
@@ -8,7 +8,7 @@ using RestauranteUni.Domain.UseCases;
 namespace RestauranteUni.API.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("pedido")]
 [Authorize]
 public class OrderController : BaseController   
 {
@@ -33,12 +33,12 @@ public class OrderController : BaseController
         {
             return Created("", result.Data);
         }
-        return Error("Failed to create an order", result);
+        return Error("Falha ao criar o pedido", result);
     }
     
     
     [HttpPut]
-    [Route("Status")]
+    [Route("status")]
     [RolesAuthorize(RoleType.Professional)]
     public async Task<IActionResult> ChangeStatus(ChangeOrderStatusDto dto, CancellationToken cancellationToken)
     {
@@ -47,6 +47,6 @@ public class OrderController : BaseController
         {
             return Created("", result.Data);
         }
-        return Error("Failed to create an order", result);
+        return Error("Falha ao alterar o status do pedido", result);
     }
 }
