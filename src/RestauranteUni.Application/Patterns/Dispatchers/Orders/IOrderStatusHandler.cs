@@ -1,4 +1,5 @@
-﻿using RestauranteUni.Data;
+using System.Threading.Tasks;
+using RestauranteUni.Data;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
 using RestauranteUni.Domain.Core.Orders;
 using RestauranteUni.Domain.Core.Users;
@@ -9,5 +10,5 @@ namespace RestauranteUni.Application.Patterns.Dispatchers.Orders;
 public interface IOrderStatusHandler
 {
     OrderStatus Status { get; }
-    public Result Handle(Order order, ICurrentUser user, ApplicationDbContext context);
+    public Task<Result> HandleAsync(Order order, ICurrentUser user, ApplicationDbContext context);
 }

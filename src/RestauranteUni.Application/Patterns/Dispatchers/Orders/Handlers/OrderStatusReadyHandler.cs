@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using RestauranteUni.Data;
 using RestauranteUni.Domain.Core.Accounts.Roles;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
@@ -12,33 +13,23 @@ public sealed class OrderStatusReadyHandler : IOrderStatusHandler
 {
 
     public OrderStatus Status { get; set; } = OrderStatus.Ready;
-    public  Result Handle(Order order, ICurrentUser user, ApplicationDbContext context)
+    public Task<Result> HandleAsync(Order order, ICurrentUser user, ApplicationDbContext context)
     {
-        try
+        if (!user.InRole(RoleType.Professional))
         {
-            if (!user.InRole(RoleType.Professional))
-            {
-                return Result.Failure(new Error("Usuário não possui permissão"));
-            }
-            if (order.Status == Status)  
-            {
-                return Result.Success();
-            }
+            return Task.FromResult(Result.Failure(new Error("Usuário não possui permissão")));
+        }
+        if (order.Status == Status)  
+        {
+            return Task.FromResult(Result.Success());
+        }
 
-            var currentStatus = order.Status;
-            if (currentStatus != OrderStatus.Chicken)
-            {
-                return Result.Failure(new Error("O pedido precisa estar no status de cozinha."));
-            }
-            order.Status = OrderStatus.Ready;
-            return Result.Success();
-        }
-        catch (Exception exception)
+        var currentStatus = order.Status;
+        if (currentStatus != OrderStatus.Chicken)
         {
-            return Result.Failure(new Error()
-            {
-                Message = exception.Message
-            });
+            return Task.FromResult(Result.Failure(new Error("O pedido precisa estar no status de cozinha.")));
         }
+        order.Status = OrderStatus.Ready;
+        return Task.FromResult(Result.Success());
     }
 }

@@ -1,8 +1,9 @@
-﻿using RestauranteUni.Domain.ValuesObjects;
+using System.Threading.Tasks;
+using RestauranteUni.Domain.ValuesObjects;
 
 namespace RestauranteUni.Application.Patterns.Dispatchers;
 
 public interface IDispatcher<T, TK>
 {
-    Result Handle(T parameter1, TK parameter2);
+    Task<Result> HandleAsync(T parameter1, TK parameter2);
 }

@@ -31,15 +31,15 @@ public sealed class ChangeOrderStatusUseCaseHandler : IUseCaseHandler<ChangeOrde
     {
 
         var order = await _dbContext.Orders
-            .FirstOrDefaultAsync(x => x.PublicId == parameter.OrderId &&
-                                                               x.RestaurantId == _currentUser.RestaurantId, cancellation);
+            .FirstOrDefaultAsync(x => 
+                x.PublicId == parameter.OrderId && x.RestaurantId == _currentUser.RestaurantId, cancellation);
 
         if (order == null)
         {
             return Result<OrderStatusChangeResponseDto>.FailureNotFound("Pedido não encontrado.");
         }
 
-        var result = _orderStatusDispatcher.Handle(parameter.Status, order);
+        var result = await _orderStatusDispatcher.HandleAsync(parameter.Status, order);
 
         if (!result.IsSuccess)
         {

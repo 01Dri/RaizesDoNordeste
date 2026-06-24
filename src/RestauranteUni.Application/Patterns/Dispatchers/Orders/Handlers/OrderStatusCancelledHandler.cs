@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Data;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
 using RestauranteUni.Domain.Core.Orders;
@@ -11,7 +12,7 @@ namespace RestauranteUni.Application.Patterns.Dispatchers.Orders.Handlers;
 public sealed class OrderStatusCancelledHandler : IOrderStatusHandler
 {
     public OrderStatus Status { get; } = OrderStatus.Cancelled;
-    public Result Handle(Order order, ICurrentUser user, ApplicationDbContext context)
+    public async Task<Result> HandleAsync(Order order, ICurrentUser user, ApplicationDbContext context)
     {
         var statusAllowedToCancel = new List<OrderStatus>()
         {
@@ -44,9 +45,9 @@ public sealed class OrderStatusCancelledHandler : IOrderStatusHandler
 
         if (order.Status == OrderStatus.Chicken)
         {
-            context.StockIngredientMovements
+            await context.StockIngredientMovements
                 .Where(x => x.OrderId == order.Id)
-                .ExecuteUpdate(setters => setters
+                .ExecuteUpdateAsync(setters => setters
                     .SetProperty(x => x.Type, StockMovementType.Loss)
                     .SetProperty(x => x.Description, "Pedido cancelado"));
         }
