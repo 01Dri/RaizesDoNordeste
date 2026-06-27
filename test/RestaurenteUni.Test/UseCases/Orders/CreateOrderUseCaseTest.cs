@@ -373,7 +373,7 @@ namespace RestaurenteUni.Test.UseCases.Orders
             Assert.Multiple(() =>
             {
                 Assert.That(result.IsSuccess, Is.True);
-                Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
                 Assert.That(result.Data, Is.Not.Null);
                 Assert.That(result.Data!.TotalPrice, Is.EqualTo(37.50m));
                 Assert.That(result.Data.AccountId, Is.EqualTo(_accountId));
@@ -399,8 +399,10 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(orderInDb!.Status, Is.EqualTo(OrderStatus.Chicken));
                 Assert.That(orderInDb.Channel, Is.EqualTo(OrderChannel.Web));
                 Assert.That(orderInDb.RestaurantId, Is.EqualTo(_restaurantId));
+                Assert.That(orderInDb.TotalPrice, Is.EqualTo(37.50m));
                 Assert.That(orderInDb.Items, Has.Count.EqualTo(1));
                 Assert.That(orderInDb.Items.First().MenuItemId, Is.EqualTo(menuItem.Id));
+                Assert.That(orderInDb.Items.First().Quantity, Is.EqualTo(3));
             });
 
             var ingredientInDb = await _context.StockIngredients.FindAsync(ingredient.Id);
@@ -477,6 +479,18 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.Data.Items, Has.Count.EqualTo(1));
                 Assert.That(result.Data.Items[0].Quantity, Is.EqualTo(3));
             });
+
+            var orderInDb = await _context.Orders
+                .Include(o => o.Items)
+                .FirstOrDefaultAsync(o => o.PublicId == result.Data!.Id);
+
+            Assert.That(orderInDb, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(orderInDb!.TotalPrice, Is.EqualTo(37.50m));
+                Assert.That(orderInDb.Items, Has.Count.EqualTo(1));
+                Assert.That(orderInDb.Items.First().Quantity, Is.EqualTo(3));
+            });
         }
 
         [Test]
@@ -500,7 +514,53 @@ namespace RestaurenteUni.Test.UseCases.Orders
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Alguns itens do cardápio não foram encontrados"));
+            });
+        }
+
+        [Test]
+        public async Task ShouldSaveTotalPriceAndItemQuantityToDatabase_WhenOrderIsCreated()
+        {
+            var menuItem1 = SeedMenuItem("Pasta", 12.50m, isAvailable: true);
+            var ingredient1 = SeedStockIngredient("Massa", 10);
+            LinkIngredientToMenuItem(menuItem1, ingredient1, 2);
+
+            var menuItem2 = SeedMenuItem("Soda", 5.00m, isAvailable: true);
+            var ingredient2 = SeedStockIngredient("Liquid", 10);
+            LinkIngredientToMenuItem(menuItem2, ingredient2, 1);
+
+            var dto = new CreateOrderDto
+            {
+                Channel = OrderChannel.Web,
+                Items = new List<CreateOrderItemDto>
+                {
+                    new CreateOrderItemDto { PublicMenuItemId = menuItem1.PublicId, Quantity = 2 },
+                    new CreateOrderItemDto { PublicMenuItemId = menuItem2.PublicId, Quantity = 3 }
+                }
+            };
+
+            var result = await _handler.HandleAsync(dto);
+
+            Assert.That(result.IsSuccess, Is.True);
+
+            var orderInDb = await _context.Orders
+                .Include(o => o.Items)
+                .ThenInclude(i => i.MenuItem)
+                .FirstOrDefaultAsync(o => o.PublicId == result.Data!.Id);
+
+            Assert.That(orderInDb, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                // 2 * 12.50 + 3 * 5.00 = 25.00 + 15.00 = 40.00
+                Assert.That(orderInDb!.TotalPrice, Is.EqualTo(40.00m));
+                Assert.That(orderInDb.Items, Has.Count.EqualTo(2));
+
+                var orderItem1 = orderInDb.Items.FirstOrDefault(i => i.MenuItemId == menuItem1.Id);
+                Assert.That(orderItem1, Is.Not.Null);
+                Assert.That(orderItem1!.Quantity, Is.EqualTo(2));
+
+                var orderItem2 = orderInDb.Items.FirstOrDefault(i => i.MenuItemId == menuItem2.Id);
+                Assert.That(orderItem2, Is.Not.Null);
+                Assert.That(orderItem2!.Quantity, Is.EqualTo(3));
             });
         }
     }

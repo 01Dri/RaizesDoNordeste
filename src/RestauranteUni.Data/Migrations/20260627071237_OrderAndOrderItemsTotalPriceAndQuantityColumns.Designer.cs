@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestauranteUni.Data;
 
@@ -10,9 +11,11 @@ using RestauranteUni.Data;
 namespace RestauranteUni.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260627071237_OrderAndOrderItemsTotalPriceAndQuantityColumns")]
+    partial class OrderAndOrderItemsTotalPriceAndQuantityColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.8");
@@ -575,7 +578,7 @@ namespace RestauranteUni.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("payment", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("RestauranteUni.Domain.Core.Payments.PaymentOrder", b =>
@@ -601,7 +604,7 @@ namespace RestauranteUni.Data.Migrations
                     b.HasIndex("PaymentId")
                         .IsUnique();
 
-                    b.ToTable("payment_order", (string)null);
+                    b.ToTable("PaymentOrders");
                 });
 
             modelBuilder.Entity("RestauranteUni.Domain.Core.Restaurants.Restaurant", b =>

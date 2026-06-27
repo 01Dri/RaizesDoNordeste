@@ -40,9 +40,13 @@ public class OrderBuilder : BaseEntityBuilder<long, Order>
             .WithOne(i => i.Order)
             .HasForeignKey(i => i.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(x => x.TotalPrice)
+            .HasColumnName("total_price").IsRequired();
         
         builder.Navigation(x => x.Items);
-        
+
+        builder.Navigation(x => x.PaymentOrder);
         builder.HasData(new Order()
         {
             Id = 1,

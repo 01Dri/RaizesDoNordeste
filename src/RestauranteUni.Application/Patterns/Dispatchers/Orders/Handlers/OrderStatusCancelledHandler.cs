@@ -1,6 +1,6 @@
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Data;
+using RestauranteUni.Domain.Core.Accounts.Roles;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
 using RestauranteUni.Domain.Core.Orders;
 using RestauranteUni.Domain.Core.Users;
@@ -21,6 +21,11 @@ public sealed class OrderStatusCancelledHandler : IOrderStatusHandler
             OrderStatus.Ready
         };
 
+        if (!user.InRole(RoleType.Customer))
+        {
+            return await Task.FromResult(Result.Failure(new Error("Usuário não possui permissão")));
+        }
+        
         if (order.Status == Status)
         {
             return Result.Success();

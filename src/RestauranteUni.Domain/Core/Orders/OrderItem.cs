@@ -9,5 +9,6 @@ public class OrderItem
     public Order Order { get; set; } = null!;
     public long? MenuItemId { get; set; }
     public MenuItem MenuItem { get; set; } = null!;
+    public decimal Quantity { get; set; }
     
 }

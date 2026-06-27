@@ -1,5 +1,6 @@
 ﻿using RestauranteUni.Domain.Core.Accounts;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
+using RestauranteUni.Domain.Core.Payments;
 using RestauranteUni.Domain.Core.Restaurants;
 using RestauranteUni.Domain.Core.Stocks;
 
@@ -17,5 +18,9 @@ public class Order : BaseDomain<long>
     public virtual ICollection<OrderItem> Items { get; set; } = [];
 
     public virtual ICollection<StockIngredientMovement> StockIngredientMovements { get; set; } = [];
+    
+    public virtual PaymentOrder? PaymentOrder { get; set; }  
+    
+    public decimal TotalPrice { get; set; }
 
 }

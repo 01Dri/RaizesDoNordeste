@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Net;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RestauranteUni.Application.Extensions;
@@ -7,6 +8,7 @@ using RestauranteUni.Domain.Core.Ingredients.Enums;
 using RestauranteUni.Domain.Core.Menus;
 using RestauranteUni.Domain.Core.Orders;
 using RestauranteUni.Domain.Core.Orders.DTO;
+using RestauranteUni.Domain.Core.Payments;
 using RestauranteUni.Domain.Core.Stocks;
 using RestauranteUni.Domain.Core.Users;
 using RestauranteUni.Domain.UseCases;
@@ -105,9 +107,10 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
         await _dbContext.SaveChangesAsync(cancellation);
         
         await HandleMenuItemsAsync(menuItemsConsumption, order);
+        var totalPrice = menuItemsConsumption.Sum(x => x.TotalPrice);
+        order.TotalPrice = totalPrice;
         await _dbContext.SaveChangesAsync(cancellation);
-
-        return Result<OrderResponseDto>.Success(new OrderResponseDto()
+        var orderResponse = new OrderResponseDto()
         {
             Id = order.PublicId,
             CreatedAt = order.CreatedAt,
@@ -115,7 +118,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
             AccountId = _currentUser.AccountId,
             AccountEmail = _currentUser.Email,
             Status = order.Status,
-            TotalPrice = menuItemsConsumption.Sum(x => x.TotalPrice),
+            TotalPrice = totalPrice,
             Items = order.Items.Select(x => new OrderItemResponseDto()
             {
                 Id = x.Id.GetValueOrDefault(),
@@ -125,7 +128,9 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
                 UnitPrice = x.MenuItem.Price,
                 Quantity = menuItemsConsumption.FirstOrDefault(m => m.ItemId == x.MenuItemId)!.TotalQuantity,
             }).ToImmutableList()
-        });
+        };
+
+        return Result<OrderResponseDto>.Success(orderResponse, HttpStatusCode.Created);
     }
 
 
@@ -198,6 +203,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
                         QuantityToUseInOrder = quantityToConsume,
                     });
             }
+            
 
             result.Add(menuItemConsumption);
         }
@@ -238,9 +244,11 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
             order.Items.Add(new OrderItem()
             {
                 MenuItem = menuItem.Item,
+                Quantity = menuItem.TotalQuantity
             });
 
             order.Status = OrderStatus.Chicken;
+            
         }
         
     }

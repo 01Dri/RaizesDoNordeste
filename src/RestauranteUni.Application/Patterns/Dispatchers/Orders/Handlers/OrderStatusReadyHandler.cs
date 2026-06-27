@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using RestauranteUni.Data;
 using RestauranteUni.Domain.Core.Accounts.Roles;
 using RestauranteUni.Domain.Core.Ingredients.Enums;
@@ -29,6 +28,7 @@ public sealed class OrderStatusReadyHandler : IOrderStatusHandler
         {
             return Task.FromResult(Result.Failure(new Error("O pedido precisa estar no status de cozinha.")));
         }
+        
         order.Status = OrderStatus.Ready;
         return Task.FromResult(Result.Success());
     }

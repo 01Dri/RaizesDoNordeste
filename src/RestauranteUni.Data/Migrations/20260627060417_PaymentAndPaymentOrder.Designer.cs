@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestauranteUni.Data;
 
@@ -10,9 +11,11 @@ using RestauranteUni.Data;
 namespace RestauranteUni.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260627060417_PaymentAndPaymentOrder")]
+    partial class PaymentAndPaymentOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.8");
@@ -456,10 +459,6 @@ namespace RestauranteUni.Data.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("status");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("total_price");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("updated_at");
@@ -482,8 +481,7 @@ namespace RestauranteUni.Data.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PublicId = new Guid("9a88024d-2618-4e25-87f5-35217f7a7c8c"),
                             RestaurantId = new Guid("9a88024d-2618-4e25-87f5-35217f7a7c8a"),
-                            Status = 1,
-                            TotalPrice = 0m
+                            Status = 1
                         });
                 });
 
@@ -502,10 +500,6 @@ namespace RestauranteUni.Data.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("order_id");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("quantity");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MenuItemId");
@@ -519,15 +513,13 @@ namespace RestauranteUni.Data.Migrations
                         {
                             Id = 1L,
                             MenuItemId = 1L,
-                            OrderId = 1L,
-                            Quantity = 0m
+                            OrderId = 1L
                         },
                         new
                         {
                             Id = 2L,
                             MenuItemId = 2L,
-                            OrderId = 1L,
-                            Quantity = 0m
+                            OrderId = 1L
                         });
                 });
 
@@ -575,7 +567,7 @@ namespace RestauranteUni.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("payment", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("RestauranteUni.Domain.Core.Payments.PaymentOrder", b =>
@@ -601,7 +593,7 @@ namespace RestauranteUni.Data.Migrations
                     b.HasIndex("PaymentId")
                         .IsUnique();
 
-                    b.ToTable("payment_order", (string)null);
+                    b.ToTable("PaymentOrders");
                 });
 
             modelBuilder.Entity("RestauranteUni.Domain.Core.Restaurants.Restaurant", b =>

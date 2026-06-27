@@ -27,7 +27,9 @@ public class OrderItemBuilder : IEntityTypeConfiguration<OrderItem>
         builder.HasOne(x => x.Order)
             .WithMany(x => x.Items)
             .HasForeignKey(x => x.OrderId);
-        
+
+        builder.Property(x => x.Quantity)
+            .HasColumnName("quantity").IsRequired();
         builder.HasData(new OrderItem()
         {
             Id = 1,

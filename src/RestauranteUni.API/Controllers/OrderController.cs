@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestauranteUni.API.Attributes;
-using RestauranteUni.Domain.Core.Accounts.Roles;
 using RestauranteUni.Domain.Core.Orders.DTO;
 using RestauranteUni.Domain.UseCases;
 
@@ -39,7 +37,7 @@ public class OrderController : BaseController
     
     [HttpPut]
     [Route("status")]
-    [RolesAuthorize(RoleType.Professional)]
+    [Authorize]
     public async Task<IActionResult> ChangeStatus(ChangeOrderStatusDto dto, CancellationToken cancellationToken)
     {
         var result = await _changeStatusHandler.HandleAsync(dto, cancellationToken);
