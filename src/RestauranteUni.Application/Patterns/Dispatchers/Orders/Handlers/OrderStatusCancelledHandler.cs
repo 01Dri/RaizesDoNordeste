@@ -23,7 +23,7 @@ public sealed class OrderStatusCancelledHandler : IOrderStatusHandler
 
         if (!user.InRole(RoleType.Customer))
         {
-            return await Task.FromResult(Result.Failure(new Error("Usuário não possui permissão")));
+            return Result.Failure(new Error("Usuário não possui permissão"));
         }
         
         if (order.Status == Status)

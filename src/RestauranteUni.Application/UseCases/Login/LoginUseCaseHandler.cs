@@ -35,6 +35,9 @@ namespace RestauranteUni.Application.UseCases.Login
 
         public async Task<Result<LoginResponseDto>> HandleAsync(LoginDto parameter, CancellationToken cancellation = default)
         {
+            var t = 2;
+            t = 3;
+
             var validation = await _validator.ValidateAsync(parameter, cancellation);
             if (validation.ContainsErrors())
             {
@@ -44,6 +47,8 @@ namespace RestauranteUni.Application.UseCases.Login
                     [new Validation(propertyName, $"{propertyName} inválido")]
                 );
             } 
+            
+            
              
             var email = new Email(parameter.Email);
             var account = await _context.Accounts.Include(x => x.RoleAccounts)
@@ -52,7 +57,7 @@ namespace RestauranteUni.Application.UseCases.Login
             {
                 return Result<LoginResponseDto>.Failure
                 (
-          [new Validation("Credenciais inválidas")],
+                    new Error("Credenciais inválidas"),
                     HttpStatusCode.Unauthorized
                 );
             }
@@ -96,5 +101,18 @@ namespace RestauranteUni.Application.UseCases.Login
 
             return claims;
         }
+    }
+
+
+    class Teste
+    {
+        public string Conta { get; init; }
+        public List<RolesTest> Roles { get; set; }
+    }
+
+    class RolesTest
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
     }
 }

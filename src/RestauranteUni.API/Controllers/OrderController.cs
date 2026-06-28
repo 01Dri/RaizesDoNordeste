@@ -23,6 +23,8 @@ public class OrderController : BaseController
         _changeStatusHandler = changeStatusHandler;
     }
 
+    
+    // COLOCAR UMA LOGICA PARA QUANDO O CLIENTE JA ESTIVER COM UM PEDIDO EM ABERTO, ADICIONAR OS ITEMS NESSE PEDIDO
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrderDto dto, CancellationToken cancellationToken)
     {
