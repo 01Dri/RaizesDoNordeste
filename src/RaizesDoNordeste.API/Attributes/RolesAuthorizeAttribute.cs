@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Users;
@@ -30,7 +30,7 @@ public class RolesAuthorizeFilter : IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        if (!_roles.All(_currentUser.InRole))
+        if (!_roles.Any(_currentUser.InRole))
         {
             context.Result = new ForbidResult();
         }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Domain.Core.Accounts;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Ingredients;
@@ -27,6 +27,7 @@ namespace RaizesDoNordeste.Data
         public virtual DbSet<StockIngredientMovement> StockIngredientMovements { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<PaymentOrder> PaymentOrders { get; set; }
+        public virtual DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         
 
         public ApplicationDbContext(

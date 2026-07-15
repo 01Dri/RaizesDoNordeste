@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
 using FluentValidation;
@@ -57,7 +57,7 @@ namespace RaizesDoNordeste.Application.UseCases.Login
             {
                 return Result<LoginResponseDto>.Failure
                 (
-                    new Error("Credenciais inválidas"),
+                    [new Validation("Email", "Credenciais inválidas")],
                     HttpStatusCode.Unauthorized
                 );
             }
@@ -78,7 +78,20 @@ namespace RaizesDoNordeste.Application.UseCases.Login
             claims.Add(new Claim("restaurant_id", restaurant.Id.ToString()));
             claims.Add(new Claim("restaurant_name", restaurant.Name));
 
-            var response = new LoginResponseDto(_tokenService.WriteToken(account.Id, account.Email.Value, claims));
+            var refreshTokenValue = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
+            var userRefreshToken = new RaizesDoNordeste.Domain.Core.Accounts.UserRefreshToken
+            {
+                AccountId = account.Id,
+                Token = refreshTokenValue,
+                ExpiresAt = RaizesDoNordeste.Domain.Calendar.Now.AddDays(7),
+                Revoked = false,
+                RestaurantId = restaurant.Id
+            };
+            await _context.UserRefreshTokens.AddAsync(userRefreshToken, cancellation);
+            await _context.SaveChangesAsync(cancellation);
+
+            var token = _tokenService.WriteToken(account.Id, account.Email.Value, claims);
+            var response = new LoginResponseDto(token, refreshTokenValue);
 
             return Result<LoginResponseDto>.Success(response);
         }
