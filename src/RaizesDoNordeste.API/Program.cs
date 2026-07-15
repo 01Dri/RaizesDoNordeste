@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +19,8 @@ builder.Services.AddScoped<ICurrentUser, CurrentUserContext>();
 
 builder.Services.AddScoped<IHasherService, HasherService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<UninterPayment.SDK.IUninterPaymentClient, UninterPayment.SDK.UninterPaymentClient>();
 
 builder.Services.AddApplicationServices(typeof(ApplicationAssemblyReference));
 

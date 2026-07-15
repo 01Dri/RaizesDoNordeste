@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using RaizesDoNordeste.Application.UseCases.Payments.Validations;
 using RaizesDoNordeste.Domain.Core.Payments.DTO;
@@ -27,10 +27,6 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
                 PaymentMethod = new PaymentMethodDto
                 {
                     Method = PaymentMethod.Pix
-                },
-                PaymentDetails = new PaymentDetailsDto
-                {
-                    Amount = 100.50m
                 }
             };
 
@@ -48,10 +44,6 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
                 PaymentMethod = new PaymentMethodDto
                 {
                     Method = PaymentMethod.Pix
-                },
-                PaymentDetails = new PaymentDetailsDto
-                {
-                    Amount = 100.50m
                 }
             };
 
@@ -70,11 +62,7 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
             var dto = new PaymentRequestDto
             {
                 OrderId = Guid.NewGuid(),
-                PaymentMethod = null!,
-                PaymentDetails = new PaymentDetailsDto
-                {
-                    Amount = 100.50m
-                }
+                PaymentMethod = null!
             };
 
             var result = _validator.Validate(dto);
@@ -95,10 +83,6 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
                 PaymentMethod = new PaymentMethodDto
                 {
                     Method = (PaymentMethod)99
-                },
-                PaymentDetails = new PaymentDetailsDto
-                {
-                    Amount = 100.50m
                 }
             };
 
@@ -110,53 +94,5 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
                 Assert.That(result.Errors.Any(e => e.PropertyName == "PaymentMethod.Method"), Is.True);
             });
         }
-
-        [Test]
-        public void ShouldBeInvalid_WhenPaymentDetailsIsNull()
-        {
-            var dto = new PaymentRequestDto
-            {
-                OrderId = Guid.NewGuid(),
-                PaymentMethod = new PaymentMethodDto
-                {
-                    Method = PaymentMethod.Pix
-                },
-                PaymentDetails = null!
-            };
-
-            var result = _validator.Validate(dto);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(result.IsValid, Is.False);
-                Assert.That(result.Errors.Any(e => e.PropertyName == nameof(PaymentRequestDto.PaymentDetails)), Is.True);
-            });
-        }
-
-        [Test]
-        public void ShouldBeInvalid_WhenAmountIsZeroOrNegative()
-        {
-            var dto = new PaymentRequestDto
-            {
-                OrderId = Guid.NewGuid(),
-                PaymentMethod = new PaymentMethodDto
-                {
-                    Method = PaymentMethod.Pix
-                },
-                PaymentDetails = new PaymentDetailsDto
-                {
-                    Amount = 0
-                }
-            };
-
-            var result = _validator.Validate(dto);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(result.IsValid, Is.False);
-                Assert.That(result.Errors.Any(e => e.PropertyName == "PaymentDetails.Amount"), Is.True);
-            });
-        }
     }
 }
-

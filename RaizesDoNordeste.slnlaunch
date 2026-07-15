@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Run API + Worker",
+    "Projects": [
+      {
+        "Path": "src\\RaizesDoNordeste.API\\RaizesDoNordeste.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\UninterPayment.Worker\\UninterPayment.Worker.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

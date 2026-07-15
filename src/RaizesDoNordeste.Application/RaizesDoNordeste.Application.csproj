@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RaizesDoNordeste.Data\RaizesDoNordeste.Data.csproj" />
     <ProjectReference Include="..\RaizesDoNordeste.Domain\RaizesDoNordeste.Domain.csproj" />
+    <ProjectReference Include="..\UninterPayment.SDK\UninterPayment.SDK.csproj" />
   </ItemGroup>
 
   <ItemGroup>

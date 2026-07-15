@@ -19,7 +19,7 @@ public class PaymentController : BaseController
     }
 
     [HttpPost("Order/{orderId}")]
-    public async Task<IActionResult> Pay([FromRoute] Guid orderId, [FromBody] PaymentRequestDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> PayAsync([FromRoute] Guid orderId, [FromBody] PaymentRequestDto dto, CancellationToken cancellationToken)
     {
         dto.OrderId = orderId;
         var result = await _paymentHandler.HandleAsync(dto, cancellationToken);
@@ -29,4 +29,5 @@ public class PaymentController : BaseController
         }
         return Error("Falha ao processar o pagamento", result);
     }
+
 }

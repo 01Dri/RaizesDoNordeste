@@ -21,13 +21,6 @@ public sealed class PaymentRequestDtoValidator : AbstractValidator<PaymentReques
             .SetValidator(new PaymentMethodDtoValidator())
             .When(x => x.PaymentMethod != null);
 
-        RuleFor(x => x.PaymentDetails)
-            .NotNull()
-            .WithMessage("As informações necessárias para o pagamento são obrigatórias.");
-
-        RuleFor(x => x.PaymentDetails)
-            .SetValidator(new PaymentDetailsDtoValidator())
-            .When(x => x.PaymentDetails != null);
     }
 }
 
@@ -38,16 +31,6 @@ public sealed class PaymentMethodDtoValidator : AbstractValidator<PaymentMethodD
         RuleFor(x => x.Method)
             .IsInEnum()
             .WithMessage("Forma de pagamento inválida.");
-    }
-}
-
-public sealed class PaymentDetailsDtoValidator : AbstractValidator<PaymentDetailsDto>
-{
-    public PaymentDetailsDtoValidator()
-    {
-        RuleFor(x => x.Amount)
-            .GreaterThan(0)
-            .WithMessage("O valor do pagamento deve ser maior que zero.");
     }
 }
 

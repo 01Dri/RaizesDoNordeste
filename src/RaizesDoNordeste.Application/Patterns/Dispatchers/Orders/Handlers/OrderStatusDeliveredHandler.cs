@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
@@ -41,12 +41,12 @@ public sealed class OrderStatusDeliveredHandler : IOrderStatusHandler
         switch (paymentOrderStatus.Status)
         {
             case PaymentStatus.Paid:
-                return Result.Failure(new Error("O pedido ainda não foi pago."));
+                order.Status = OrderStatus.Delivered;
+                return Result.Success();
             case PaymentStatus.Canceled:
                 return Result.Failure(new Error("O pagamento do pedido foi cancelado"));
             default:
-                order.Status = OrderStatus.Delivered;
-                return Result.Success();
+                return Result.Failure(new Error("O pedido ainda não foi pago."));
         }
     }
 }

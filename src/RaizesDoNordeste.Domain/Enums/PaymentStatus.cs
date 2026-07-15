@@ -1,7 +1,8 @@
-﻿namespace RaizesDoNordeste.Domain.Core.Ingredients.Enums;
+namespace RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 
 public enum PaymentStatus
 {
-    Paid,
-    Canceled
+    Paid = 0,
+    Canceled = 1,
+    Waiting = 2
 }
