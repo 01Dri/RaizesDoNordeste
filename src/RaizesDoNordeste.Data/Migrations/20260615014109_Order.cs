@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -69,6 +69,16 @@ namespace RaizesDoNordeste.Data.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "accounts",
+                columns: new[] { "id", "email", "password", "created_at", "active" },
+                values: new object[] { 1L, "admin@raizesdonordeste.com", "$2a$11$7V/6OBPGgxqTJ3Q/CIF8eeRFvjekqWQYg4KYGBsiQCXwdMBt37Bmq", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true });
+
+            migrationBuilder.InsertData(
+                table: "role_accounts",
+                columns: new[] { "id", "account_id", "role_id", "role_status" },
+                values: new object[] { 1L, 1L, 2, 1 }); // role_id = 2 (Admin), role_status = 1 (Enable)
 
             migrationBuilder.InsertData(
                 table: "orders",

@@ -82,25 +82,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.ExecuteSqlRaw(@"
-        CREATE TABLE IF NOT EXISTS user_refresh_tokens (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            account_id INTEGER NOT NULL,
-            token TEXT NOT NULL,
-            expires_at TEXT NOT NULL,
-            revoked INTEGER NOT NULL DEFAULT 0,
-            active INTEGER NOT NULL DEFAULT 1,
-            created_at TEXT NOT NULL,
-            updated_at TEXT NULL,
-            restaurant_id TEXT NOT NULL,
-            FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
-        );
-    ");
-}
-
 app.Run();
 
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RaizesDoNordeste.Domain.Core.Accounts;
 using RaizesDoNordeste.Domain.ValuesObjects;
