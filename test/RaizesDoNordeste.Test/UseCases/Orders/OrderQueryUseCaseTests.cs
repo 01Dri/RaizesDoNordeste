@@ -70,7 +70,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Id = 500,
                 PublicId = orderId,
                 Status = OrderStatus.Delivered,
-                Channel = OrderChannel.Totem,
+                Channel = OrderChannel.TOTEM,
                 RestaurantId = _userRestaurantId,
                 AccountId = 1L,
                 TotalPrice = 45.00m,
@@ -102,7 +102,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Id = 501,
                 PublicId = orderId,
                 Status = OrderStatus.Delivered,
-                Channel = OrderChannel.Totem,
+                Channel = OrderChannel.TOTEM,
                 RestaurantId = Guid.NewGuid(), // Different restaurant
                 AccountId = 1L,
                 TotalPrice = 45.00m,
@@ -131,7 +131,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Id = 600,
                 PublicId = Guid.NewGuid(),
                 Status = OrderStatus.Delivered,
-                Channel = OrderChannel.Totem,
+                Channel = OrderChannel.TOTEM,
                 RestaurantId = _userRestaurantId,
                 AccountId = 1L,
                 TotalPrice = 30.00m,
@@ -143,7 +143,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Id = 601,
                 PublicId = Guid.NewGuid(),
                 Status = OrderStatus.Delivered,
-                Channel = OrderChannel.Totem,
+                Channel = OrderChannel.TOTEM,
                 RestaurantId = Guid.NewGuid(), // Other restaurant
                 AccountId = 1L,
                 TotalPrice = 40.00m,
@@ -174,7 +174,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Id = 610,
                 PublicId = Guid.NewGuid(),
                 Status = OrderStatus.Delivered,
-                Channel = OrderChannel.Totem,
+                Channel = OrderChannel.TOTEM,
                 RestaurantId = _userRestaurantId,
                 AccountId = 1L,
                 TotalPrice = 30.00m,
@@ -186,7 +186,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Id = 611,
                 PublicId = Guid.NewGuid(),
                 Status = OrderStatus.Process, // Different status
-                Channel = OrderChannel.Totem,
+                Channel = OrderChannel.TOTEM,
                 RestaurantId = _userRestaurantId,
                 AccountId = 1L,
                 TotalPrice = 40.00m,
@@ -198,6 +198,49 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
 
             // Act
             var result = await _listHandler.HandleAsync(new ListOrdersQueryDto(OrderStatus.Delivered), CancellationToken.None);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.Data.Orders.Count, Is.EqualTo(1));
+                Assert.That(result.Data.Orders[0].Id, Is.EqualTo(order1.PublicId));
+            });
+        }
+
+        [Test]
+        public async Task List_ShouldFilterByChannel_WhenSpecified()
+        {
+            // Arrange
+            var order1 = new Order
+            {
+                Id = 620,
+                PublicId = Guid.NewGuid(),
+                Status = OrderStatus.Delivered,
+                Channel = OrderChannel.BALCAO,
+                RestaurantId = _userRestaurantId,
+                AccountId = 1L,
+                TotalPrice = 30.00m,
+                Active = true,
+                CreatedAt = DateTime.UtcNow
+            };
+            var order2 = new Order
+            {
+                Id = 621,
+                PublicId = Guid.NewGuid(),
+                Status = OrderStatus.Delivered,
+                Channel = OrderChannel.TOTEM,
+                RestaurantId = _userRestaurantId,
+                AccountId = 1L,
+                TotalPrice = 40.00m,
+                Active = true,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Orders.AddRange(order1, order2);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _listHandler.HandleAsync(new ListOrdersQueryDto(null, OrderChannel.BALCAO), CancellationToken.None);
 
             // Assert
             Assert.Multiple(() =>

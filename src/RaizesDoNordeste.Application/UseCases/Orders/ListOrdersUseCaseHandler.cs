@@ -36,6 +36,11 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
                 query = query.Where(o => o.Status == parameter.Status.Value);
             }
 
+            if (parameter.Channel.HasValue)
+            {
+                query = query.Where(o => o.Channel == parameter.Channel.Value);
+            }
+
             var orders = await query
                 .OrderByDescending(o => o.CreatedAt)
                 .Select(order => new OrderResponseDto
@@ -46,6 +51,7 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
                     AccountId = order.AccountId.GetValueOrDefault(),
                     AccountEmail = order.Account != null && order.Account.Email != null ? order.Account.Email.Value : "",
                     Status = order.Status,
+                    Channel = order.Channel,
                     TotalPrice = order.TotalPrice,
                     Items = order.Items.Select(x => new OrderItemResponseDto
                     {

@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using RaizesDoNordeste.Domain.Core.Orders.DTO;
 
 namespace RaizesDoNordeste.Application.UseCases.Orders.Validations;

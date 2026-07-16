@@ -1,4 +1,4 @@
-﻿using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
+using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.UseCases;
 
 namespace RaizesDoNordeste.Domain.Core.Orders.DTO;

@@ -50,6 +50,7 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
                 AccountId = order.AccountId.GetValueOrDefault(),
                 AccountEmail = order.Account?.Email?.Value ?? "",
                 Status = order.Status,
+                Channel = order.Channel,
                 TotalPrice = order.TotalPrice,
                 Items = order.Items.Select(x => new OrderItemResponseDto
                 {

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Orders;
@@ -56,7 +56,7 @@ public class OrderBuilder : BaseEntityBuilder<long, Order>
             CreatedAt = new DateTime(2026, 1, 1),
             Active = true,
             Status = OrderStatus.Chicken,
-            Channel = OrderChannel.Totem
+            Channel = OrderChannel.TOTEM
         });
     }
 }

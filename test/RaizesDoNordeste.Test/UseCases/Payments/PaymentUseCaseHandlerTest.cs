@@ -74,7 +74,7 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
                 Id = id,
                 PublicId = orderId,
                 Status = status,
-                Channel = OrderChannel.Balcony,
+                Channel = OrderChannel.BALCAO,
                 RestaurantId = Guid.NewGuid(),
                 AccountId = _accountId,
                 TotalPrice = totalPrice

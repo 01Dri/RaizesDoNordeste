@@ -11,7 +11,7 @@ using RaizesDoNordeste.Data;
 namespace RaizesDoNordeste.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260716021017_AddUserRefreshTokens")]
+    [Migration("20260716024945_AddUserRefreshTokens")]
     partial class AddUserRefreshTokens
     {
         /// <inheritdoc />
@@ -531,7 +531,7 @@ namespace RaizesDoNordeste.Data.Migrations
                             Id = 1L,
                             AccountId = 1L,
                             Active = true,
-                            Channel = 0,
+                            Channel = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PublicId = new Guid("9a88024d-2618-4e25-87f5-35217f7a7c8c"),
                             RestaurantId = new Guid("9a88024d-2618-4e25-87f5-35217f7a7c8a"),

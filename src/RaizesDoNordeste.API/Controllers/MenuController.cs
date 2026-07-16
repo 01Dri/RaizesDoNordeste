@@ -9,7 +9,6 @@ namespace RaizesDoNordeste.API.Controllers;
 [ApiController]
 [Route("cardapio")]
 [Authorize]
-
 public class MenuController : ControllerBase
 {
     private readonly IUseCaseHandler<MenuResponseDto> _handler;

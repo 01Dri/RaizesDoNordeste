@@ -54,7 +54,7 @@ namespace RaizesDoNordeste.Test.Controllers
                 Id = 100, // Safe ID
                 PublicId = orderId,
                 Status = OrderStatus.Ready,
-                Channel = OrderChannel.Balcony,
+                Channel = OrderChannel.BALCAO,
                 RestaurantId = Guid.NewGuid(),
                 AccountId = 5,
                 TotalPrice = 100.00m
@@ -133,7 +133,7 @@ namespace RaizesDoNordeste.Test.Controllers
                 Id = 200, // Safe ID
                 PublicId = orderId,
                 Status = OrderStatus.Ready,
-                Channel = OrderChannel.Balcony,
+                Channel = OrderChannel.BALCAO,
                 RestaurantId = Guid.NewGuid(),
                 AccountId = 5,
                 TotalPrice = 100.00m
@@ -168,7 +168,7 @@ namespace RaizesDoNordeste.Test.Controllers
                 Id = 300, // Safe ID
                 PublicId = orderId,
                 Status = OrderStatus.Ready,
-                Channel = OrderChannel.Balcony,
+                Channel = OrderChannel.BALCAO,
                 RestaurantId = Guid.NewGuid(),
                 AccountId = 5,
                 TotalPrice = 100.00m

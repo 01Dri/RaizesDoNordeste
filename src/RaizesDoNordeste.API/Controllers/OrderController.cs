@@ -62,9 +62,9 @@ public class OrderController : BaseController
 
     [HttpGet]
     [RolesAuthorize(RoleType.Professional, RoleType.Manager, RoleType.Owner, RoleType.Admin)]
-    public async Task<IActionResult> List([FromQuery] OrderStatus? status, CancellationToken cancellationToken)
+    public async Task<IActionResult> List([FromQuery] ListOrdersQueryDto queryDto, CancellationToken cancellationToken)
     {
-        var result = await _listOrdersHandler.HandleAsync(new ListOrdersQueryDto(status), cancellationToken);
+        var result = await _listOrdersHandler.HandleAsync(queryDto, cancellationToken);
         if (result.IsSuccess)
         {
             return Ok(result.Data);

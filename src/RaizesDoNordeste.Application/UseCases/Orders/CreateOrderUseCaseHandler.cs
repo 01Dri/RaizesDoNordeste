@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Net;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -118,6 +118,7 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
             AccountId = _currentUser.AccountId,
             AccountEmail = _currentUser.Email,
             Status = order.Status,
+            Channel = order.Channel,
             TotalPrice = totalPrice,
             Items = order.Items.Select(x => new OrderItemResponseDto()
             {

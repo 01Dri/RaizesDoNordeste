@@ -38,6 +38,13 @@ namespace RaizesDoNordeste.Data.Migrations
                 });
 
             migrationBuilder.UpdateData(
+                table: "orders",
+                keyColumn: "id",
+                keyValue: 1L,
+                column: "channel",
+                value: 1);
+
+            migrationBuilder.UpdateData(
                 table: "restaurants",
                 keyColumn: "id",
                 keyValue: new Guid("9a88024d-2618-4e25-87f5-35217f7a7c8a"),
@@ -69,6 +76,13 @@ namespace RaizesDoNordeste.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "user_refresh_tokens");
+
+            migrationBuilder.UpdateData(
+                table: "orders",
+                keyColumn: "id",
+                keyValue: 1L,
+                column: "channel",
+                value: 0);
 
             migrationBuilder.UpdateData(
                 table: "restaurants",

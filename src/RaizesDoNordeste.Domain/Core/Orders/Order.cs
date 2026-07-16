@@ -1,4 +1,4 @@
-﻿using RaizesDoNordeste.Domain.Core.Accounts;
+using RaizesDoNordeste.Domain.Core.Accounts;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Payments;
 using RaizesDoNordeste.Domain.Core.Restaurants;

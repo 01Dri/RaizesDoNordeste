@@ -1,4 +1,4 @@
-Ôªøusing FluentValidation;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
@@ -69,9 +69,9 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
             {
                 Id = _restaurantId,
                 Name = "Restaurante Central",
-                Description = "Restaurante Universit√°rio da Faculdade",
+                Description = "Restaurante Universit·rio da Faculdade",
                 Phone = new Phone("11999999999"),
-                Address = new Address("Rua das Oliveiras", "123", "Bairro Novo", "S√£o Paulo", "SP", "01234567"),
+                Address = new Address("Rua das Oliveiras", "123", "Bairro Novo", "S„o Paulo", "SP", "01234567"),
                 Email = new Email("ru@faculdade.com"),
                 Cnpj = new Cnpj("12345678000195"),
                 Active = true
@@ -171,7 +171,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Assert.That(result.Validations, Is.Not.Null);
                 var channelValidation = result.Validations!.FirstOrDefault(v => v.Property == nameof(CreateOrderDto.Channel));
                 Assert.That(channelValidation, Is.Not.Null);
-                Assert.That(channelValidation!.Errors, Contains.Item("Canal de pedido inv√°lido."));
+                Assert.That(channelValidation!.Errors, Contains.Item("Canal de pedido inv·lido."));
             });
         }
 
@@ -180,7 +180,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
         {
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = null!
             };
 
@@ -192,7 +192,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Assert.That(result.Validations, Is.Not.Null);
                 var itemsValidation = result.Validations!.FirstOrDefault(v => v.Property == nameof(CreateOrderDto.Items));
                 Assert.That(itemsValidation, Is.Not.Null);
-                Assert.That(itemsValidation!.Errors, Contains.Item("Os itens s√£o obrigat√≥rios."));
+                Assert.That(itemsValidation!.Errors, Contains.Item("Os itens s„o obrigatÛrios."));
             });
         }
 
@@ -201,7 +201,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
         {
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>()
             };
 
@@ -222,7 +222,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
         {
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = Guid.Empty, Quantity = 1 }
@@ -237,7 +237,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Assert.That(result.Validations, Is.Not.Null);
                 var itemValidation = result.Validations!.FirstOrDefault(v => v.Property.StartsWith("Items["));
                 Assert.That(itemValidation, Is.Not.Null);
-                Assert.That(itemValidation!.Errors, Contains.Item("O ID do item do card√°pio √© obrigat√≥rio."));
+                Assert.That(itemValidation!.Errors, Contains.Item("O ID do item do card·pio È obrigatÛrio."));
             });
         }
 
@@ -248,7 +248,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
         {
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = Guid.NewGuid(), Quantity = quantity }
@@ -272,7 +272,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
         {
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = Guid.NewGuid(), Quantity = 2 }
@@ -286,7 +286,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Itens do card√°pio n√£o encontrados"));
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Itens do card·pio n„o encontrados"));
             });
         }
 
@@ -297,7 +297,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
 
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = menuItem.PublicId, Quantity = 1 }
@@ -311,7 +311,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Alguns itens do card√°pio n√£o est√£o dispon√≠veis."));
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Alguns itens do card·pio n„o est„o disponÌveis."));
                 
                 var details = result.ErrorData.Details as IEnumerable<object>;
                 Assert.That(details, Is.Not.Null);
@@ -324,12 +324,12 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
         public async Task ShouldReturnFailure_WhenIngredientsAreOutOfStock()
         {
             var menuItem = SeedMenuItem("Burguer", 10.00m, isAvailable: true);
-            var ingredient = SeedStockIngredient("P√£o", 1);
+            var ingredient = SeedStockIngredient("P„o", 1);
             LinkIngredientToMenuItem(menuItem, ingredient, 2);
 
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = menuItem.PublicId, Quantity = 1 }
@@ -343,7 +343,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
                 Assert.That(result.IsSuccess, Is.False);
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
                 Assert.That(result.ErrorData, Is.Not.Null);
-                Assert.That(result.ErrorData!.Message, Is.EqualTo("Alguns itens do card√°pio n√£o possuem ingredientes suficientes em estoque"));
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Alguns itens do card·pio n„o possuem ingredientes suficientes em estoque"));
                 
                 var details = result.ErrorData.Details as IEnumerable<object>;
                 Assert.That(details, Is.Not.Null);
@@ -361,7 +361,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
 
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = menuItem.PublicId, Quantity = 3 }
@@ -397,7 +397,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
             Assert.Multiple(() =>
             {
                 Assert.That(orderInDb!.Status, Is.EqualTo(OrderStatus.Chicken));
-                Assert.That(orderInDb.Channel, Is.EqualTo(OrderChannel.Web));
+                Assert.That(orderInDb.Channel, Is.EqualTo(OrderChannel.WEB));
                 Assert.That(orderInDb.RestaurantId, Is.EqualTo(_restaurantId));
                 Assert.That(orderInDb.TotalPrice, Is.EqualTo(37.50m));
                 Assert.That(orderInDb.Items, Has.Count.EqualTo(1));
@@ -436,7 +436,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
 
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = menuItem.PublicId, Quantity = 2 }
@@ -461,7 +461,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
 
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = menuItem.PublicId, Quantity = 1 },
@@ -499,7 +499,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
             var menuItem = SeedMenuItem("Pasta", 12.50m, isAvailable: true);
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = menuItem.PublicId, Quantity = 1 },
@@ -530,7 +530,7 @@ namespace RaizesDoNordeste.Test.UseCases.Orders
 
             var dto = new CreateOrderDto
             {
-                Channel = OrderChannel.Web,
+                Channel = OrderChannel.WEB,
                 Items = new List<CreateOrderItemDto>
                 {
                     new CreateOrderItemDto { PublicMenuItemId = menuItem1.PublicId, Quantity = 2 },
