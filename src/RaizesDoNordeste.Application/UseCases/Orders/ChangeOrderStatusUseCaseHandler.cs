@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Application.Patterns.Dispatchers;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;

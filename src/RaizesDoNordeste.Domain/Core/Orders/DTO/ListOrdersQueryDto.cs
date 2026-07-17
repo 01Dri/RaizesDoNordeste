@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.UseCases;
 
@@ -6,6 +7,8 @@ namespace RaizesDoNordeste.Domain.Core.Orders.DTO
     public class ListOrdersQueryDto : IUseCaseRequest
     {
         public OrderStatus? Status { get; set; }
+
+        [JsonPropertyName("canalPedido")]
         public OrderChannel? Channel { get; set; }
 
         public ListOrdersQueryDto() { }

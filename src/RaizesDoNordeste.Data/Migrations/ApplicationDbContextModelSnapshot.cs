@@ -225,7 +225,7 @@ namespace RaizesDoNordeste.Data.Migrations
                     b.HasIndex("PublicId")
                         .IsUnique();
 
-                    b.ToTable("Ingredients");
+                    b.ToTable("Ingredients", (string)null);
                 });
 
             modelBuilder.Entity("RaizesDoNordeste.Domain.Core.Menus.Menu", b =>
@@ -1095,7 +1095,7 @@ namespace RaizesDoNordeste.Data.Migrations
 
                             b1.HasKey("RestaurantId");
 
-                            b1.ToTable("restaurants");
+                            b1.ToTable("restaurants", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("RestaurantId");

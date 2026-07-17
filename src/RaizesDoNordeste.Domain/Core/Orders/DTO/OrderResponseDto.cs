@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Collections.Immutable;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.UseCases;
@@ -19,6 +20,8 @@ public class OrderResponseDto : IUseCaseResponse
     public decimal TotalPrice { get; set; }
 
     public OrderStatus Status { get; set; }
+
+    [JsonPropertyName("canalPedido")]
     public OrderChannel Channel { get; set; }
 
     public IImmutableList<OrderItemResponseDto> Items { get; set; } = [];
