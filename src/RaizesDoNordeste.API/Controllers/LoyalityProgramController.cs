@@ -9,7 +9,7 @@ namespace RaizesDoNordeste.API.Controllers
     [ApiController]
     [Route("loyality")]
     [Authorize]
-    public class LoyalityProgramController : ControllerBase
+    public class LoyalityProgramController : BaseController
     {
 
         private readonly IUseCaseHandler<LoyalityJoinResponseDto> _handler;
@@ -23,12 +23,12 @@ namespace RaizesDoNordeste.API.Controllers
         public async Task<IActionResult> JoinAsync(CancellationToken cancellationToken)
         {
             var result = await _handler.HandleAsync(cancellationToken);
-            if (!result.IsSuccess)
+            if (result.IsSuccess)
             {
-                var errorResponse = result.ToErrorResponse("Erro no programa de fidelidade.");
-                return StatusCode(errorResponse.Status, errorResponse);
+                return Created("", result.Data);
             }
-            return Created("", result.Data);
+            return Error("Erro no programa de fidelidade.", result);
+
         }
     }
 }
