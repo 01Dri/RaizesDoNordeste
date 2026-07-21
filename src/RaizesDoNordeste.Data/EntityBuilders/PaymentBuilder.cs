@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RaizesDoNordeste.Domain.Core.Payments;
 
@@ -16,6 +16,11 @@ public class PaymentBuilder : BaseEntityBuilder<long, Payment>
         
         builder.Property(x => x.TotalPaid)
             .HasColumnName("total_paid").IsRequired();
+
+        builder.Property(x => x.TotalDiscount)
+            .HasColumnName("total_discount")
+            .HasDefaultValue(0.0m)
+            .IsRequired();
         
         builder.Property(x => x.PaymentMethod)
             .HasColumnName("payment_method").IsRequired();
@@ -25,6 +30,9 @@ public class PaymentBuilder : BaseEntityBuilder<long, Payment>
 
         builder.Property(x => x.Description)
             .HasColumnName("description").HasMaxLength(255);
+
+        builder.Property(x => x.ExternalPaymentId)
+            .HasColumnName("external_payment_id").HasMaxLength(100);
 
         builder.Navigation(X => X.PaymentOrder);
 

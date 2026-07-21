@@ -8,6 +8,7 @@ public class PaymentResponseDto : IUseCaseResponse
     public Guid OrderId { get; set; }
     public PaymentStatus Status { get; set; }
     public decimal AmountPaid { get; set; }
+    public int EarnedLoyaliyPoints { get; set; }
     public Error? ErrorResponse { get; set; }
 }
 

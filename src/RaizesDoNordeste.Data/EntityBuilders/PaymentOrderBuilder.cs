@@ -30,6 +30,10 @@ public class PaymentOrderBuilder : IEntityTypeConfiguration<PaymentOrder>
             .WithOne(x => x.PaymentOrder)
             .HasForeignKey<PaymentOrder>(s => s.PaymentId).IsRequired();
 
+
+        builder.Property(x => x.UsedLoyalityPoints)
+            .HasColumnName("used_loyality_points").HasDefaultValue(false);
+
         builder.Navigation(x => x.Payment);
         builder.Navigation(x => x.Order);
 

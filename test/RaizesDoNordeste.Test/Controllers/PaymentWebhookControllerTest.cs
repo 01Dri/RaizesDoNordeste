@@ -11,12 +11,16 @@ using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Orders;
 using RaizesDoNordeste.Domain.Core.Payments;
 
+using Moq;
+using RaizesDoNordeste.Domain.Services;
+
 namespace RaizesDoNordeste.Test.Controllers
 {
     [TestFixture]
     public class PaymentWebhookControllerTest
     {
         private ApplicationDbContext _context;
+        private Mock<ILoyalityProgramService> _loyalityProgramServiceMock;
         private PaymentWebhookController _controller;
 
         [SetUp]
@@ -29,7 +33,8 @@ namespace RaizesDoNordeste.Test.Controllers
             _context = new ApplicationDbContext(options);
             _context.Database.EnsureCreated();
 
-            _controller = new PaymentWebhookController(_context);
+            _loyalityProgramServiceMock = new Mock<ILoyalityProgramService>();
+            _controller = new PaymentWebhookController(_context, _loyalityProgramServiceMock.Object);
             
             var httpContext = new DefaultHttpContext();
             _controller.ControllerContext = new ControllerContext
@@ -100,7 +105,8 @@ namespace RaizesDoNordeste.Test.Controllers
                 Assert.That(updatedPayment, Is.Not.Null);
                 Assert.That(updatedPayment.Status, Is.EqualTo(PaymentStatus.Paid));
                 Assert.That(updatedPayment.TotalPaid, Is.EqualTo(100.00m));
-                Assert.That(updatedPayment.Description, Contains.Substring("tx-pix-111"));
+                Assert.That(updatedPayment.Description, Is.EqualTo("Pagamento Pix aprovado via webhook."));
+                Assert.That(updatedPayment.ExternalPaymentId, Is.EqualTo("tx-pix-111"));
             });
         }
 

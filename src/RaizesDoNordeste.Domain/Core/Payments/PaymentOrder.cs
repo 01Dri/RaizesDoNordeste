@@ -1,4 +1,4 @@
-﻿using RaizesDoNordeste.Domain.Core.Orders;
+using RaizesDoNordeste.Domain.Core.Orders;
 
 namespace RaizesDoNordeste.Domain.Core.Payments;
 
@@ -9,4 +9,7 @@ public class PaymentOrder
     public virtual Order Order { get; set; }
     public long? PaymentId { get; set; }
     public virtual Payment Payment { get; set; }
+
+    public bool UsedLoyalityPoints { get; set; }
+
 }

@@ -1,8 +1,8 @@
 ﻿namespace RaizesDoNordeste.Domain.Core.Loyalit
 {
-    public enum LoyalitProgramType
+    public enum LoyalitProgramMovementType
     {
         Consume,
-        Gain
+        Earn
     }
 }

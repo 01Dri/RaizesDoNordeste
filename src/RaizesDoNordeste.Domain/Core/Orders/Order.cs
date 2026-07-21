@@ -22,5 +22,4 @@ public class Order : BaseDomain<long>
     public virtual PaymentOrder? PaymentOrder { get; set; }  
     
     public decimal TotalPrice { get; set; }
-
 }

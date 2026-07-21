@@ -7,6 +7,7 @@ public class PaymentRequestDto : IUseCaseRequest
 {
     public Guid? OrderId { get; set; }
     public PaymentMethodDto PaymentMethod { get; set; } = null!;
+    public bool UseLoyalityPoints { get; set; }
 }
 
 public class PaymentMethodDto

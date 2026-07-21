@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Application.Extensions;
 using RaizesDoNordeste.Data;
@@ -6,6 +7,7 @@ using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Payments;
 using RaizesDoNordeste.Domain.Core.Payments.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
+using RaizesDoNordeste.Domain.Services;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
 using UninterPayment.SDK;
@@ -19,21 +21,36 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
     private readonly IValidator<PaymentRequestDto> _validator;
     private readonly ICurrentUser _currentUser;
     private readonly IUninterPaymentClient _uninterPaymentClient;
+    private readonly ILoyalityProgramService _loyalityProgramService;
+    private readonly IConfiguration _configuration;
 
-    public PaymentUseCaseHandler(
+    public PaymentUseCaseHandler
+    (
         ApplicationDbContext dbContext,
         IValidator<PaymentRequestDto> validator,
         ICurrentUser currentUser,
-        IUninterPaymentClient uninterPaymentClient)
+        IUninterPaymentClient uninterPaymentClient,
+        ILoyalityProgramService loyalityProgramService,
+        IConfiguration configuration
+    )
     {
         _dbContext = dbContext;
         _validator = validator;
         _currentUser = currentUser;
         _uninterPaymentClient = uninterPaymentClient;
+        _loyalityProgramService = loyalityProgramService;
+        _configuration = configuration;
     }
 
     // PENSAR EM PONTOS DE FILIDADE PARA DESCONTO E GANHA DE PONTOS.
 
+
+    /**
+      • Paridade de Centavos (Mais comum no mercado):
+      • Regra: 100 pontos = R$ 1,00 (ou seja, cada 1 ponto vale R$ 0,01).
+      • Cálculo: Desconto = Pontos / 100
+      • Exemplo: Se o cliente tem 1500 pontos, ele tem R$ 15,00 de desconto (1500 / 100).
+    **/
     public async Task<Result<PaymentResponseDto>> HandleAsync(PaymentRequestDto parameter, CancellationToken cancellation = default)
     {
         var validation = await _validator.ValidateAsync(parameter, cancellation);
@@ -58,10 +75,21 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
 
         if (order.Items.Sum(x => x.MenuItem.Price *  x.Quantity) != order.TotalPrice)
         {
-            throw new ArgumentException("Total do pedido está incorreto.");
+            return Result<PaymentResponseDto>.Failure(new Error("Total do pedido está incorreto."));
         }
 
-        // Map domain payment method to SDK payment method
+        var totalToPay = order.TotalPrice;
+        if (parameter.UseLoyalityPoints)
+        {
+            totalToPay = await _loyalityProgramService
+                .ApplyDiscountAsync(totalToPay, _currentUser.AccountId, _currentUser.RestaurantId);
+        }
+
+        if (totalToPay < 0)
+        {
+            return Result<PaymentResponseDto>.Failure(new Error("Total do pedido está incorreto."));
+        }
+
         var sdkMethod = parameter.PaymentMethod.Method == PaymentMethod.Pix 
             ? UninterPaymentMethod.Pix 
             : UninterPaymentMethod.CreditCard;
@@ -69,11 +97,11 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         var sdkRequest = new UninterPayment.SDK.PaymentRequest
         {
             OrderId = order.PublicId,
-            Amount = order.TotalPrice,
+            Amount = totalToPay,
             Method = sdkMethod,
             CardNumber = null,
             PixKey = null,
-            WebhookUrl = "http://localhost:5269/pagamento/webhook"
+            WebhookUrl = _configuration["PaymentSettings:WebhookUrl"] ?? "http://localhost:5269/pagamento/webhook"
         };
 
         var sdkResult = await _uninterPaymentClient.ProcessPaymentAsync(sdkRequest, cancellation);
@@ -90,12 +118,14 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         var payment = new Payment
         {
             Total = order.TotalPrice,
-            TotalPaid = domainStatus == PaymentStatus.Paid ? order.TotalPrice : 0,
+            TotalDiscount = order.TotalPrice - totalToPay,
+            TotalPaid = domainStatus == PaymentStatus.Paid ? totalToPay : 0,
             PaymentMethod = parameter.PaymentMethod.Method,
             Status = domainStatus,
-            Description = domainStatus == PaymentStatus.Paid 
-                ? $"Aprovado na hora via cartão. Transação: {sdkResult.TransactionId}" 
-                : $"Aguardando confirmação Pix. Transação: {sdkResult.TransactionId}"
+            ExternalPaymentId = sdkResult.TransactionId,
+            Description = domainStatus == PaymentStatus.Paid
+                ? "Aprovado na hora via cartão."
+                : "Aguardando confirmação Pix."
         };
 
         _dbContext.Payments.Add(payment);
@@ -103,20 +133,19 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         var paymentOrder = new PaymentOrder
         {
             Order = order,
-            Payment = payment
+            Payment = payment,
+            UsedLoyalityPoints = parameter.UseLoyalityPoints 
+            // validar depois, só deve considerar que usou pontos,
+            // se de fato houve a movimentação
         };
         _dbContext.PaymentOrders.Add(paymentOrder);
 
-
-
-        //var loyalityProgram = await _dbContext.LoyalitPrograms
-        //    .FirstOrDefaultAsync(x => x.AccountId == _currentUser.AccountId &&
-        //    x.RestaurantId == _currentUser.RestaurantId, cancellation);
-
-        //if (loyalityProgram != null)
-        //{
-             
-        //}
+        int loyalityPoints = 0;
+        if (domainStatus == PaymentStatus.Paid)
+        {
+            loyalityPoints = await _loyalityProgramService
+                .EarnPointsAsync(totalToPay, _currentUser.AccountId, _currentUser.RestaurantId, cancellation);
+        }
 
         await _dbContext.SaveChangesAsync(cancellation);
 
@@ -124,7 +153,8 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         {
             OrderId = order.PublicId,
             Status = domainStatus,
-            AmountPaid = payment.TotalPaid
+            AmountPaid = payment.TotalPaid,
+            EarnedLoyaliyPoints = loyalityPoints,
         };
 
         return Result<PaymentResponseDto>.Success(responseDto);

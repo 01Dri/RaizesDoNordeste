@@ -19,6 +19,7 @@ builder.Services.AddScoped<ICurrentUser, CurrentUserContext>();
 
 builder.Services.AddScoped<IHasherService, HasherService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ILoyalityProgramService, LoyalityProgramService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<UninterPayment.SDK.IUninterPaymentClient, UninterPayment.SDK.UninterPaymentClient>();
 

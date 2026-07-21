@@ -21,6 +21,9 @@ using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
 using UninterPayment.SDK;
 
+using Microsoft.Extensions.Configuration;
+using RaizesDoNordeste.Domain.Services;
+
 namespace RaizesDoNordeste.Test.UseCases.Payments
 {
     [TestFixture]
@@ -30,6 +33,8 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
         private Mock<IValidator<PaymentRequestDto>> _validatorMock;
         private Mock<ICurrentUser> _currentUserMock;
         private Mock<IUninterPaymentClient> _paymentClientMock;
+        private Mock<ILoyalityProgramService> _loyalityProgramServiceMock;
+        private Mock<IConfiguration> _configurationMock;
         private PaymentUseCaseHandler _handler;
         private readonly long _accountId = 5;
 
@@ -46,6 +51,8 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
             _validatorMock = new Mock<IValidator<PaymentRequestDto>>();
             _currentUserMock = new Mock<ICurrentUser>();
             _paymentClientMock = new Mock<IUninterPaymentClient>();
+            _loyalityProgramServiceMock = new Mock<ILoyalityProgramService>();
+            _configurationMock = new Mock<IConfiguration>();
 
             _currentUserMock.Setup(x => x.AccountId).Returns(_accountId);
 
@@ -53,11 +60,25 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
                 .Setup(x => x.ValidateAsync(It.IsAny<PaymentRequestDto>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult());
 
+            _loyalityProgramServiceMock
+                .Setup(x => x.ApplyDiscountAsync(It.IsAny<decimal>(), It.IsAny<long>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((decimal val, long ac, Guid rest, CancellationToken ct) => val);
+
+            _loyalityProgramServiceMock
+                .Setup(x => x.EarnPointsAsync(It.IsAny<decimal>(), It.IsAny<long>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(0);
+
+            _configurationMock
+                .Setup(x => x[It.IsAny<string>()])
+                .Returns((string key) => key == "PaymentSettings:WebhookUrl" ? "http://localhost/webhook" : null);
+
             _handler = new PaymentUseCaseHandler(
                 _context,
                 _validatorMock.Object,
                 _currentUserMock.Object,
-                _paymentClientMock.Object
+                _paymentClientMock.Object,
+                _loyalityProgramServiceMock.Object,
+                _configurationMock.Object
             );
         }
 

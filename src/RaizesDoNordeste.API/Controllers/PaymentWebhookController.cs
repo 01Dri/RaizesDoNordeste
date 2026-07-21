@@ -5,6 +5,7 @@ using RaizesDoNordeste.API.Attributes;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Payments;
+using RaizesDoNordeste.Domain.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -16,10 +17,12 @@ namespace RaizesDoNordeste.API.Controllers
     public class PaymentWebhookController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly ILoyalityProgramService _loyalityProgramService;
 
-        public PaymentWebhookController(ApplicationDbContext dbContext)
+        public PaymentWebhookController(ApplicationDbContext dbContext, ILoyalityProgramService loyalityProgramService)
         {
             _dbContext = dbContext;
+            _loyalityProgramService = loyalityProgramService;
         }
 
         [HttpPost]
@@ -53,7 +56,15 @@ namespace RaizesDoNordeste.API.Controllers
                 // Update existing waiting payment
                 payment.Status = PaymentStatus.Paid;
                 payment.TotalPaid = dto.Amount;
-                payment.Description = $"Pagamento Pix aprovado via webhook. Transação: {dto.TransactionId}";
+                payment.ExternalPaymentId = dto.TransactionId;
+                payment.Description = "Pagamento Pix aprovado via webhook.";
+
+                // Earn loyalty points upon confirmation of Pix payment
+                await _loyalityProgramService.EarnPointsAsync(
+                    dto.Amount,
+                    order.AccountId.GetValueOrDefault(),
+                    order.RestaurantId
+                );
 
                 await _dbContext.SaveChangesAsync();
                 return Ok(new { Message = "Pagamento processado com sucesso e status atualizado." });
