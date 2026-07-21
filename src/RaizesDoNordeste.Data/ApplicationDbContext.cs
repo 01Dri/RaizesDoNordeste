@@ -7,6 +7,7 @@ using RaizesDoNordeste.Domain.Core.Orders;
 using RaizesDoNordeste.Domain.Core.Payments;
 using RaizesDoNordeste.Domain.Core.Restaurants;
 using RaizesDoNordeste.Domain.Core.Stocks;
+using RaizesDoNordeste.Domain.Core.Loyalit;
 
 namespace RaizesDoNordeste.Data
 {
@@ -28,6 +29,8 @@ namespace RaizesDoNordeste.Data
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<PaymentOrder> PaymentOrders { get; set; }
         public virtual DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
+        public virtual DbSet<LoyalitProgram> LoyalitPrograms { get; set; }
+        public virtual DbSet<LoyalitProgramMovements> LoyalitProgramMovements { get; set; }
         
 
         public ApplicationDbContext(

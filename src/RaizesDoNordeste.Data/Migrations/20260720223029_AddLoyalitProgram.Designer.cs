@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaizesDoNordeste.Data;
 
@@ -10,9 +11,11 @@ using RaizesDoNordeste.Data;
 namespace RaizesDoNordeste.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260720223029_AddLoyalitProgram")]
+    partial class AddLoyalitProgram
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.8");
@@ -39,9 +42,6 @@ namespace RaizesDoNordeste.Data.Migrations
                         .HasMaxLength(254)
                         .HasColumnType("TEXT")
                         .HasColumnName("email");
-
-                    b.Property<long?>("LoyalitProgramId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -268,17 +268,11 @@ namespace RaizesDoNordeste.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId")
-                        .IsUnique();
+                    b.HasIndex("AccountId");
 
-                    b.HasIndex("RestaurantId")
-                        .IsUnique();
+                    b.HasIndex("RestaurantId");
 
-                    b.HasIndex("AccountId", "RestaurantId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_loyalit_programs_account_restaurant");
-
-                    b.ToTable("loyalit_programs", (string)null);
+                    b.ToTable("loyalit_program", (string)null);
                 });
 
             modelBuilder.Entity("RaizesDoNordeste.Domain.Core.Loyalit.LoyalitProgramMovements", b =>
@@ -772,9 +766,6 @@ namespace RaizesDoNordeste.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("email");
 
-                    b.Property<long?>("LoyalityProgramId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -1040,14 +1031,14 @@ namespace RaizesDoNordeste.Data.Migrations
             modelBuilder.Entity("RaizesDoNordeste.Domain.Core.Loyalit.LoyalitProgram", b =>
                 {
                     b.HasOne("RaizesDoNordeste.Domain.Core.Accounts.Account", "Account")
-                        .WithOne("LoyalitProgram")
-                        .HasForeignKey("RaizesDoNordeste.Domain.Core.Loyalit.LoyalitProgram", "AccountId")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RaizesDoNordeste.Domain.Core.Restaurants.Restaurant", "Restaurant")
-                        .WithOne("LoyalitProgram")
-                        .HasForeignKey("RaizesDoNordeste.Domain.Core.Loyalit.LoyalitProgram", "RestaurantId")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1295,8 +1286,6 @@ namespace RaizesDoNordeste.Data.Migrations
 
             modelBuilder.Entity("RaizesDoNordeste.Domain.Core.Accounts.Account", b =>
                 {
-                    b.Navigation("LoyalitProgram");
-
                     b.Navigation("Orders");
 
                     b.Navigation("RoleAccounts");
@@ -1335,8 +1324,6 @@ namespace RaizesDoNordeste.Data.Migrations
 
             modelBuilder.Entity("RaizesDoNordeste.Domain.Core.Restaurants.Restaurant", b =>
                 {
-                    b.Navigation("LoyalitProgram");
-
                     b.Navigation("Menu");
 
                     b.Navigation("Orders");

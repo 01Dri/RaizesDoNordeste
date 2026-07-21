@@ -1,0 +1,699 @@
+{
+	"info": {
+		"_postman_id": "8907865c-60db-465c-9c71-3dfbd60a9202",
+		"name": "Raizes do Nordeste - API",
+		"description": "Coleção de testes para a API do projeto acadêmico da rede de lanchonetes Raízes do Nordeste. Contém fluxos principais, simulação de pagamento, controle de estoque e tratamento de erros.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticação",
+			"item": [
+				{
+					"name": "Login do Desenvolvedor (Fácil e Automático)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.isSuccess && jsonData.data && jsonData.data.token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+									"    console.log(\"Token salvo na variável: \" + jsonData.data.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/desenvolvedor",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"desenvolvedor"
+							]
+						},
+						"description": "Gera um token JWT com perfil de Administrador e salva automaticamente na variável de coleção 'token'."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Manual (Administrador)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.isSuccess && jsonData.data && jsonData.data.token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@raizesdonordeste.com\",\n  \"password\": \"somehashedpassword\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Realiza o login com credenciais de administrador em uma unidade específica."
+					},
+					"response": []
+				},
+				{
+					"name": "Login de Usuário sem Permissão (Customer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.isSuccess && jsonData.data && jsonData.data.token) {",
+									"    pm.collectionVariables.set(\"token_cliente\", jsonData.data.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"Password123!\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login com conta de cliente comum para testar cenários de erro de permissão (403)."
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Credenciais Inválidas (Erro 401)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@raizesdonordeste.com\",\n  \"password\": \"senha_incorreta\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Cenário de erro (401) com senha incorreta."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuários",
+			"item": [
+				{
+					"name": "Cadastrar Novo Usuário (Cliente)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuarios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						},
+						"description": "Cadastra uma nova conta na aplicação. Por padrão, recebe o perfil de Customer (cliente)."
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Perfil Logado",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/perfil",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"perfil"
+							]
+						},
+						"description": "Busca informações do perfil do usuário autenticado no momento."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Unidades e Cardápio",
+			"item": [
+				{
+					"name": "Listar Unidades (Restaurantes)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/unidades",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unidades"
+							]
+						},
+						"description": "Lista todos os restaurantes/unidades ativos do sistema."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Unidades - Acesso Sem Token (Erro 401)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/unidades",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unidades"
+							]
+						},
+						"description": "Cenário de erro (401) ao tentar acessar recurso protegido sem enviar o token."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Produtos (Cardápio da Unidade)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/produtos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"produtos"
+							]
+						},
+						"description": "Exibe o cardápio e produtos cadastrados para a unidade na qual o usuário está logado."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pedidos",
+			"item": [
+				{
+					"name": "Criar Pedido com Sucesso (Canal Válido)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.id) {",
+									"    pm.collectionVariables.set(\"orderId\", jsonData.id);",
+									"    console.log(\"ID do pedido criado salvo: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"canalPedido\": \"TOTEM\",\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 1\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pedidos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pedidos"
+							]
+						},
+						"description": "Cria um novo pedido para o X-Burger via canal TOTEM. Salva automaticamente o ID do pedido gerado em 'orderId'."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Pedido - canalPedido Inválido (Erro 400)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"canalPedido\": \"CANAL_INEXISTENTE\",\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 1\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pedidos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pedidos"
+							]
+						},
+						"description": "Cenário de erro (400/422). O canal de pedido deve obedecer o enum correto, retornando validação de erro."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Pedido - Sem Estoque (Erro 400)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"canalPedido\": \"APP\",\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 99999\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pedidos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pedidos"
+							]
+						},
+						"description": "Cenário de erro (400). Tenta criar um pedido com quantidade muito superior ao estoque físico de ingredientes do produto."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Pedidos da Unidade",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pedidos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pedidos"
+							]
+						},
+						"description": "Obtém todos os pedidos efetuados na unidade corrente."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Pedidos - Filtrado por canalPedido",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pedidos?canalPedido=TOTEM",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pedidos"
+							],
+							"query": [
+								{
+									"key": "canalPedido",
+									"value": "TOTEM"
+								}
+							]
+						},
+						"description": "Lista os pedidos filtrando pelo canal de venda usando a propriedade requerida canalPedido no query param."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Pedidos - Acesso Negado Cliente (Erro 403)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_cliente}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pedidos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pedidos"
+							]
+						},
+						"description": "Cenário de erro (403 - Forbidden). Um token de perfil Customer (cliente comum) não possui perfil de funcionário autorizado a gerenciar ou listar pedidos."
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Status para Ready (Cozinha -> Pronto)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"status\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pedidos/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pedidos",
+								"status"
+							]
+						},
+						"description": "Altera o status do pedido para Ready (Status 2 no enum, que representa Pronto) para viabilizar o fluxo de pagamento."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pagamento",
+			"item": [
+				{
+					"name": "Solicitar Pagamento do Pedido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"paymentMethod\": {\n    \"method\": 0\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pagamento/Order/{{orderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pagamento",
+								"Order",
+								"{{orderId}}"
+							]
+						},
+						"description": "Envia a solicitação de pagamento ao gateway de pagamento (Método 0 = Pix)."
+					},
+					"response": []
+				},
+				{
+					"name": "Simular Webhook Confirmação (Aprovação Pix)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Uninter-Signature",
+								"value": "UNINTER_MOCK_SIGNATURE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionId\": \"trans_12345abcde\",\n  \"orderId\": \"{{orderId}}\",\n  \"status\": \"Approved\",\n  \"amount\": 29.90\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pagamento/webhook",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pagamento",
+								"webhook"
+							]
+						},
+						"description": "Webhook do gateway mock informando aprovação de pagamento Pix. Envia assinatura correta para bypassar autenticação do Webhook."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Estoque",
+			"item": [
+				{
+					"name": "Consultar Estoque Atual",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/estoque",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estoque"
+							]
+						},
+						"description": "Visualiza as quantidades atuais de ingredientes de estoque na unidade ativa."
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Entrada/Movimentação de Estoque",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"stockIngredientId\": 1,\n  \"quantity\": 50,\n  \"type\": 0,\n  \"description\": \"Entrada de mercadoria fornecedor\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/estoque/movimentacao",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estoque",
+								"movimentacao"
+							]
+						},
+						"description": "Realiza uma movimentação manual de estoque (tipo 0 = Input/Entrada, tipo 1 = Output/Saída, tipo 2 = Loss/Desperdício, tipo 3 = Consumption)."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5269",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token_cliente",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "orderId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

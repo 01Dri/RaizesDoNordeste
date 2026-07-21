@@ -1,4 +1,5 @@
-﻿using RaizesDoNordeste.Domain.Core.Menus;
+﻿using RaizesDoNordeste.Domain.Core.Loyalit;
+using RaizesDoNordeste.Domain.Core.Menus;
 using RaizesDoNordeste.Domain.Core.Orders;
 using RaizesDoNordeste.Domain.Core.Stocks;
 using RaizesDoNordeste.Domain.ValuesObjects;
@@ -15,6 +16,7 @@ public class Restaurant : BaseDomain<Guid>
     public Cnpj Cnpj { get; set; } = null!;
     public virtual Menu? Menu { get; set; }
     public virtual Stock Stock { get; set; } = null!;
-    
     public virtual ICollection<Order> Orders { get; set; } = [];
+    public long? LoyalityProgramId { get; set; }
+    public virtual LoyalitProgram? LoyalitProgram { get; set; }        
 }
