@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+using System.Reflection;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using RaizesDoNordeste.Application.Patterns.Decorators;
 using RaizesDoNordeste.Application.Patterns.Dispatchers;
 using RaizesDoNordeste.Application.Patterns.Dispatchers.Orders;
 using RaizesDoNordeste.Application.Patterns.Dispatchers.Orders.Handlers;
@@ -60,10 +62,56 @@ namespace RaizesDoNordeste.API.Extensions
                             Implementation = implementation
                         }));
 
-                foreach (var implementation in implementations)
+                foreach (var impl in implementations)
                 {
-                    service.AddScoped(implementation.Service, implementation.Implementation);
+                    service.RegisterSingleImplementation(serviceType, impl.Service, impl.Implementation);
                 }    
+            }
+
+            private void RegisterSingleImplementation(Type serviceType, Type interfaceType, Type implementationType)
+            {
+                if (serviceType == typeof(IUseCaseHandler<,>))
+                {
+                    service.AddScoped(implementationType);
+                    service.AddScoped(interfaceType, provider =>
+                    {
+                        var innerHandler = provider.GetRequiredService(implementationType);
+                        var hasTransactional = implementationType.GetCustomAttribute<TransactionalAttribute>() != null;
+
+                        if (hasTransactional)
+                        {
+                            var requestType = interfaceType.GetGenericArguments()[0];
+                            var responseType = interfaceType.GetGenericArguments()[1];
+                            var decoratorType = typeof(TransactionalUseCaseHandlerDecorator<,>).MakeGenericType(requestType, responseType);
+                            return ActivatorUtilities.CreateInstance(provider, decoratorType, innerHandler);
+                        }
+
+                        return innerHandler;
+                    });
+                    return;
+                }
+
+                if (serviceType == typeof(IUseCaseHandler<>))
+                {
+                    service.AddScoped(implementationType);
+                    service.AddScoped(interfaceType, provider =>
+                    {
+                        var innerHandler = provider.GetRequiredService(implementationType);
+                        var hasTransactional = implementationType.GetCustomAttribute<TransactionalAttribute>() != null;
+
+                        if (hasTransactional)
+                        {
+                            var responseType = interfaceType.GetGenericArguments()[0];
+                            var decoratorType = typeof(TransactionalUseCaseHandlerDecorator<>).MakeGenericType(responseType);
+                            return ActivatorUtilities.CreateInstance(provider, decoratorType, innerHandler);
+                        }
+
+                        return innerHandler;
+                    });
+                    return;
+                }
+
+                service.AddScoped(interfaceType, implementationType);
             }
 
             private static List<IOrderStatusHandler> GetOrderStatusHandlers()

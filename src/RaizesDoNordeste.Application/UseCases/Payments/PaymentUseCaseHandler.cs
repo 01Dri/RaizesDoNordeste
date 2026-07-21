@@ -12,6 +12,7 @@ using UninterPayment.SDK;
 
 namespace RaizesDoNordeste.Application.UseCases.Payments;
 
+[Transactional]
 public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, PaymentResponseDto>
 {
     private readonly ApplicationDbContext _dbContext;
@@ -20,8 +21,8 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
     private readonly IUninterPaymentClient _uninterPaymentClient;
 
     public PaymentUseCaseHandler(
-        ApplicationDbContext dbContext, 
-        IValidator<PaymentRequestDto> validator, 
+        ApplicationDbContext dbContext,
+        IValidator<PaymentRequestDto> validator,
         ICurrentUser currentUser,
         IUninterPaymentClient uninterPaymentClient)
     {
@@ -30,6 +31,8 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         _currentUser = currentUser;
         _uninterPaymentClient = uninterPaymentClient;
     }
+
+    // PENSAR EM PONTOS DE FILIDADE PARA DESCONTO E GANHA DE PONTOS.
 
     public async Task<Result<PaymentResponseDto>> HandleAsync(PaymentRequestDto parameter, CancellationToken cancellation = default)
     {
@@ -103,6 +106,17 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
             Payment = payment
         };
         _dbContext.PaymentOrders.Add(paymentOrder);
+
+
+
+        //var loyalityProgram = await _dbContext.LoyalitPrograms
+        //    .FirstOrDefaultAsync(x => x.AccountId == _currentUser.AccountId &&
+        //    x.RestaurantId == _currentUser.RestaurantId, cancellation);
+
+        //if (loyalityProgram != null)
+        //{
+             
+        //}
 
         await _dbContext.SaveChangesAsync(cancellation);
 
