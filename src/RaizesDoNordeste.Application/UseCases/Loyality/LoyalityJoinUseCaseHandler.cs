@@ -38,10 +38,10 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
                 return Result<LoyalityJoinResponseDto>.Failure(new Error("Cliente não encontrado."));
             }
 
-            var alreadyJoined = await _context.LoyalitPrograms
-                .AnyAsync(x => x.AccountId == parameter.CustomerAccountId && x.RestaurantId == _currentUser.RestaurantId, cancellation);
+            var existingProgram = await _context.LoyalitPrograms
+                .FirstOrDefaultAsync(x => x.AccountId == parameter.CustomerAccountId && x.RestaurantId == _currentUser.RestaurantId, cancellation);
 
-            if (alreadyJoined)
+            if (existingProgram != null && existingProgram.Active && existingProgram.LeavedAt == null)
             {
                 return Result<LoyalityJoinResponseDto>.Failure(new Error("O cliente já está no programa de fidelidade."));
             }
@@ -55,15 +55,25 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
                 return Result<LoyalityJoinResponseDto>.Failure(new Error("O cliente precisa ter realizado pelo menos 3 pedidos no último mês para entrar no programa de fidelidade."));
             }
 
-            var program = new LoyalitProgram
+            if (existingProgram != null)
             {
-                AccountId = parameter.CustomerAccountId,
-                RestaurantId = _currentUser.RestaurantId,
-                JoinedAt = DateTime.UtcNow,
-                Active = true
-            };
+                existingProgram.Active = true;
+                existingProgram.LeavedAt = null;
+                existingProgram.JoinedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                var program = new LoyalitProgram
+                {
+                    AccountId = parameter.CustomerAccountId,
+                    RestaurantId = _currentUser.RestaurantId,
+                    JoinedAt = DateTime.UtcNow,
+                    Active = true,
+                    LeavedAt = null
+                };
+                await _context.AddAsync(program, cancellation);
+            }
 
-            await _context.AddAsync(program, cancellation);
             await _context.SaveChangesAsync(cancellation);
 
             return Result<LoyalityJoinResponseDto>.Success(new LoyalityJoinResponseDto(), System.Net.HttpStatusCode.Created);

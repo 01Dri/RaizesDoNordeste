@@ -27,7 +27,7 @@ namespace RaizesDoNordeste.Application.Services
             }
 
             var program = await _dbContext.LoyalitPrograms
-                .FirstOrDefaultAsync(x => x.AccountId == accountId && x.RestaurantId == restaurantId && x.Active, cancellationToken);
+                .FirstOrDefaultAsync(x => x.AccountId == accountId && x.RestaurantId == restaurantId && x.Active && x.LeavedAt == null, cancellationToken);
 
             if (program == null || program.Points <= 0)
             {
@@ -64,7 +64,7 @@ namespace RaizesDoNordeste.Application.Services
         public async Task<EarnPointsResult> EarnPointsAsync(decimal amountPaid, long accountId, Guid restaurantId, CancellationToken cancellationToken = default)
         {
             var program = await _dbContext.LoyalitPrograms
-                .FirstOrDefaultAsync(x => x.AccountId == accountId && x.RestaurantId == restaurantId && x.Active, cancellationToken);
+                .FirstOrDefaultAsync(x => x.AccountId == accountId && x.RestaurantId == restaurantId && x.Active && x.LeavedAt == null, cancellationToken);
 
             if (program == null)
             {
@@ -103,7 +103,7 @@ namespace RaizesDoNordeste.Application.Services
         public async Task<int?> GetUserPointsAsync(long accountId, Guid restaurantId, CancellationToken cancellationToken = default)
         {
             var program = await _dbContext.LoyalitPrograms
-                .FirstOrDefaultAsync(x => x.AccountId == accountId && x.RestaurantId == restaurantId && x.Active, cancellationToken);
+                .FirstOrDefaultAsync(x => x.AccountId == accountId && x.RestaurantId == restaurantId && x.Active && x.LeavedAt == null, cancellationToken);
 
             return program?.Points;
         }
