@@ -62,11 +62,15 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
 
             _loyalityProgramServiceMock
                 .Setup(x => x.ApplyDiscountAsync(It.IsAny<decimal>(), It.IsAny<long>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((decimal val, long ac, Guid rest, CancellationToken ct) => val);
+                .ReturnsAsync(new ApplyDiscountResult(false, 0m));
 
             _loyalityProgramServiceMock
                 .Setup(x => x.EarnPointsAsync(It.IsAny<decimal>(), It.IsAny<long>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(0);
+                .ReturnsAsync(new EarnPointsResult(false, 0, null));
+
+            _loyalityProgramServiceMock
+                .Setup(x => x.GetUserPointsAsync(It.IsAny<long>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((int?)null);
 
             _configurationMock
                 .Setup(x => x[It.IsAny<string>()])

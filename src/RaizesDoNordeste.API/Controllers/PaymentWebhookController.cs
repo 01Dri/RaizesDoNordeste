@@ -53,13 +53,11 @@ namespace RaizesDoNordeste.API.Controllers
                     return BadRequest("Não foi encontrado um registro de pagamento para este pedido.");
                 }
 
-                // Update existing waiting payment
                 payment.Status = PaymentStatus.Paid;
                 payment.TotalPaid = dto.Amount;
                 payment.ExternalPaymentId = dto.TransactionId;
                 payment.Description = "Pagamento Pix aprovado via webhook.";
 
-                // Earn loyalty points upon confirmation of Pix payment
                 await _loyalityProgramService.EarnPointsAsync(
                     dto.Amount,
                     order.AccountId.GetValueOrDefault(),

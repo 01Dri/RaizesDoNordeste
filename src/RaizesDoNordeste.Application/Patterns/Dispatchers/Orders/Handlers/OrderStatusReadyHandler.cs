@@ -14,10 +14,6 @@ public sealed class OrderStatusReadyHandler : IOrderStatusHandler
     public OrderStatus Status { get; set; } = OrderStatus.Ready;
     public Task<Result> HandleAsync(Order order, ICurrentUser user, ApplicationDbContext context)
     {
-        if (!user.InRole(RoleType.Professional))
-        {
-            return Task.FromResult(Result.Failure(new Error("Usuário não possui permissão")));
-        }
         if (order.Status == Status)  
         {
             return Task.FromResult(Result.Success());

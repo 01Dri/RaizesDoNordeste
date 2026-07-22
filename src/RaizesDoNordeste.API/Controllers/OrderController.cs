@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 namespace RaizesDoNordeste.API.Controllers;
 
 [ApiController]
-[Route("pedidos")]
 [Route("pedido")]
 [Authorize]
 public class OrderController : BaseController   

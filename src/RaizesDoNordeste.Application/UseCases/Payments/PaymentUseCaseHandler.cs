@@ -79,10 +79,14 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         }
 
         var totalToPay = order.TotalPrice;
+        bool usedLoyaltyPoints = false;
         if (parameter.UseLoyalityPoints)
         {
-            totalToPay = await _loyalityProgramService
-                .ApplyDiscountAsync(totalToPay, _currentUser.AccountId, _currentUser.RestaurantId);
+            var discountResult = await _loyalityProgramService
+                .ApplyDiscountAsync(order.TotalPrice, _currentUser.AccountId, _currentUser.RestaurantId, cancellation);
+            
+            usedLoyaltyPoints = discountResult.PointsConsumed;
+            totalToPay = order.TotalPrice - discountResult.DiscountAmount;
         }
 
         if (totalToPay < 0)
@@ -134,19 +138,20 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         {
             Order = order,
             Payment = payment,
-            UsedLoyalityPoints = parameter.UseLoyalityPoints 
-            // validar depois, só deve considerar que usou pontos,
-            // se de fato houve a movimentação
+            UsedLoyalityPoints = usedLoyaltyPoints
         };
         _dbContext.PaymentOrders.Add(paymentOrder);
 
         int loyalityPoints = 0;
+        int? totalPointsInRestaurant = null;
+
         if (domainStatus == PaymentStatus.Paid)
         {
-            loyalityPoints = await _loyalityProgramService
+            var earnResult = await _loyalityProgramService
                 .EarnPointsAsync(totalToPay, _currentUser.AccountId, _currentUser.RestaurantId, cancellation);
+            loyalityPoints = earnResult.PointsAmount;
+            totalPointsInRestaurant = earnResult.TotalPointsInRestaurant;
         }
-
         await _dbContext.SaveChangesAsync(cancellation);
 
         var responseDto = new PaymentResponseDto
@@ -155,6 +160,7 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
             Status = domainStatus,
             AmountPaid = payment.TotalPaid,
             EarnedLoyaliyPoints = loyalityPoints,
+            TotalPointsInRestaurant = totalPointsInRestaurant
         };
 
         return Result<PaymentResponseDto>.Success(responseDto);

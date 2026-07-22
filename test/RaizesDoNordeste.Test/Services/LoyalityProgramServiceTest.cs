@@ -3,6 +3,7 @@ using NUnit.Framework;
 using RaizesDoNordeste.Application.Services;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Loyalit;
+using RaizesDoNordeste.Domain.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -36,20 +37,24 @@ namespace RaizesDoNordeste.Test.Services
         }
 
         [Test]
-        public async Task ApplyDiscountAsync_ShouldReturnOriginalValue_WhenLoyaltyProgramDoesNotExist()
+        public async Task ApplyDiscountAsync_ShouldReturnFalseAndZeroDiscount_WhenLoyaltyProgramDoesNotExist()
         {
             // Arrange
             decimal orderValue = 50.0m;
 
             // Act
-            decimal finalValue = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
+            var result = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
 
             // Assert
-            Assert.That(finalValue, Is.EqualTo(orderValue));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.PointsConsumed, Is.False);
+                Assert.That(result.DiscountAmount, Is.EqualTo(0.0m));
+            });
         }
 
         [Test]
-        public async Task ApplyDiscountAsync_ShouldReturnOriginalValue_WhenLoyaltyProgramHasNoPoints()
+        public async Task ApplyDiscountAsync_ShouldReturnFalseAndZeroDiscount_WhenLoyaltyProgramHasNoPoints()
         {
             // Arrange
             var program = new LoyalitProgram
@@ -66,10 +71,14 @@ namespace RaizesDoNordeste.Test.Services
             decimal orderValue = 50.0m;
 
             // Act
-            decimal finalValue = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
+            var result = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
 
             // Assert
-            Assert.That(finalValue, Is.EqualTo(orderValue));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.PointsConsumed, Is.False);
+                Assert.That(result.DiscountAmount, Is.EqualTo(0.0m));
+            });
         }
 
         [Test]
@@ -91,12 +100,13 @@ namespace RaizesDoNordeste.Test.Services
             decimal orderValue = 50.0m;
 
             // Act
-            decimal finalValue = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
+            var result = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(finalValue, Is.EqualTo(30.0m)); // 50 - 20 = 30
+                Assert.That(result.PointsConsumed, Is.True);
+                Assert.That(result.DiscountAmount, Is.EqualTo(20.0m));
                 Assert.That(program.Points, Is.EqualTo(0)); // All points consumed
             });
 
@@ -128,12 +138,13 @@ namespace RaizesDoNordeste.Test.Services
             decimal orderValue = 50.0m;
 
             // Act
-            decimal finalValue = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
+            var result = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(finalValue, Is.EqualTo(0.0m)); // Fully covered
+                Assert.That(result.PointsConsumed, Is.True);
+                Assert.That(result.DiscountAmount, Is.EqualTo(50.0m));
                 Assert.That(program.Points, Is.EqualTo(100)); // 600 - 500 consumed = 100 left
             });
 
@@ -147,16 +158,20 @@ namespace RaizesDoNordeste.Test.Services
         }
 
         [Test]
-        public async Task EarnPointsAsync_ShouldReturnZero_WhenAmountPaidIsZeroOrNegative()
+        public async Task EarnPointsAsync_ShouldReturnFalseAndZeroPoints_WhenAmountPaidIsZeroOrNegative()
         {
             // Arrange
             decimal amountPaid = 0.0m;
 
             // Act
-            int pointsEarned = await _service.EarnPointsAsync(amountPaid, _accountId, _restaurantId);
+            var result = await _service.EarnPointsAsync(amountPaid, _accountId, _restaurantId);
 
             // Assert
-            Assert.That(pointsEarned, Is.EqualTo(0));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.PointsEarned, Is.False);
+                Assert.That(result.PointsAmount, Is.EqualTo(0));
+            });
         }
 
         [Test]
@@ -177,12 +192,14 @@ namespace RaizesDoNordeste.Test.Services
             decimal amountPaid = 35.50m;
 
             // Act
-            int pointsEarned = await _service.EarnPointsAsync(amountPaid, _accountId, _restaurantId);
+            var result = await _service.EarnPointsAsync(amountPaid, _accountId, _restaurantId);
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(pointsEarned, Is.EqualTo(35)); // Math.Floor(35.50) = 35
+                Assert.That(result.PointsEarned, Is.True);
+                Assert.That(result.PointsAmount, Is.EqualTo(35)); // Math.Floor(35.50) = 35
+                Assert.That(result.TotalPointsInRestaurant, Is.EqualTo(85));
                 Assert.That(program.Points, Is.EqualTo(85)); // 50 + 35 = 85
             });
 
@@ -193,6 +210,38 @@ namespace RaizesDoNordeste.Test.Services
                 Assert.That(movement.Type, Is.EqualTo(LoyalitProgramMovementType.Earn));
                 Assert.That(movement.Points, Is.EqualTo(35));
             });
+        }
+
+        [Test]
+        public async Task GetUserPointsAsync_ShouldReturnNull_WhenUserIsNotInProgram()
+        {
+            // Act
+            int? points = await _service.GetUserPointsAsync(_accountId, _restaurantId);
+
+            // Assert
+            Assert.That(points, Is.Null);
+        }
+
+        [Test]
+        public async Task GetUserPointsAsync_ShouldReturnPointsAmount_WhenUserIsInProgram()
+        {
+            // Arrange
+            var program = new LoyalitProgram
+            {
+                AccountId = _accountId,
+                RestaurantId = _restaurantId,
+                Points = 120,
+                Active = true,
+                JoinedAt = DateTime.UtcNow
+            };
+            await _context.LoyalitPrograms.AddAsync(program);
+            await _context.SaveChangesAsync();
+
+            // Act
+            int? points = await _service.GetUserPointsAsync(_accountId, _restaurantId);
+
+            // Assert
+            Assert.That(points, Is.EqualTo(120));
         }
     }
 }
