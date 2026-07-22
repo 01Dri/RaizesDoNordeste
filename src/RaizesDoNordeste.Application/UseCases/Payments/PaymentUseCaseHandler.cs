@@ -1,6 +1,6 @@
 using FluentValidation;
-using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using RaizesDoNordeste.Application.Extensions;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
@@ -22,6 +22,7 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
     private readonly ICurrentUser _currentUser;
     private readonly IUninterPaymentClient _uninterPaymentClient;
     private readonly ILoyalityProgramService _loyalityProgramService;
+    private readonly IPaymentTransactionService _paymentTransactionService;
     private readonly IConfiguration _configuration;
 
     public PaymentUseCaseHandler
@@ -31,6 +32,7 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         ICurrentUser currentUser,
         IUninterPaymentClient uninterPaymentClient,
         ILoyalityProgramService loyalityProgramService,
+        IPaymentTransactionService paymentTransactionService,
         IConfiguration configuration
     )
     {
@@ -39,18 +41,10 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         _currentUser = currentUser;
         _uninterPaymentClient = uninterPaymentClient;
         _loyalityProgramService = loyalityProgramService;
+        _paymentTransactionService = paymentTransactionService;
         _configuration = configuration;
     }
 
-    // PENSAR EM PONTOS DE FILIDADE PARA DESCONTO E GANHA DE PONTOS.
-
-
-    /**
-      • Paridade de Centavos (Mais comum no mercado):
-      • Regra: 100 pontos = R$ 1,00 (ou seja, cada 1 ponto vale R$ 0,01).
-      • Cálculo: Desconto = Pontos / 100
-      • Exemplo: Se o cliente tem 1500 pontos, ele tem R$ 15,00 de desconto (1500 / 100).
-    **/
     public async Task<Result<PaymentResponseDto>> HandleAsync(PaymentRequestDto parameter, CancellationToken cancellation = default)
     {
         var validation = await _validator.ValidateAsync(parameter, cancellation);
@@ -119,51 +113,30 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
             ? PaymentStatus.Paid 
             : PaymentStatus.Waiting;
 
-        var payment = new Payment
-        {
-            Total = order.TotalPrice,
-            TotalDiscount = order.TotalPrice - totalToPay,
-            TotalPaid = domainStatus == PaymentStatus.Paid ? totalToPay : 0,
-            PaymentMethod = parameter.PaymentMethod.Method,
-            Status = domainStatus,
-            ExternalPaymentId = sdkResult.TransactionId,
-            Description = domainStatus == PaymentStatus.Paid
-                ? "Aprovado na hora via cartão."
-                : "Aguardando confirmação Pix."
-        };
+        var description = domainStatus == PaymentStatus.Paid
+            ? "Aprovado na hora via cartão."
+            : "Aguardando confirmação Pix.";
 
-        _dbContext.Payments.Add(payment);
-
-        var paymentOrder = new PaymentOrder
-        {
-            Order = order,
-            Payment = payment,
-            UsedLoyalityPoints = usedLoyaltyPoints
-        };
-        _dbContext.PaymentOrders.Add(paymentOrder);
-
-        int loyalityPoints = 0;
-        int? totalPointsInRestaurant = null;
-
-        if (domainStatus == PaymentStatus.Paid)
-        {
-            var earnResult = await _loyalityProgramService
-                .EarnPointsAsync(totalToPay, _currentUser.AccountId, _currentUser.RestaurantId, cancellation);
-            loyalityPoints = earnResult.PointsAmount;
-            totalPointsInRestaurant = earnResult.TotalPointsInRestaurant;
-        }
-        await _dbContext.SaveChangesAsync(cancellation);
+        var txResult = await _paymentTransactionService.RegisterPaymentAsync(
+            order,
+            parameter.PaymentMethod.Method,
+            domainStatus,
+            totalToPay,
+            sdkResult.TransactionId,
+            usedLoyaltyPoints,
+            description,
+            cancellation
+        );
 
         var responseDto = new PaymentResponseDto
         {
             OrderId = order.PublicId,
             Status = domainStatus,
-            AmountPaid = payment.TotalPaid,
-            EarnedLoyaliyPoints = loyalityPoints,
-            TotalPointsInRestaurant = totalPointsInRestaurant
+            AmountPaid = txResult.Payment.TotalPaid,
+            EarnedLoyaliyPoints = txResult.EarnedLoyaltyPoints,
+            TotalPointsInRestaurant = txResult.TotalPointsInRestaurant
         };
 
         return Result<PaymentResponseDto>.Success(responseDto);
     }
 }
-

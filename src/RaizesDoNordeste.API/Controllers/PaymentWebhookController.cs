@@ -1,12 +1,11 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.API.Attributes;
 using RaizesDoNordeste.Data;
-using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Payments;
 using RaizesDoNordeste.Domain.Services;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.API.Controllers
@@ -17,16 +16,16 @@ namespace RaizesDoNordeste.API.Controllers
     public class PaymentWebhookController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly ILoyalityProgramService _loyalityProgramService;
+        private readonly IPaymentTransactionService _paymentTransactionService;
 
-        public PaymentWebhookController(ApplicationDbContext dbContext, ILoyalityProgramService loyalityProgramService)
+        public PaymentWebhookController(ApplicationDbContext dbContext, IPaymentTransactionService paymentTransactionService)
         {
             _dbContext = dbContext;
-            _loyalityProgramService = loyalityProgramService;
+            _paymentTransactionService = paymentTransactionService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> ReceiveNotification([FromBody] WebhookPayload dto)
+        public async Task<IActionResult> ReceiveNotification([FromBody] WebhookPayload dto, CancellationToken cancellationToken)
         {
             if (dto == null)
             {
@@ -36,7 +35,7 @@ namespace RaizesDoNordeste.API.Controllers
             var order = await _dbContext.Orders
                 .Include(o => o.PaymentOrder)
                 .ThenInclude(po => po.Payment)
-                .FirstOrDefaultAsync(o => o.PublicId == dto.OrderId);
+                .FirstOrDefaultAsync(o => o.PublicId == dto.OrderId, cancellationToken);
 
             if (order == null)
             {
@@ -53,18 +52,16 @@ namespace RaizesDoNordeste.API.Controllers
                     return BadRequest("Não foi encontrado um registro de pagamento para este pedido.");
                 }
 
-                payment.Status = PaymentStatus.Paid;
-                payment.TotalPaid = dto.Amount;
-                payment.ExternalPaymentId = dto.TransactionId;
-                payment.Description = "Pagamento Pix aprovado via webhook.";
-
-                await _loyalityProgramService.EarnPointsAsync(
-                    dto.Amount,
+                await _paymentTransactionService.ConfirmPaymentAsync(
+                    payment,
                     order.AccountId.GetValueOrDefault(),
-                    order.RestaurantId
+                    order.RestaurantId,
+                    dto.Amount,
+                    dto.TransactionId,
+                    "Pagamento Pix aprovado via webhook.",
+                    cancellationToken
                 );
 
-                await _dbContext.SaveChangesAsync();
                 return Ok(new { Message = "Pagamento processado com sucesso e status atualizado." });
             }
 

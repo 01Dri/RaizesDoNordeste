@@ -34,7 +34,8 @@ namespace RaizesDoNordeste.Test.Controllers
             _context.Database.EnsureCreated();
 
             _loyalityProgramServiceMock = new Mock<ILoyalityProgramService>();
-            _controller = new PaymentWebhookController(_context, _loyalityProgramServiceMock.Object);
+            var paymentTxService = new PaymentTransactionService(_context, _loyalityProgramServiceMock.Object);
+            _controller = new PaymentWebhookController(_context, paymentTxService);
             
             var httpContext = new DefaultHttpContext();
             _controller.ControllerContext = new ControllerContext

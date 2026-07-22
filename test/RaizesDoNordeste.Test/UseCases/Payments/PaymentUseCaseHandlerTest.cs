@@ -76,12 +76,15 @@ namespace RaizesDoNordeste.Test.UseCases.Payments
                 .Setup(x => x[It.IsAny<string>()])
                 .Returns((string key) => key == "PaymentSettings:WebhookUrl" ? "http://localhost/webhook" : null);
 
+            var paymentTxService = new PaymentTransactionService(_context, _loyalityProgramServiceMock.Object);
+
             _handler = new PaymentUseCaseHandler(
                 _context,
                 _validatorMock.Object,
                 _currentUserMock.Object,
                 _paymentClientMock.Object,
                 _loyalityProgramServiceMock.Object,
+                paymentTxService,
                 _configurationMock.Object
             );
         }
