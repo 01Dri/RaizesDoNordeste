@@ -25,7 +25,7 @@ namespace RaizesDoNordeste.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ReceiveNotification([FromBody] WebhookPayload dto, CancellationToken cancellationToken)
+        public async Task<IActionResult> ReceiveNotification([FromBody] WebhookPayload dto, CancellationToken cancellationToken = default)
         {
             if (dto == null)
             {

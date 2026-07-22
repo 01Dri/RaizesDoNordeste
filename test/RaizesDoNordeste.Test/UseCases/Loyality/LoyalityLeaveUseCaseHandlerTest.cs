@@ -3,7 +3,6 @@ using Moq;
 using NUnit.Framework;
 using RaizesDoNordeste.Application.UseCases.Loyality;
 using RaizesDoNordeste.Data;
-using RaizesDoNordeste.Domain.Core.Accounts;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Loyalit;
 using RaizesDoNordeste.Domain.Core.Loyalit.DTO;
@@ -122,8 +121,8 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(result.Error.Message, Contains.Substring("gerente"));
+                Assert.That(result.IsSuccess, Is.False);
+                Assert.That(result.ErrorData?.Message, Contains.Substring("gerente"));
             });
         }
 
@@ -139,8 +138,8 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(result.Error.Message, Contains.Substring("não faz parte do programa"));
+                Assert.That(result.IsSuccess, Is.False);
+                Assert.That(result.ErrorData?.Message, Contains.Substring("não faz parte do programa"));
             });
         }
     }

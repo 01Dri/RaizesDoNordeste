@@ -12,6 +12,7 @@ using RaizesDoNordeste.Domain.Core.Orders;
 using RaizesDoNordeste.Domain.Core.Payments;
 
 using Moq;
+using RaizesDoNordeste.Application.Services;
 using RaizesDoNordeste.Domain.Services;
 
 namespace RaizesDoNordeste.Test.Controllers

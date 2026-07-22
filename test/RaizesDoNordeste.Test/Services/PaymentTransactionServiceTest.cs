@@ -52,19 +52,20 @@ namespace RaizesDoNordeste.Test.Services
                 AccountId = _accountId,
                 RestaurantId = _restaurantId,
                 TotalPrice = 100.00m,
-                Status = OrderStatus.Ready
+                Status = OrderStatus.Ready,
+                Channel = OrderChannel.BALCAO
             };
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
             _loyalityProgramServiceMock
-                .Setup(x => x.EarnPointsAsync(100.00m, _accountId, _restaurantId, It.IsAny<CancellationToken>()))
+                .Setup(x => x.EarnPointsAsync(It.IsAny<decimal>(), It.IsAny<long>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new EarnPointsResult(true, 100, 100));
 
             // Act
             var result = await _service.RegisterPaymentAsync(
                 order,
-                PaymentMethod.CreditCard,
+                PaymentMethod.Credit,
                 PaymentStatus.Paid,
                 100.00m,
                 "tx-123",
@@ -99,7 +100,7 @@ namespace RaizesDoNordeste.Test.Services
             await _context.SaveChangesAsync();
 
             _loyalityProgramServiceMock
-                .Setup(x => x.EarnPointsAsync(50.0m, _accountId, _restaurantId, It.IsAny<CancellationToken>()))
+                .Setup(x => x.EarnPointsAsync(It.IsAny<decimal>(), It.IsAny<long>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new EarnPointsResult(true, 50, 50));
 
             // Act

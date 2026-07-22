@@ -3,14 +3,16 @@ using Moq;
 using NUnit.Framework;
 using RaizesDoNordeste.Application.UseCases.Loyality;
 using RaizesDoNordeste.Data;
-using RaizesDoNordeste.Domain.Core.Accounts;
-using RaizesDoNordeste.Domain.Core.Accounts.Roles;
+using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Loyalit;
 using RaizesDoNordeste.Domain.Core.Loyalit.DTO;
 using RaizesDoNordeste.Domain.Core.Orders;
 using RaizesDoNordeste.Domain.Core.Users;
+using RaizesDoNordeste.Domain.ValuesObjects;
 using System;
 using System.Threading.Tasks;
+using AccountEntity = RaizesDoNordeste.Domain.Core.Accounts.Account;
+using RoleType = RaizesDoNordeste.Domain.Core.Accounts.Roles.RoleType;
 
 namespace RaizesDoNordeste.Test.UseCases.Loyality
 {
@@ -61,8 +63,8 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(result.Error.Message, Contains.Substring("gerente"));
+                Assert.That(result.IsSuccess, Is.False);
+                Assert.That(result.ErrorData?.Message, Contains.Substring("gerente"));
             });
         }
 
@@ -78,8 +80,8 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(result.Error.Message, Contains.Substring("Cliente não encontrado"));
+                Assert.That(result.IsSuccess, Is.False);
+                Assert.That(result.ErrorData?.Message, Contains.Substring("Cliente não encontrado"));
             });
         }
 
@@ -87,7 +89,7 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
         public async Task HandleAsync_ShouldReturnFailure_WhenCustomerAlreadyJoined()
         {
             // Arrange
-            var account = new Account { Id = _customerAccountId, Name = "Cliente Teste", Active = true, CreatedAt = DateTime.UtcNow };
+            var account = new AccountEntity { Id = _customerAccountId, Email = new Email("client1@test.com"), Password = "pass" };
             await _context.Accounts.AddAsync(account);
 
             var program = new LoyalitProgram
@@ -108,8 +110,8 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(result.Error.Message, Contains.Substring("já está no programa"));
+                Assert.That(result.IsSuccess, Is.False);
+                Assert.That(result.ErrorData?.Message, Contains.Substring("já está no programa"));
             });
         }
 
@@ -117,7 +119,7 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
         public async Task HandleAsync_ShouldReturnFailure_WhenCustomerHasLessThan3OrdersInLastMonth()
         {
             // Arrange
-            var account = new Account { Id = _customerAccountId, Name = "Cliente Teste", Active = true, CreatedAt = DateTime.UtcNow };
+            var account = new AccountEntity { Id = _customerAccountId, Email = new Email("client2@test.com"), Password = "pass" };
             await _context.Accounts.AddAsync(account);
 
             // Only 2 orders in last month
@@ -129,7 +131,8 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
                     AccountId = _customerAccountId,
                     RestaurantId = _restaurantId,
                     TotalPrice = 30.0m,
-                    Status = OrderStatus.Finished,
+                    Status = OrderStatus.Delivered,
+                    Channel = OrderChannel.BALCAO,
                     CreatedAt = DateTime.UtcNow.AddDays(-10)
                 };
                 await _context.Orders.AddAsync(order);
@@ -144,8 +147,8 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(result.Error.Message, Contains.Substring("pelo menos 3 pedidos"));
+                Assert.That(result.IsSuccess, Is.False);
+                Assert.That(result.ErrorData?.Message, Contains.Substring("pelo menos 3 pedidos"));
             });
         }
 
@@ -153,7 +156,7 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
         public async Task HandleAsync_ShouldSuccessfullyJoinCustomer_WhenUserIsManagerAndCustomerHas3OrMoreOrdersInLastMonth()
         {
             // Arrange
-            var account = new Account { Id = _customerAccountId, Name = "Cliente Teste", Active = true, CreatedAt = DateTime.UtcNow };
+            var account = new AccountEntity { Id = _customerAccountId, Email = new Email("client3@test.com"), Password = "pass" };
             await _context.Accounts.AddAsync(account);
 
             // 3 orders in last month
@@ -165,7 +168,8 @@ namespace RaizesDoNordeste.Test.UseCases.Loyality
                     AccountId = _customerAccountId,
                     RestaurantId = _restaurantId,
                     TotalPrice = 30.0m,
-                    Status = OrderStatus.Finished,
+                    Status = OrderStatus.Delivered,
+                    Channel = OrderChannel.BALCAO,
                     CreatedAt = DateTime.UtcNow.AddDays(-5 * (i + 1))
                 };
                 await _context.Orders.AddAsync(order);

@@ -22,6 +22,7 @@ using RaizesDoNordeste.Domain.ValuesObjects;
 using UninterPayment.SDK;
 
 using Microsoft.Extensions.Configuration;
+using RaizesDoNordeste.Application.Services;
 using RaizesDoNordeste.Domain.Services;
 
 namespace RaizesDoNordeste.Test.UseCases.Payments
