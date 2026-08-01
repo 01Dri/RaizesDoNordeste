@@ -1,13 +1,9 @@
 using System.Net;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text.Json;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Application.Extensions;
 using RaizesDoNordeste.Data;
-using RaizesDoNordeste.Domain;
-using RaizesDoNordeste.Domain.Core.Accounts;
 using RaizesDoNordeste.Domain.Core.Login;
 using RaizesDoNordeste.Domain.Services;
 using RaizesDoNordeste.Domain.UseCases;
@@ -20,19 +16,19 @@ namespace RaizesDoNordeste.Application.UseCases.Login
         private readonly ApplicationDbContext _context;
         private readonly IValidator<LoginDto> _validator;
         private readonly IHasherService _hasherService;
-        private readonly ITokenService _tokenService;
+        private readonly ILoginService _loginService;
         public LoginUseCaseHandler
         (
             ApplicationDbContext context,   
             IValidator<LoginDto> validator,
             IHasherService hasherService,
-            ITokenService tokenService
+            ILoginService loginService
         )
         {
             _context = context;
             _validator = validator;
             _hasherService = hasherService;
-            _tokenService = tokenService;
+            _loginService = loginService;
         }
 
         public async Task<Result<LoginResponseDto>> HandleAsync(LoginDto parameter, CancellationToken cancellation = default)
@@ -52,6 +48,7 @@ namespace RaizesDoNordeste.Application.UseCases.Login
                 .Include(x => x.RoleAccounts)
                 .Include(account => account.Email)
                 .FirstOrDefaultAsync(x => x.Email == email, cancellation);
+            
             if (account == null || !_hasherService.VerifyPassword(parameter.Password, account.Password))
             {
                 return Result<LoginResponseDto>.Failure
@@ -74,45 +71,20 @@ namespace RaizesDoNordeste.Application.UseCases.Login
                 return Result<LoginResponseDto>.FailureNotFound("Restaurante não encontrado.");
             }
 
-            var claims = MountRolesClaims(account);
+            var claims = _loginService.MountRolesClaims(account);
             claims.Add(new Claim("restaurant_id", restaurant.Id.ToString()));
             claims.Add(new Claim("restaurant_name", restaurant.Name));
 
-            var refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-            var userRefreshToken = new UserRefreshToken
-            {
-                AccountId = account.Id,
-                Token = refreshTokenValue,
-                ExpiresAt = Calendar.Now.AddDays(7),
-                Revoked = false,
-                RestaurantId = restaurant.Id
-            };
+
+            var userRefreshToken = await _loginService.CreateRefreshTokenAsync(cancellation);
+            
             await _context.UserRefreshTokens.AddAsync(userRefreshToken, cancellation);
             await _context.SaveChangesAsync(cancellation);
 
-            var token = _tokenService.WriteToken(account.Id, account.Email.Value, claims);
-            var response = new LoginResponseDto(token, refreshTokenValue);
+            var token = _loginService.GenerateToken(account, claims);
+            var response = new LoginResponseDto(token, userRefreshToken.Token);
 
             return Result<LoginResponseDto>.Success(response);
-        }
-
-        private static List<Claim> MountRolesClaims(Account account)
-        {
-            var roles = account.RoleAccounts;
-            var claims = new List<Claim>();
-
-            foreach (var roleType in roles)
-            {
-                var value = new
-                {
-                    roleType.RoleId,
-                    roleType.RoleStatus,
-                    roleType.AccountId
-                };
-                claims.Add(new Claim(ClaimTypes.Role, JsonSerializer.Serialize(value)));
-            }
-
-            return claims;
         }
     }
 }
