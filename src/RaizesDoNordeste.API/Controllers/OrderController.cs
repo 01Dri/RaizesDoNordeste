@@ -5,9 +5,6 @@ using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Orders.DTO;
 using RaizesDoNordeste.Domain.UseCases;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.API.Controllers;
 
@@ -34,29 +31,28 @@ public class OrderController : RaizesDoNordesteController
         _getOrderByIdHandler = getOrderByIdHandler;
         _listOrdersHandler = listOrdersHandler;
     }
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrderDto dto, CancellationToken cancellationToken)
     {
         var result = await _createOrderHandler.HandleAsync(dto, cancellationToken);
-        if (result.IsSuccess)
-        {
-            return Created("", result.Data);
-        }
-        return Error("Falha ao criar o pedido", result);
+
+        if (!result.IsSuccess)
+            return Error("Falha ao criar o pedido", result);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = result.Data.Id },
+            result.Data);
     }
     
     [HttpPut]
-    [Route("status")]
+    [Route("status/{id:guid}")]
     [RolesAuthorize(RoleType.Professional, RoleType.Manager, RoleType.Owner, RoleType.Admin)]
-    public async Task<IActionResult> ChangeStatus(ChangeOrderStatusDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeStatus([FromRoute] Guid id, [FromBody] ChangeOrderStatusDto dto, CancellationToken cancellationToken)
     {
+        dto.OrderId = id;
         var result = await _changeStatusHandler.HandleAsync(dto, cancellationToken);
-        if (result.IsSuccess)
-        {
-            return Created("", result.Data);
-        }
-        return Error("Falha ao alterar o status do pedido", result);
+        return result.IsSuccess ? Ok(result) : Error("Falha ao alterar o status do pedido", result);
     }
 
     [HttpGet]
@@ -68,11 +64,7 @@ public class OrderController : RaizesDoNordesteController
     {
         var queryDto = new ListOrdersQueryDto(status, canalPedido);
         var result = await _listOrdersHandler.HandleAsync(queryDto, cancellationToken);
-        if (result.IsSuccess)
-        {
-            return Ok(result.Data);
-        }
-        return Error("Falha ao obter lista de pedidos", result);
+        return result.IsSuccess ? Ok(result.Data) : Error("Falha ao obter lista de pedidos", result);
     }
 
     [HttpGet("{id:guid}")]
@@ -80,10 +72,6 @@ public class OrderController : RaizesDoNordesteController
     public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var result = await _getOrderByIdHandler.HandleAsync(new GetOrderByIdQueryDto(id), cancellationToken);
-        if (result.IsSuccess)
-        {
-            return Ok(result.Data);
-        }
-        return Error("Falha ao obter detalhes do pedido", result);
+        return result.IsSuccess ? Ok(result.Data) : Error("Falha ao obter detalhes do pedido", result);
     }
 }

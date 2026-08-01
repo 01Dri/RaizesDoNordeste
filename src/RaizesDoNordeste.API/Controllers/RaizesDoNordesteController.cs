@@ -5,6 +5,12 @@ namespace RaizesDoNordeste.API.Controllers;
 
 public class RaizesDoNordesteController : ControllerBase
 {
+
+    protected IActionResult Result<T>(T data)
+        where T : Result
+    {
+        return StatusCode((int)data.StatusCode, data);
+    }
     protected IActionResult Error<T>(
         string message,
         T data

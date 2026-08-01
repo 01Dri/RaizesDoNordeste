@@ -1,13 +1,10 @@
+using System.Collections.Immutable;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Orders.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Orders
 {
@@ -25,10 +22,6 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
         public async Task<Result<ListOrdersResponseDto>> HandleAsync(ListOrdersQueryDto parameter, CancellationToken cancellation = default)
         {
             var query = _dbContext.Orders
-                .Include(o => o.Account)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.MenuItem)
-                        .ThenInclude(m => m.Menu)
                 .Where(o => o.RestaurantId == _currentUser.RestaurantId);
 
             if (parameter.Status.HasValue)
@@ -56,8 +49,8 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
                     Items = order.Items.Select(x => new OrderItemResponseDto
                     {
                         Id = x.Id.GetValueOrDefault(),
-                        MenuId = x.MenuItem != null && x.MenuItem.Menu != null ? x.MenuItem.Menu.PublicId : System.Guid.Empty,
-                        MenuItemId = x.MenuItem != null ? x.MenuItem.PublicId : System.Guid.Empty,
+                        MenuId = x.MenuItem != null && x.MenuItem.Menu != null ? x.MenuItem.Menu.PublicId : Guid.Empty,
+                        MenuItemId = x.MenuItem != null ? x.MenuItem.PublicId : Guid.Empty,
                         MenuItemName = x.MenuItem != null ? x.MenuItem.Title : "",
                         UnitPrice = x.MenuItem != null ? x.MenuItem.Price : 0,
                         Quantity = x.Quantity

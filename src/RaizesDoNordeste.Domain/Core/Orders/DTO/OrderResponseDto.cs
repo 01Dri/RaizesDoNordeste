@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.UseCases;
 
@@ -9,6 +9,7 @@ public class OrderResponseDto : IUseCaseResponse
 {
     public Guid Id { get; set; }
 
+    public Guid? RestaurantId { get; set; }
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

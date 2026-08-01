@@ -1,14 +1,10 @@
+using System.Collections.Immutable;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Orders.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Orders
 {
@@ -26,44 +22,30 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
         public async Task<Result<OrderResponseDto>> HandleAsync(GetOrderByIdQueryDto parameter, CancellationToken cancellation = default)
         {
             var order = await _dbContext.Orders
-                .Include(o => o.Account)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.MenuItem)
-                        .ThenInclude(m => m.Menu)
-                .FirstOrDefaultAsync(o => o.PublicId == parameter.Id, cancellation);
-
-            if (order == null)
-            {
-                return Result<OrderResponseDto>.FailureNotFound("Pedido não encontrado.");
-            }
-
-            if (order.RestaurantId != _currentUser.RestaurantId)
-            {
-                return Result<OrderResponseDto>.Failure(new Error("Você não tem permissão para visualizar este pedido."), HttpStatusCode.Forbidden);
-            }
-
-            var response = new OrderResponseDto
-            {
-                Id = order.PublicId,
-                CreatedAt = order.CreatedAt,
-                UpdatedAt = order.UpdatedAt,
-                AccountId = order.AccountId.GetValueOrDefault(),
-                AccountEmail = order.Account?.Email?.Value ?? "",
-                Status = order.Status,
-                Channel = order.Channel,
-                TotalPrice = order.TotalPrice,
-                Items = order.Items.Select(x => new OrderItemResponseDto
+                .Select(order => new OrderResponseDto()
                 {
-                    Id = x.Id.GetValueOrDefault(),
-                    MenuId = x.MenuItem?.Menu?.PublicId ?? System.Guid.Empty,
-                    MenuItemId = x.MenuItem?.PublicId ?? System.Guid.Empty,
-                    MenuItemName = x.MenuItem?.Title ?? "",
-                    UnitPrice = x.MenuItem?.Price ?? 0,
-                    Quantity = x.Quantity
-                }).ToImmutableList()
-            };
+                    Id = order.PublicId,
+                    RestaurantId = order.RestaurantId,
+                    CreatedAt = order.CreatedAt,
+                    UpdatedAt = order.UpdatedAt,
+                    AccountId = order.AccountId.GetValueOrDefault(),
+                    AccountEmail = order.Account.Email.Value,
+                    Status = order.Status,
+                    Channel = order.Channel,
+                    TotalPrice = order.TotalPrice,
+                    Items = order.Items.Select(x => new OrderItemResponseDto
+                    {
+                        Id = x.Id.GetValueOrDefault(),
+                        MenuId = x.MenuItem.Menu.PublicId,
+                        MenuItemId = x.MenuItem.PublicId,
+                        MenuItemName = x.MenuItem.Title,
+                        UnitPrice = x.MenuItem.Price,
+                        Quantity = x.Quantity
+                    }).ToImmutableList()
+                })
+                .FirstOrDefaultAsync(o => o.Id == parameter.Id && o.RestaurantId == _currentUser.RestaurantId, cancellation);
 
-            return Result<OrderResponseDto>.Success(response);
+            return order == null ? Result<OrderResponseDto>.FailureNotFound("Pedido não encontrado.") : Result<OrderResponseDto>.Success(order);
         }
     }
 }

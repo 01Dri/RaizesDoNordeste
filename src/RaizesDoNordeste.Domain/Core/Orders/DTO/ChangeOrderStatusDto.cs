@@ -5,7 +5,7 @@ namespace RaizesDoNordeste.Domain.Core.Orders.DTO;
 
 public sealed class ChangeOrderStatusDto : IUseCaseRequest
 {
-    public required Guid OrderId { get; set; }
+    public Guid? OrderId { get; set; }
     public required OrderStatus Status { get; set; }
 }
 
