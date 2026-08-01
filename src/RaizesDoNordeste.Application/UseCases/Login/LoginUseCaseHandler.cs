@@ -1,10 +1,12 @@
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text.Json;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Application.Extensions;
 using RaizesDoNordeste.Data;
+using RaizesDoNordeste.Domain;
 using RaizesDoNordeste.Domain.Core.Accounts;
 using RaizesDoNordeste.Domain.Core.Login;
 using RaizesDoNordeste.Domain.Services;
@@ -45,19 +47,20 @@ namespace RaizesDoNordeste.Application.UseCases.Login
                 );
             } 
             
-            
-             
             var email = new Email(parameter.Email);
-            var account = await _context.Accounts.Include(x => x.RoleAccounts)
+            var account = await _context.Accounts
+                .Include(x => x.RoleAccounts)
+                .Include(account => account.Email)
                 .FirstOrDefaultAsync(x => x.Email == email, cancellation);
             if (account == null || !_hasherService.VerifyPassword(parameter.Password, account.Password))
             {
                 return Result<LoginResponseDto>.Failure
                 (
-                    [new Validation("Email", "Credenciais inválidas")],
+                    new Error("Credenciais inválidas"),
                     HttpStatusCode.Unauthorized
                 );
             }
+
             var restaurant = await _context.Restaurants.Select(x => new 
                 {
                    x.Id,
@@ -75,12 +78,12 @@ namespace RaizesDoNordeste.Application.UseCases.Login
             claims.Add(new Claim("restaurant_id", restaurant.Id.ToString()));
             claims.Add(new Claim("restaurant_name", restaurant.Name));
 
-            var refreshTokenValue = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
-            var userRefreshToken = new RaizesDoNordeste.Domain.Core.Accounts.UserRefreshToken
+            var refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            var userRefreshToken = new UserRefreshToken
             {
                 AccountId = account.Id,
                 Token = refreshTokenValue,
-                ExpiresAt = RaizesDoNordeste.Domain.Calendar.Now.AddDays(7),
+                ExpiresAt = Calendar.Now.AddDays(7),
                 Revoked = false,
                 RestaurantId = restaurant.Id
             };
@@ -111,19 +114,6 @@ namespace RaizesDoNordeste.Application.UseCases.Login
 
             return claims;
         }
-    }
-
-
-    class Teste
-    {
-        public string Conta { get; init; }
-        public List<RolesTest> Roles { get; set; }
-    }
-
-    class RolesTest
-    {
-        public long Id { get; set; }
-        public string Name { get; set; }
     }
 }
 
