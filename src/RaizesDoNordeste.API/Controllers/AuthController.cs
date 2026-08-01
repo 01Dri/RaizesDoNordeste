@@ -6,7 +6,7 @@ namespace RaizesDoNordeste.API.Controllers
 {
     [ApiController]
     [Route("auth")]
-    public class AuthController : BaseController
+    public class AuthController : RaizesDoNordesteController
     {
         private readonly IUseCaseHandler<LoginDto, LoginResponseDto> _loginHandler;
         private readonly IUseCaseHandler<RefreshRequestDto, LoginResponseDto> _refreshHandler;

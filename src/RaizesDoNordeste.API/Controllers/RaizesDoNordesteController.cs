@@ -3,7 +3,7 @@ using RaizesDoNordeste.Domain.ValuesObjects;
 
 namespace RaizesDoNordeste.API.Controllers;
 
-public class BaseController : ControllerBase
+public class RaizesDoNordesteController : ControllerBase
 {
     protected IActionResult Error<T>(
         string message,

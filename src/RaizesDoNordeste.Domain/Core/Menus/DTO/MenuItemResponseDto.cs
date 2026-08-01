@@ -19,3 +19,4 @@ public sealed class MenuItemResponseDto
 
     public bool IsFeatured { get; set; }
 }
+

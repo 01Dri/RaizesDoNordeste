@@ -20,36 +20,34 @@ namespace RaizesDoNordeste.Application.UseCases.Restaurants.Menus
          public async Task<Result<MenuResponseDto>> HandleAsync(CancellationToken cancellation = default)
          {
              var menu = await _context.Menus
-                 .Include(x => x.Restaurant)
-                 .Include(x => x.Items
-                     .Where(i => i.IsAvailable))
-                 .FirstOrDefaultAsync(x => x.RestaurantId == _currentUser.RestaurantId, cancellation);
-             if (menu == null)
-             {
-                 return Result<MenuResponseDto>.FailureNotFound("Cardápio não encontrado.");
-             }
-
-             var items = menu
-                 .Items.OrderBy(x => x.DisplayOrder)
-                 .Select(x => new MenuItemResponseDto()
-             {
-                 PublicId = x.PublicId,
-                 Title = x.Title,
-                 Description = x.Description,
-                 Price = x.Price,
-                 ImageUrl = x.ImageUrl,
-                 IsAvailable = x.IsAvailable,
-                 PreparationTimeInMinutes = x.PreparationTimeInMinutes,
-                 IsFeatured = x.IsFeatured
-             }).ToList();
-
-             return Result<MenuResponseDto>.Success(new MenuResponseDto()
-             {
-                 Name = menu.Name,
-                 RestaurantName = menu.Restaurant!.Name,
-                 Items =  items
-             });
-     }
+                 .Where(x => x.RestaurantId == _currentUser.RestaurantId)
+                 .Select(x => new MenuResponseDto
+                 {
+                     Name = x.Name,
+                     RestaurantName = x.Restaurant.Name,
+                     RestaurantId = x.RestaurantId.Value,
+                     Items = x.Items
+                         .Where(i => i.IsAvailable)
+                         .OrderBy(i => i.DisplayOrder)
+                         .Select(i => new MenuItemResponseDto
+                         {
+                             PublicId = i.PublicId,
+                             Title = i.Title,
+                             Description = i.Description,
+                             Price = i.Price,
+                             ImageUrl = i.ImageUrl,
+                             IsAvailable = i.IsAvailable,
+                             PreparationTimeInMinutes = i.PreparationTimeInMinutes,
+                             IsFeatured = i.IsFeatured,
+                             DisplayOrder = i.DisplayOrder
+                         })
+                         .ToList()
+                 })
+                 .FirstOrDefaultAsync(cancellation);
+             // Por enquanto, retornamos apenas um menu por restaurant
+             return menu == null ? Result<MenuResponseDto>.FailureNotFound("Cardápio não encontrado.") 
+                 : Result<MenuResponseDto>.Success(menu);
+         }
     }
 }
 

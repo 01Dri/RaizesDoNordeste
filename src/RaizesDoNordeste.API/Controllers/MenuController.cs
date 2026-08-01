@@ -9,7 +9,7 @@ namespace RaizesDoNordeste.API.Controllers;
 [ApiController]
 [Route("cardapio")]
 [Authorize]
-public class MenuController : ControllerBase
+public class MenuController : RaizesDoNordesteController
 {
     private readonly IUseCaseHandler<MenuResponseDto> _handler;
     public MenuController(IUseCaseHandler<MenuResponseDto> handler)
@@ -21,12 +21,6 @@ public class MenuController : ControllerBase
     public async Task<IActionResult> GetRestaurantMenuOfCurrentUser(CancellationToken cancellation)
     {
         var result = await _handler.HandleAsync(cancellation);
-        if (result.IsSuccess)
-        {
-            return Ok(result);
-        }
-
-        var errorResponse = result.ToErrorResponse("Erro ao obter o cardápio");
-        return StatusCode(errorResponse.Status, errorResponse);
+        return result.IsSuccess ? Created("", result.Data) : Error("Erro ao obter o cardápio", result);
     }
 }

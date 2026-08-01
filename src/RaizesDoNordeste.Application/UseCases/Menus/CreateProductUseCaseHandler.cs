@@ -1,16 +1,13 @@
+using System.Net;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Application.Extensions;
 using RaizesDoNordeste.Data;
-using RaizesDoNordeste.Domain.Core.Menus;
 using RaizesDoNordeste.Domain.Core.Menus.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
+using MenuItem = RaizesDoNordeste.Domain.Core.Menus.MenuItem;
 
 namespace RaizesDoNordeste.Application.UseCases.Menus
 {

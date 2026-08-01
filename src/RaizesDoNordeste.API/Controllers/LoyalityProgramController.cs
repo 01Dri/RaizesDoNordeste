@@ -10,7 +10,7 @@ namespace RaizesDoNordeste.API.Controllers
     [ApiController]
     [Route("loyality")]
     [Authorize]
-    public class LoyalityProgramController : BaseController
+    public class LoyalityProgramController : RaizesDoNordesteController
     {
         private readonly IUseCaseHandler<LoyalityJoinRequestDto, LoyalityJoinResponseDto> _joinHandler;
         private readonly IUseCaseHandler<LoyalityLeaveRequestDto, LoyalityLeaveResponseDto> _leaveHandler;

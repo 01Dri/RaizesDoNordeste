@@ -14,7 +14,7 @@ namespace RaizesDoNordeste.API.Controllers;
 [ApiController]
 [Route("pedido")]
 [Authorize]
-public class OrderController : BaseController   
+public class OrderController : RaizesDoNordesteController   
 {
     private readonly IUseCaseHandler<CreateOrderDto, OrderResponseDto> _createOrderHandler;
     private readonly IUseCaseHandler<ChangeOrderStatusDto, OrderStatusChangeResponseDto> _changeStatusHandler;

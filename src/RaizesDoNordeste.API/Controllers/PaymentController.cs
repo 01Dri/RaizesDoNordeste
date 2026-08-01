@@ -9,7 +9,7 @@ namespace RaizesDoNordeste.API.Controllers;
 [ApiController]
 [Route("pagamento")]
 [Authorize]
-public class PaymentController : BaseController
+public class PaymentController : RaizesDoNordesteController
 {
     private readonly IUseCaseHandler<PaymentRequestDto, PaymentResponseDto> _paymentHandler;
 
