@@ -1,16 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using RaizesDoNordeste.Domain.Core.Login;
 using RaizesDoNordeste.Domain.UseCases;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.API.Controllers
 {
     [ApiController]
     [Route("auth")]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IUseCaseHandler<LoginDto, LoginResponseDto> _loginHandler;
         private readonly IUseCaseHandler<RefreshRequestDto, LoginResponseDto> _refreshHandler;
@@ -33,39 +29,21 @@ namespace RaizesDoNordeste.API.Controllers
         public async Task<IActionResult> LoginAsync([FromBody] LoginDto dto, CancellationToken cancellation)
         {
             var result = await _loginHandler.HandleAsync(dto, cancellation);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            var errorResponse = result.ToErrorResponse("Erro ao realizar login");
-            return StatusCode(errorResponse.Status, errorResponse);
+            return !result.IsSuccess ? Error("Erro ao realizar login", result) : Ok(result);
         }
 
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshAsync([FromBody] RefreshRequestDto dto, CancellationToken cancellation)
         {
             var result = await _refreshHandler.HandleAsync(dto, cancellation);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            var errorResponse = result.ToErrorResponse("Erro ao renovar token");
-            return StatusCode(errorResponse.Status, errorResponse);
+            return !result.IsSuccess ? Error("Erro ao renovar token", result) : Ok(result);
         }
 
         [HttpPost("logout")]
         public async Task<IActionResult> LogoutAsync([FromBody] LogoutRequestDto dto, CancellationToken cancellation)
         {
             var result = await _logoutHandler.HandleAsync(dto, cancellation);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            var errorResponse = result.ToErrorResponse("Erro ao realizar logout");
-            return StatusCode(errorResponse.Status, errorResponse);
+            return !result.IsSuccess ? Error("Erro ao realizar logout", result) : Ok(result);
         }
 
         [HttpGet("desenvolvedor")]
@@ -79,13 +57,8 @@ namespace RaizesDoNordeste.API.Controllers
             var result = await _loginHandler.HandleAsync(
                 new LoginDto(email, password, Guid.Parse("9a88024d-2618-4e25-87f5-35217f7a7c8a")), cancellation);
 
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
+            return !result.IsSuccess ? Error("Erro ao realizar login", result) : Ok(result);
 
-            var errorResponse = result.ToErrorResponse("Erro ao realizar login");
-            return StatusCode(errorResponse.Status, errorResponse);
         }
     }
 }
