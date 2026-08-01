@@ -53,6 +53,6 @@ public class LoginService  : ILoginService
     public string GenerateToken(Account account, List<Claim> claims)
         =>  _tokenService.WriteToken(account.Id, account.Email.Value, claims);
 
-    public string GenerateRefreshTokenHash()
+    private static string GenerateRefreshTokenHash()
         => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 }
