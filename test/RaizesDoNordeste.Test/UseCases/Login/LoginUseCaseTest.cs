@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Application.UseCases.Login;
 using RaizesDoNordeste.Application.UseCases.Login.Validations;
 using RaizesDoNordeste.Data;
@@ -39,10 +39,12 @@ namespace RaizesDoNordeste.Test.UseCases.Login
                 .Returns(false);
 
             _tokenService = new Mock<ITokenService>();
-            _tokenService.Setup(x => x.WriteToken(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<List<Claim>>(), It.IsAny<DateTime?>()))
+            _tokenService.Setup(x => x.WriteToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<List<Claim>>(), It.IsAny<DateTime?>()))
                 .Returns("mocked_jwt_token");
 
-            _handler = new LoginUseCaseHandler(_context, new LoginUseCaseDtoValidation(), _hashService.Object, _tokenService.Object);
+            var loginService = new LoginService(_tokenService.Object);
+
+            _handler = new LoginUseCaseHandler(_context, new LoginUseCaseDtoValidation(), _hashService.Object, loginService);
 
         }
 

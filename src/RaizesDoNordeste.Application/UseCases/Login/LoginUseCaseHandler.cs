@@ -46,7 +46,6 @@ namespace RaizesDoNordeste.Application.UseCases.Login
             var email = new Email(parameter.Email);
             var account = await _context.Accounts
                 .Include(x => x.RoleAccounts)
-                .Include(account => account.Email)
                 .FirstOrDefaultAsync(x => x.Email == email, cancellation);
             
             if (account == null || !_hasherService.VerifyPassword(parameter.Password, account.Password))
@@ -76,7 +75,7 @@ namespace RaizesDoNordeste.Application.UseCases.Login
             claims.Add(new Claim("restaurant_name", restaurant.Name));
 
 
-            var userRefreshToken = await _loginService.CreateRefreshTokenAsync(cancellation);
+            var userRefreshToken = _loginService.CreateRefreshToken(account.Id, restaurant.Id);
             
             await _context.UserRefreshTokens.AddAsync(userRefreshToken, cancellation);
             await _context.SaveChangesAsync(cancellation);

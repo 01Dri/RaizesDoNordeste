@@ -1,45 +1,35 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
-using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain;
 using RaizesDoNordeste.Domain.Core.Accounts;
+using RaizesDoNordeste.Domain.Core.Accounts.Roles;
+using RaizesDoNordeste.Domain.Core.Login;
 using RaizesDoNordeste.Domain.Services;
 
 namespace RaizesDoNordeste.Application.Services;
 
-public class LoginService  : ILoginService
+public class LoginService : ILoginService
 {
-    private readonly ApplicationDbContext _context;
     private readonly ITokenService _tokenService;
     
-    public LoginService(ApplicationDbContext context, ITokenService tokenService)
+    public LoginService(ITokenService tokenService)
     {
-        _context = context;
         _tokenService = tokenService;
     }
     
-    public async Task<UserRefreshToken> CreateRefreshTokenAsync(CancellationToken cancellationToken = default)
+    public UserRefreshToken CreateRefreshToken(long accountId, Guid restaurantId)
     {
-        var refreshToken = GenerateRefreshTokenHash();
-        var existingToken = await _context.UserRefreshTokens
-            .Include(t => t.Account)
-            .ThenInclude(a => a.RoleAccounts).Include(userRefreshToken => userRefreshToken.Account)
-            .ThenInclude(account => account.Email)
-            .FirstOrDefaultAsync(t => t.Token == refreshToken  && !t.Revoked && t.ExpiresAt > Calendar.Now, cancellationToken);
-
-        var newRefreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        var newRefreshToken = new UserRefreshToken
+        var refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        return new UserRefreshToken
         {
-            AccountId = existingToken.AccountId,
-            Token = newRefreshTokenValue,
+            AccountId = accountId,
+            Token = refreshTokenValue,
             ExpiresAt = Calendar.Now.AddDays(7),
             Revoked = false,
-            RestaurantId = existingToken.RestaurantId
+            Active = true,
+            RestaurantId = restaurantId
         };
-
-        return newRefreshToken;
     }
 
     public List<Claim> MountRolesClaims(Account account)
@@ -47,12 +37,10 @@ public class LoginService  : ILoginService
         var roles = account.RoleAccounts;
         return roles
             .Select(roleType => new { roleType.RoleId, roleType.RoleStatus, roleType.AccountId })
-            .Select(value => new Claim(ClaimTypes.Role, JsonSerializer.Serialize(value))).ToList();
+            .Select(value => new Claim(ClaimTypes.Role, JsonSerializer.Serialize(value)))
+            .ToList();
     }
 
     public string GenerateToken(Account account, List<Claim> claims)
-        =>  _tokenService.WriteToken(account.Id, account.Email.Value, claims);
-
-    private static string GenerateRefreshTokenHash()
-        => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        => _tokenService.WriteToken(account.Id, account.Email.Value, claims);
 }

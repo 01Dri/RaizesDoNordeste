@@ -13,6 +13,7 @@ using RaizesDoNordeste.Domain.Core.Accounts;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Login;
 using RaizesDoNordeste.Domain.Core.Restaurants;
+using RaizesDoNordeste.Application.Services;
 using RaizesDoNordeste.Domain.Services;
 using RaizesDoNordeste.Domain.ValuesObjects;
 
@@ -40,7 +41,8 @@ namespace RaizesDoNordeste.Test.UseCases.Login
                 .Setup(s => s.WriteToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<List<Claim>>(), It.IsAny<DateTime?>()))
                 .Returns("new_jwt_token");
 
-            _handler = new RefreshTokenUseCaseHandler(_context, _tokenServiceMock.Object);
+            var loginService = new LoginService(_tokenServiceMock.Object);
+            _handler = new RefreshTokenUseCaseHandler(_context, loginService);
         }
 
         [TearDown]

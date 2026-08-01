@@ -30,8 +30,7 @@ namespace RaizesDoNordeste.Application.UseCases.Login
 
             var existingToken = await _context.UserRefreshTokens
                 .Include(t => t.Account)
-                .ThenInclude(a => a.RoleAccounts).Include(userRefreshToken => userRefreshToken.Account)
-                .ThenInclude(account => account.Email)
+                .ThenInclude(a => a.RoleAccounts)
                 .FirstOrDefaultAsync(t => t.Token == parameter.RefreshToken && !t.Revoked && t.ExpiresAt > Calendar.Now, cancellation);
 
             if (existingToken == null)
@@ -51,7 +50,7 @@ namespace RaizesDoNordeste.Application.UseCases.Login
             existingToken.Active = false;
             existingToken.UpdatedAt = Calendar.Now;
 
-            var newRefreshToken = await _loginService.CreateRefreshTokenAsync(cancellation);
+            var newRefreshToken = _loginService.CreateRefreshToken(existingToken.AccountId, existingToken.RestaurantId);
 
             await _context.UserRefreshTokens.AddAsync(newRefreshToken, cancellation);
             await _context.SaveChangesAsync(cancellation);

@@ -19,6 +19,7 @@ builder.Services.AddScoped<ICurrentUser, CurrentUserContext>();
 
 builder.Services.AddScoped<IHasherService, HasherService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoyalityProgramService, LoyalityProgramService>();
 builder.Services.AddScoped<IPaymentTransactionService, PaymentTransactionService>();
 builder.Services.AddHttpClient();
