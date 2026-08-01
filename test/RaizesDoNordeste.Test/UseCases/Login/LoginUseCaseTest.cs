@@ -77,8 +77,8 @@ namespace RaizesDoNordeste.Test.UseCases.Login
             Assert.Multiple(() =>
             {
                 Assert.That(result.IsSuccess, Is.False);
-                Assert.That(result.Validations.Count, Is.EqualTo(1));
-                Assert.That(result.Validations.First().Errors, Contains.Item("Credenciais inválidas"));
+                Assert.That(result.ErrorData, Is.Not.Null);
+                Assert.That(result.ErrorData!.Message, Is.EqualTo("Credenciais inválidas"));
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
             });
         }

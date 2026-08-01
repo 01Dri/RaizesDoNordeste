@@ -1,12 +1,10 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain;
 using RaizesDoNordeste.Domain.Core.Login;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Login
 {
@@ -23,7 +21,7 @@ namespace RaizesDoNordeste.Application.UseCases.Login
         {
             if (string.IsNullOrWhiteSpace(parameter.RefreshToken))
             {
-                return Result<LogoutResponseDto>.Failure(new Error("Refresh token é obrigatório."), HttpStatusCode.BadRequest);
+                return Result<LogoutResponseDto>.Failure(new Error("Refresh token é obrigatório."));
             }
 
             var token = await _context.UserRefreshTokens
