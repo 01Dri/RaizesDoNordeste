@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using RaizesDoNordeste.Application.Extensions;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
-using RaizesDoNordeste.Domain.Core.Payments;
 using RaizesDoNordeste.Domain.Core.Payments.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.Services;
@@ -92,14 +91,14 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
             ? UninterPaymentMethod.Pix 
             : UninterPaymentMethod.CreditCard;
 
-        var sdkRequest = new UninterPayment.SDK.PaymentRequest
+        var sdkRequest = new PaymentRequest
         {
             OrderId = order.PublicId,
             Amount = totalToPay,
             Method = sdkMethod,
             CardNumber = null,
             PixKey = null,
-            WebhookUrl = _configuration["PaymentSettings:WebhookUrl"] ?? "http://localhost:5269/pagamento/webhook"
+            WebhookUrl = _configuration["PaymentSettings:WebhookUrl"]
         };
 
         var sdkResult = await _uninterPaymentClient.ProcessPaymentAsync(sdkRequest, cancellation);

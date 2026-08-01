@@ -2,9 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Loyalit;
 using RaizesDoNordeste.Domain.Services;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.Services
 {

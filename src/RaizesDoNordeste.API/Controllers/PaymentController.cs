@@ -23,11 +23,7 @@ public class PaymentController : RaizesDoNordesteController
     {
         dto.OrderId = orderId;
         var result = await _paymentHandler.HandleAsync(dto, cancellationToken);
-        if (result.IsSuccess)
-        {
-            return Created("", result);
-        }
-        return Error("Falha ao processar o pagamento", result);
+        return result.IsSuccess ? Created(string.Empty, result) : Error("Falha ao processar o pagamento", result);
     }
 
 }
