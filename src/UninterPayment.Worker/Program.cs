@@ -28,4 +28,4 @@ app.MapPost("/payments", async ([FromBody] PaymentQueueItem item, [FromServices]
 
 app.MapGet("/health", () => Results.Ok("Worker is running."));
 
-app.Run("http://localhost:5200");
+app.Run("http://0.0.0.0:5200");

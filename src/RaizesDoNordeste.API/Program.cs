@@ -22,7 +22,14 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ILoyalityProgramService, LoyalityProgramService>();
 builder.Services.AddScoped<IPaymentTransactionService, PaymentTransactionService>();
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<UninterPayment.SDK.IUninterPaymentClient, UninterPayment.SDK.UninterPaymentClient>();
+builder.Services.AddScoped<UninterPayment.SDK.IUninterPaymentClient>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var workerUrl = config["WorkerUrl"] ?? config["WORKER_URL"] ?? "http://localhost:5200";
+    var httpClientFactory = sp.GetService<IHttpClientFactory>();
+    var httpClient = httpClientFactory?.CreateClient() ?? new HttpClient();
+    return new UninterPayment.SDK.UninterPaymentClient(httpClient, workerUrl);
+});
 
 builder.Services.AddApplicationServices(typeof(ApplicationAssemblyReference));
 

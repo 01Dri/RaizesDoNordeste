@@ -1,0 +1,26 @@
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /app
+
+# Copy project files and restore dependencies
+COPY src/RaizesDoNordeste.Domain/RaizesDoNordeste.Domain.csproj src/RaizesDoNordeste.Domain/
+COPY src/RaizesDoNordeste.Data/RaizesDoNordeste.Data.csproj src/RaizesDoNordeste.Data/
+COPY src/RaizesDoNordeste.Application/RaizesDoNordeste.Application.csproj src/RaizesDoNordeste.Application/
+COPY src/UninterPayment.SDK/UninterPayment.SDK.csproj src/UninterPayment.SDK/
+COPY src/RaizesDoNordeste.API/RaizesDoNordeste.API.csproj src/RaizesDoNordeste.API/
+
+RUN dotnet restore src/RaizesDoNordeste.API/RaizesDoNordeste.API.csproj
+
+# Copy full source code and publish
+COPY src/ src/
+RUN dotnet publish src/RaizesDoNordeste.API/RaizesDoNordeste.API.csproj -c Release -o /out
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+WORKDIR /app
+COPY --from=build /out .
+
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "RaizesDoNordeste.API.dll"]

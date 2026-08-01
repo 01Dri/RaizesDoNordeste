@@ -35,9 +35,6 @@ namespace RaizesDoNordeste.Application.UseCases.Login
 
         public async Task<Result<LoginResponseDto>> HandleAsync(LoginDto parameter, CancellationToken cancellation = default)
         {
-            var t = 2;
-            t = 3;
-
             var validation = await _validator.ValidateAsync(parameter, cancellation);
             if (validation.ContainsErrors())
             {

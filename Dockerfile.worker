@@ -1,0 +1,21 @@
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /app
+
+# Copy project file and restore dependencies
+COPY src/UninterPayment.Worker/UninterPayment.Worker.csproj src/UninterPayment.Worker/
+RUN dotnet restore src/UninterPayment.Worker/UninterPayment.Worker.csproj
+
+# Copy full source code and publish
+COPY src/UninterPayment.Worker/ src/UninterPayment.Worker/
+RUN dotnet publish src/UninterPayment.Worker/UninterPayment.Worker.csproj -c Release -o /out
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+WORKDIR /app
+COPY --from=build /out .
+
+ENV ASPNETCORE_URLS=http://+:5200
+EXPOSE 5200
+
+ENTRYPOINT ["dotnet", "UninterPayment.Worker.dll"]

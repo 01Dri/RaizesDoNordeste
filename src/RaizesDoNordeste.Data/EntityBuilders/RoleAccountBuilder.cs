@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 
@@ -35,7 +35,6 @@ namespace RaizesDoNordeste.Data.EntityBuilders
                 .WithMany(x => x.RoleAccounts)
                 .HasForeignKey(x => x.AccountId)
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

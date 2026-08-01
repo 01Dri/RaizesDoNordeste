@@ -30,7 +30,6 @@ namespace RaizesDoNordeste.Data.EntityBuilders
             
             builder.Navigation(x => x.RoleAccounts);
             builder.Navigation(x => x.Orders);
-            
         }
     }
 }

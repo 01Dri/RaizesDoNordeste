@@ -106,7 +106,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"Password123!\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}",
+							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"somehashedpassword\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -167,7 +167,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"Password123!\"\n}",
+							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"somehashedpassword\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

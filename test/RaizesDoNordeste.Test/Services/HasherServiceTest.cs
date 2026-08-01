@@ -1,4 +1,4 @@
-﻿using RaizesDoNordeste.Application.Services;
+using RaizesDoNordeste.Application.Services;
 using RaizesDoNordeste.Domain.Services;
 
 namespace RaizesDoNordeste.Test.Services
