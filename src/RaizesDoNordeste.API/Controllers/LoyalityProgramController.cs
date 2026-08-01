@@ -4,8 +4,6 @@ using RaizesDoNordeste.API.Attributes;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Loyalit.DTO;
 using RaizesDoNordeste.Domain.UseCases;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.API.Controllers
 {
@@ -30,11 +28,7 @@ namespace RaizesDoNordeste.API.Controllers
         public async Task<IActionResult> JoinAsync([FromBody] LoyalityJoinRequestDto dto, CancellationToken cancellationToken)
         {
             var result = await _joinHandler.HandleAsync(dto, cancellationToken);
-            if (result.IsSuccess)
-            {
-                return Created("", result.Data);
-            }
-            return Error("Erro no programa de fidelidade.", result);
+            return result.IsSuccess ? Created("", result.Data) : Error("Erro no programa de fidelidade.", result);
         }
 
         [HttpDelete]
@@ -42,11 +36,7 @@ namespace RaizesDoNordeste.API.Controllers
         {
             dto ??= new LoyalityLeaveRequestDto();
             var result = await _leaveHandler.HandleAsync(dto, cancellationToken);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Data);
-            }
-            return Error("Erro ao sair do programa de fidelidade.", result);
+            return result.IsSuccess ? Ok(result.Data) : Error("Erro ao sair do programa de fidelidade.", result);
         }
     }
 }

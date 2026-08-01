@@ -1,13 +1,12 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
+using RaizesDoNordeste.Domain;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Loyalit.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Loyality
 {
@@ -24,7 +23,7 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
 
         public async Task<Result<LoyalityLeaveResponseDto>> HandleAsync(LoyalityLeaveRequestDto parameter, CancellationToken cancellation = default)
         {
-            long targetAccountId = parameter?.CustomerAccountId.HasValue == true && parameter.CustomerAccountId.Value > 0
+            var targetAccountId = parameter?.CustomerAccountId.HasValue == true && parameter.CustomerAccountId.Value > 0
                 ? parameter.CustomerAccountId.Value
                 : _currentUser.AccountId;
 
@@ -36,7 +35,9 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
             }
 
             var program = await _context.LoyalitPrograms
-                .FirstOrDefaultAsync(x => x.AccountId == targetAccountId && x.RestaurantId == _currentUser.RestaurantId && x.Active && x.LeavedAt == null, cancellation);
+                .FirstOrDefaultAsync(x => x.AccountId == targetAccountId 
+                                          && x.RestaurantId == _currentUser.RestaurantId 
+                                          && x.Active && x.LeavedAt == null, cancellation);
 
             if (program == null)
             {
@@ -46,11 +47,11 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
             }
 
             program.Active = false;
-            program.LeavedAt = DateTime.UtcNow;
+            program.LeavedAt = Calendar.Now;
 
             await _context.SaveChangesAsync(cancellation);
 
-            return Result<LoyalityLeaveResponseDto>.Success(new LoyalityLeaveResponseDto(), System.Net.HttpStatusCode.OK);
+            return Result<LoyalityLeaveResponseDto>.Success(new LoyalityLeaveResponseDto(), HttpStatusCode.OK);
         }
     }
 }

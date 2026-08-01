@@ -1,14 +1,12 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
-using RaizesDoNordeste.Domain.Core.Accounts.Roles;
+using RaizesDoNordeste.Domain;
 using RaizesDoNordeste.Domain.Core.Loyalit;
 using RaizesDoNordeste.Domain.Core.Loyalit.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Loyality
 {
@@ -25,11 +23,6 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
 
         public async Task<Result<LoyalityJoinResponseDto>> HandleAsync(LoyalityJoinRequestDto parameter, CancellationToken cancellation = default)
         {
-            if (!_currentUser.InRole(RoleType.Manager))
-            {
-                return Result<LoyalityJoinResponseDto>.Failure(new Error("Apenas o gerente do restaurante pode adicionar clientes ao programa de fidelidade."));
-            }
-
             var accountExists = await _context.Accounts
                 .AnyAsync(x => x.Id == parameter.CustomerAccountId, cancellation);
 
@@ -46,9 +39,11 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
                 return Result<LoyalityJoinResponseDto>.Failure(new Error("O cliente já está no programa de fidelidade."));
             }
 
-            var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+            var oneMonthAgo = Calendar.Now.AddMonths(-1);
             var orderCount = await _context.Orders
-                .CountAsync(x => x.AccountId == parameter.CustomerAccountId && x.RestaurantId == _currentUser.RestaurantId && x.CreatedAt >= oneMonthAgo, cancellation);
+                .CountAsync(x => x.AccountId == parameter.CustomerAccountId
+                                 && x.RestaurantId == _currentUser.RestaurantId
+                                 && x.CreatedAt >= oneMonthAgo, cancellation);
 
             if (orderCount < 3)
             {
@@ -75,8 +70,7 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
             }
 
             await _context.SaveChangesAsync(cancellation);
-
-            return Result<LoyalityJoinResponseDto>.Success(new LoyalityJoinResponseDto(), System.Net.HttpStatusCode.Created);
+            return Result<LoyalityJoinResponseDto>.Success(new LoyalityJoinResponseDto(), HttpStatusCode.Created);
         }
     }
 }
