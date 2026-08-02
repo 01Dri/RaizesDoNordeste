@@ -6,12 +6,13 @@ namespace RaizesDoNordeste.Domain.Core.Payments.DTO;
 public class PaymentRequestDto : IUseCaseRequest
 {
     public Guid? OrderId { get; set; }
-    public PaymentMethodDto PaymentMethod { get; set; } = null!;
-    public bool UseLoyalityPoints { get; set; }
+    public PaymentMethodDto PaymentMethod { get; init; } = null!;
+    public bool UseLoyalityPoints => LoyalityPointToUse > 0;
+    public int LoyalityPointToUse { get; init;  }
 }
 
 public class PaymentMethodDto
 {
-    public PaymentMethod Method { get; set; }
+    public PaymentMethod Method { get; init; }
 }
 

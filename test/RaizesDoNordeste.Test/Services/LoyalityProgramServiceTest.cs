@@ -43,7 +43,7 @@ namespace RaizesDoNordeste.Test.Services
             decimal orderValue = 50.0m;
 
             // Act
-            var result = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
+            var result = await _service.ApplyDiscountAsync(new UseLoyalityProgramRequest(orderValue, _accountId, _restaurantId, 0));
 
             // Assert
             Assert.Multiple(() =>
@@ -71,7 +71,7 @@ namespace RaizesDoNordeste.Test.Services
             decimal orderValue = 50.0m;
 
             // Act
-            var result = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
+            var result = await _service.ApplyDiscountAsync(new UseLoyalityProgramRequest(orderValue, _accountId, _restaurantId, 0));
 
             // Assert
             Assert.Multiple(() =>
@@ -100,7 +100,7 @@ namespace RaizesDoNordeste.Test.Services
             decimal orderValue = 50.0m;
 
             // Act
-            var result = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
+            var result = await _service.ApplyDiscountAsync(new UseLoyalityProgramRequest(orderValue, _accountId, _restaurantId, 200));
 
             // Assert
             Assert.Multiple(() =>
@@ -138,7 +138,7 @@ namespace RaizesDoNordeste.Test.Services
             decimal orderValue = 50.0m;
 
             // Act
-            var result = await _service.ApplyDiscountAsync(orderValue, _accountId, _restaurantId);
+            var result = await _service.ApplyDiscountAsync(new UseLoyalityProgramRequest(orderValue, _accountId, _restaurantId, 600));
 
             // Assert
             Assert.Multiple(() =>

@@ -16,46 +16,43 @@ namespace RaizesDoNordeste.Application.Services
             _dbContext = dbContext;
         }
 
-        public async Task<ApplyDiscountResult> ApplyDiscountAsync(decimal orderValue, long accountId, Guid restaurantId, CancellationToken cancellationToken = default)
+        public async Task<ApplyDiscountResult> ApplyDiscountAsync(UseLoyalityProgramRequest request, CancellationToken cancellationToken = default)
         {
-            if (orderValue <= 0)
+            if (request.OrderValue <= 0)
             {
                 return new ApplyDiscountResult(false, 0m);
             }
 
             var program = await _dbContext.LoyalitPrograms
-                .FirstOrDefaultAsync(x => x.AccountId == accountId && x.RestaurantId == restaurantId && x.Active && x.LeavedAt == null, cancellationToken);
+                .FirstOrDefaultAsync(x => x.AccountId == request.AccountId && x.RestaurantId == request.RestaurantId && x.Active && x.LeavedAt == null, cancellationToken);
 
-            if (program == null || program.Points <= 0)
+            if (program is not { Points: > 0 } || request.PointsToUse > program.Points)
             {
                 return new ApplyDiscountResult(false, 0m);
             }
 
-            decimal discountFromPoints = program.Points / PointsToCashRatio;
-            decimal discountApplied = Math.Min(discountFromPoints, orderValue);
+            var discountFromPoints = request.PointsToUse / PointsToCashRatio;
+            var discountApplied = Math.Min(discountFromPoints, request.OrderValue);
 
-            if (discountApplied > 0)
+            if (discountApplied <= 0) return new ApplyDiscountResult(false, 0m);
+            var pointsToConsume = (int)(discountApplied * PointsToCashRatio);
+
+            program.Points -= pointsToConsume;
+
+            var movement = new LoyalitProgramMovements
             {
-                int pointsToConsume = (int)(discountApplied * PointsToCashRatio);
+                Type = LoyalitProgramMovementType.Consume,
+                Points = pointsToConsume,
+                LoyalityProgramId = program.Id.GetValueOrDefault(),
+                LoyalitProgram = program,
+                MovementAt = DateTime.UtcNow
+            };
 
-                program.Points -= pointsToConsume;
+            await _dbContext.LoyalitProgramMovements.AddAsync(movement, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
-                var movement = new LoyalitProgramMovements
-                {
-                    Type = LoyalitProgramMovementType.Consume,
-                    Points = pointsToConsume,
-                    LoyalityProgramId = program.Id.GetValueOrDefault(),
-                    LoyalitProgram = program,
-                    MovementAt = DateTime.UtcNow
-                };
+            return new ApplyDiscountResult(true, discountApplied);
 
-                await _dbContext.LoyalitProgramMovements.AddAsync(movement, cancellationToken);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-
-                return new ApplyDiscountResult(true, discountApplied);
-            }
-
-            return new ApplyDiscountResult(false, 0m);
         }
 
         public async Task<EarnPointsResult> EarnPointsAsync(decimal amountPaid, long accountId, Guid restaurantId, CancellationToken cancellationToken = default)
@@ -73,28 +70,25 @@ namespace RaizesDoNordeste.Application.Services
                 return new EarnPointsResult(false, 0, program.Points);
             }
 
-            int pointsEarned = (int)Math.Floor(amountPaid * CashToPointsEarningRatio);
+            var pointsEarned = (int)Math.Floor(amountPaid * CashToPointsEarningRatio);
 
-            if (pointsEarned > 0)
+            if (pointsEarned <= 0) return new EarnPointsResult(false, 0, program.Points);
+            program.Points += pointsEarned;
+
+            var movement = new LoyalitProgramMovements
             {
-                program.Points += pointsEarned;
+                Type = LoyalitProgramMovementType.Earn,
+                Points = pointsEarned,
+                LoyalityProgramId = program.Id.GetValueOrDefault(),
+                LoyalitProgram = program,
+                MovementAt = DateTime.UtcNow
+            };
 
-                var movement = new LoyalitProgramMovements
-                {
-                    Type = LoyalitProgramMovementType.Earn,
-                    Points = pointsEarned,
-                    LoyalityProgramId = program.Id.GetValueOrDefault(),
-                    LoyalitProgram = program,
-                    MovementAt = DateTime.UtcNow
-                };
+            await _dbContext.LoyalitProgramMovements.AddAsync(movement, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
-                await _dbContext.LoyalitProgramMovements.AddAsync(movement, cancellationToken);
-                await _dbContext.SaveChangesAsync(cancellationToken);
+            return new EarnPointsResult(true, pointsEarned, program.Points);
 
-                return new EarnPointsResult(true, pointsEarned, program.Points);
-            }
-
-            return new EarnPointsResult(false, 0, program.Points);
         }
 
         public async Task<int?> GetUserPointsAsync(long accountId, Guid restaurantId, CancellationToken cancellationToken = default)

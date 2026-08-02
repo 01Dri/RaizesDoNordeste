@@ -72,11 +72,17 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
         }
 
         var totalToPay = order.TotalPrice;
-        bool usedLoyaltyPoints = false;
+        var usedLoyaltyPoints = false;
         if (parameter.UseLoyalityPoints)
         {
             var discountResult = await _loyalityProgramService
-                .ApplyDiscountAsync(order.TotalPrice, _currentUser.AccountId, _currentUser.RestaurantId, cancellation);
+                .ApplyDiscountAsync(new UseLoyalityProgramRequest
+                (
+                    order.TotalPrice,
+                    _currentUser.AccountId,
+                    _currentUser.RestaurantId,
+                    parameter.LoyalityPointToUse
+                ), cancellation);
             
             usedLoyaltyPoints = discountResult.PointsConsumed;
             totalToPay = order.TotalPrice - discountResult.DiscountAmount;

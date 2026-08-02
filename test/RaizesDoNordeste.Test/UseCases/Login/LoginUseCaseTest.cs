@@ -206,6 +206,14 @@ namespace RaizesDoNordeste.Test.UseCases.Login
                 Password = HashedPassword
             });
 
+            _context.Restaurants.Add(new RaizesDoNordeste.Domain.Core.Restaurants.Restaurant
+            {
+                Id = RaizesDoNordesteversitarioId,
+                Name = "Raízes do Nordeste - Unidade Teste",
+                Email = new Email("contato@raizes.com"),
+                Cnpj = new Cnpj("12345678000195")
+            });
+
             _context.SaveChanges();
         }
 
