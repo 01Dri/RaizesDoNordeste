@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain;
+using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Loyalit;
 using RaizesDoNordeste.Domain.Core.Loyalit.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
@@ -23,6 +24,11 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
 
         public async Task<Result<LoyalityJoinResponseDto>> HandleAsync(LoyalityJoinRequestDto parameter, CancellationToken cancellation = default)
         {
+            if (!_currentUser.InRole(RoleType.Manager))
+            {
+                return Result<LoyalityJoinResponseDto>.Failure(new Error("Apenas o gerente pode incluir clientes no programa de fidelidade."));
+            }
+
             var accountExists = await _context.Accounts
                 .AnyAsync(x => x.Id == parameter.CustomerAccountId, cancellation);
 

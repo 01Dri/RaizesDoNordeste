@@ -4,9 +4,6 @@ using RaizesDoNordeste.Domain.Core.Menus.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Menus
 {
@@ -24,7 +21,6 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
         public async Task<Result<ListProductsResponseDto>> HandleAsync(CancellationToken cancellation = default)
         {
             var products = await _context.MenuItems
-                .Include(i => i.Menu)
                 .Where(i => i.Menu != null && i.Menu.RestaurantId == _currentUser.RestaurantId)
                 .OrderBy(i => i.DisplayOrder)
                 .Select(i => new ProductResponseDto

@@ -25,14 +25,14 @@ namespace RaizesDoNordeste.API.Controllers
 
         [HttpPost]
         [RolesAuthorize(RoleType.Manager)]
-        public async Task<IActionResult> JoinAsync([FromBody] LoyalityJoinRequestDto dto, CancellationToken cancellationToken)
+        public async Task<IActionResult> Join([FromBody] LoyalityJoinRequestDto dto, CancellationToken cancellationToken)
         {
             var result = await _joinHandler.HandleAsync(dto, cancellationToken);
             return result.IsSuccess ? Created("", result.Data) : Error("Erro no programa de fidelidade.", result);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> LeaveAsync([FromBody] LoyalityLeaveRequestDto? dto, CancellationToken cancellationToken)
+        public async Task<IActionResult> Leave([FromBody] LoyalityLeaveRequestDto? dto, CancellationToken cancellationToken)
         {
             dto ??= new LoyalityLeaveRequestDto();
             var result = await _leaveHandler.HandleAsync(dto, cancellationToken);

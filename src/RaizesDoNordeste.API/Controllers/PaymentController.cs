@@ -19,7 +19,7 @@ public class PaymentController : RaizesDoNordesteController
     }
 
     [HttpPost("pedido/{orderId}")]
-    public async Task<IActionResult> PayAsync([FromRoute] Guid orderId, [FromBody] PaymentRequestDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Pay([FromRoute] Guid orderId, [FromBody] PaymentRequestDto dto, CancellationToken cancellationToken)
     {
         dto.OrderId = orderId;
         var result = await _paymentHandler.HandleAsync(dto, cancellationToken);

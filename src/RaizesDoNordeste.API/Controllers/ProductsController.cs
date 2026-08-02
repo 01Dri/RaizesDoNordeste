@@ -4,15 +4,13 @@ using RaizesDoNordeste.API.Attributes;
 using RaizesDoNordeste.Domain.Core.Accounts.Roles;
 using RaizesDoNordeste.Domain.Core.Menus.DTO;
 using RaizesDoNordeste.Domain.UseCases;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.API.Controllers
 {
     [ApiController]
     [Route("produtos")]
     [Authorize]
-    public class ProductsController : ControllerBase
+    public class ProductsController : RaizesDoNordesteController
     {
         private readonly IUseCaseHandler<CreateProductDto, ProductResponseDto> _createHandler;
         private readonly IUseCaseHandler<UpdateProductDto, ProductResponseDto> _updateHandler;
@@ -36,71 +34,49 @@ namespace RaizesDoNordeste.API.Controllers
 
         [HttpPost]
         [RolesAuthorize(RoleType.Manager, RoleType.Owner, RoleType.Admin)]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateProductDto dto, CancellationToken cancellation)
+        public async Task<IActionResult> Create([FromBody] CreateProductDto dto, CancellationToken cancellation)
         {
             var result = await _createHandler.HandleAsync(dto, cancellation);
-            if (result.IsSuccess)
+            if (!result.IsSuccess)
             {
-                return Created($"produtos/{result.Data!.Id}", result.Data);
+                return Error("Erro ao cadastrar produto", result);
             }
 
-            var errorResponse = result.ToErrorResponse("Erro ao cadastrar produto");
-            return StatusCode(errorResponse.Status, errorResponse);
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = result.Data.Id },
+                result.Data);
         }
 
         [HttpGet]
-        public async Task<IActionResult> ListAsync(CancellationToken cancellation)
+        public async Task<IActionResult> List(CancellationToken cancellation)
         {
             var result = await _listHandler.HandleAsync(cancellation);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Data);
-            }
-
-            var errorResponse = result.ToErrorResponse("Erro ao listar produtos");
-            return StatusCode(errorResponse.Status, errorResponse);
+            return result.IsSuccess ? Ok(result) : Error("Erro ao listar produtos", result);
         }
 
         [HttpGet("{id:long}")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] long id, CancellationToken cancellation)
+        public async Task<IActionResult> GetById([FromRoute] long id, CancellationToken cancellation)
         {
             var result = await _getByIdHandler.HandleAsync(new GetProductByIdQueryDto(id), cancellation);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Data);
-            }
-
-            var errorResponse = result.ToErrorResponse("Erro ao obter produto");
-            return StatusCode(errorResponse.Status, errorResponse);
+            return result.IsSuccess ? Ok(result) : Error("Erro ao obter produto", result);
         }
 
         [HttpPut("{id:long}")]
         [RolesAuthorize(RoleType.Manager, RoleType.Owner, RoleType.Admin)]
-        public async Task<IActionResult> UpdateAsync([FromRoute] long id, [FromBody] UpdateProductDto dto, CancellationToken cancellation)
+        public async Task<IActionResult> Update([FromRoute] long id, [FromBody] UpdateProductDto dto, CancellationToken cancellation)
         {
             dto.Id = id;
             var result = await _updateHandler.HandleAsync(dto, cancellation);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Data);
-            }
-
-            var errorResponse = result.ToErrorResponse("Erro ao atualizar produto");
-            return StatusCode(errorResponse.Status, errorResponse);
+            return result.IsSuccess ? Ok(result) : Error("Erro ao atualizar produto", result);
         }
 
         [HttpDelete("{id:long}")]
         [RolesAuthorize(RoleType.Manager, RoleType.Owner, RoleType.Admin)]
-        public async Task<IActionResult> DeleteAsync([FromRoute] long id, CancellationToken cancellation)
+        public async Task<IActionResult> Delete([FromRoute] long id, CancellationToken cancellation)
         {
             var result = await _deleteHandler.HandleAsync(new DeleteProductDto(id), cancellation);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Data);
-            }
-
-            var errorResponse = result.ToErrorResponse("Erro ao excluir produto");
-            return StatusCode(errorResponse.Status, errorResponse);
+            return result.IsSuccess ? Ok(result) : Error("Erro ao excluir produto", result);
         }
     }
 }

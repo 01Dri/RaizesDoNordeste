@@ -26,28 +26,28 @@ namespace RaizesDoNordeste.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginDto dto, CancellationToken cancellation)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto, CancellationToken cancellation)
         {
             var result = await _loginHandler.HandleAsync(dto, cancellation);
             return !result.IsSuccess ? Error("Erro ao realizar login", result) : Ok(result);
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshAsync([FromBody] RefreshRequestDto dto, CancellationToken cancellation)
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto dto, CancellationToken cancellation)
         {
             var result = await _refreshHandler.HandleAsync(dto, cancellation);
             return !result.IsSuccess ? Error("Erro ao renovar token", result) : Ok(result);
         }
 
         [HttpPost("logout")]
-        public async Task<IActionResult> LogoutAsync([FromBody] LogoutRequestDto dto, CancellationToken cancellation)
+        public async Task<IActionResult> Logout([FromBody] LogoutRequestDto dto, CancellationToken cancellation)
         {
             var result = await _logoutHandler.HandleAsync(dto, cancellation);
             return !result.IsSuccess ? Error("Erro ao realizar logout", result) : Ok(result);
         }
 
         [HttpGet("desenvolvedor")]
-        public async Task<IActionResult> LoginDeveloperAsync(CancellationToken cancellation)
+        public async Task<IActionResult> LoginDeveloper(CancellationToken cancellation)
         {
             var developerCredentials = _configuration.GetSection("DeveloperCredentials");
 

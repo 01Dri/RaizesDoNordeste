@@ -4,9 +4,6 @@ using RaizesDoNordeste.Domain.Core.Menus.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Menus
 {
@@ -23,24 +20,13 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
 
         public async Task<Result<DeleteProductResponseDto>> HandleAsync(DeleteProductDto parameter, CancellationToken cancellation = default)
         {
-            var item = await _context.MenuItems
-                .Include(i => i.Menu)
-                .FirstOrDefaultAsync(i => i.Id == parameter.Id, cancellation);
-
-            if (item == null)
-            {
-                return Result<DeleteProductResponseDto>.FailureNotFound("Produto não encontrado.");
-            }
-
-            if (item.Menu == null || item.Menu.RestaurantId != _currentUser.RestaurantId)
-            {
-                return Result<DeleteProductResponseDto>.Failure(new Error("Você não tem permissão para remover este produto."), HttpStatusCode.Forbidden);
-            }
-
-            _context.MenuItems.Remove(item);
-            await _context.SaveChangesAsync(cancellation);
-
-            return Result<DeleteProductResponseDto>.Success(new DeleteProductResponseDto { Success = true });
+            var rowsAffected = await _context.MenuItems
+                .Where(i => i.Id == parameter.Id &&
+                            i.Menu.RestaurantId == _currentUser.RestaurantId)
+                .ExecuteUpdateAsync(setters => setters
+                        .SetProperty(i => i.Active, false),
+                    cancellation);
+            return rowsAffected == 0 ? Result<DeleteProductResponseDto>.FailureNotFound("Produto não encontrado.") : Result<DeleteProductResponseDto>.Success(new DeleteProductResponseDto { Success = true });
         }
     }
 }

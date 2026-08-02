@@ -6,9 +6,6 @@ using RaizesDoNordeste.Domain.Core.Menus.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Menus
 {
@@ -35,16 +32,12 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
 
             var item = await _context.MenuItems
                 .Include(i => i.Menu)
+                .Where(i => i.Menu.RestaurantId == _currentUser.RestaurantId)
                 .FirstOrDefaultAsync(i => i.Id == parameter.Id, cancellation);
 
             if (item == null)
             {
                 return Result<ProductResponseDto>.FailureNotFound("Produto não encontrado.");
-            }
-
-            if (item.Menu == null || item.Menu.RestaurantId != _currentUser.RestaurantId)
-            {
-                return Result<ProductResponseDto>.Failure(new Error("Você não tem permissão para editar este produto."), HttpStatusCode.Forbidden);
             }
 
             item.Title = parameter.Title;

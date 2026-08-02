@@ -32,12 +32,14 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
                 return validation.ToResultFailure<ProductResponseDto>();
             }
 
-            var menu = await _context.Menus
-                .FirstOrDefaultAsync(m => m.RestaurantId == _currentUser.RestaurantId, cancellation);
+            var menuId = await _context.Menus
+                .Where(m => m.RestaurantId == _currentUser.RestaurantId)
+                .Select(x => x.Id)
+                .FirstOrDefaultAsync(cancellation);
 
-            if (menu == null)
+            if (menuId == 0)
             {
-                return Result<ProductResponseDto>.Failure(new Error("Cardápio do restaurante do usuário não encontrado."), HttpStatusCode.BadRequest);
+                return Result<ProductResponseDto>.Failure(new Error("Cardápio do restaurante do usuário não encontrado."));
             }
 
             var item = new MenuItem
@@ -50,7 +52,7 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
                 DisplayOrder = parameter.DisplayOrder,
                 PreparationTimeInMinutes = parameter.PreparationTimeInMinutes,
                 IsFeatured = parameter.IsFeatured,
-                MenuId = menu.Id
+                MenuId = menuId
             };
 
             await _context.MenuItems.AddAsync(item, cancellation);
