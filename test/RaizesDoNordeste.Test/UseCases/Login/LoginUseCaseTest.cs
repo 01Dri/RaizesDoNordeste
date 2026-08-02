@@ -1,15 +1,16 @@
+using System.Net;
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using RaizesDoNordeste.Application.Services;
 using RaizesDoNordeste.Application.UseCases.Login;
 using RaizesDoNordeste.Application.UseCases.Login.Validations;
 using RaizesDoNordeste.Data;
-using RaizesDoNordeste.Domain.UseCases;
-using System.Net;
-using Moq;
-using RaizesDoNordeste.Application.Services;
-using RaizesDoNordeste.Domain.ValuesObjects;
-using RaizesDoNordeste.Domain.Services;
-using System.Security.Claims;
 using RaizesDoNordeste.Domain.Core.Login;
+using RaizesDoNordeste.Domain.Core.Restaurants;
+using RaizesDoNordeste.Domain.Services;
+using RaizesDoNordeste.Domain.UseCases;
+using RaizesDoNordeste.Domain.ValuesObjects;
 
 namespace RaizesDoNordeste.Test.UseCases.Login
 {
@@ -206,13 +207,18 @@ namespace RaizesDoNordeste.Test.UseCases.Login
                 Password = HashedPassword
             });
 
-            _context.Restaurants.Add(new RaizesDoNordeste.Domain.Core.Restaurants.Restaurant
+            if (!_context.Restaurants.Any(x => x.Id == RaizesDoNordesteversitarioId))
             {
-                Id = RaizesDoNordesteversitarioId,
-                Name = "Raízes do Nordeste - Unidade Teste",
-                Email = new Email("contato@raizes.com"),
-                Cnpj = new Cnpj("12345678000195")
-            });
+                _context.Restaurants.Add(new RaizesDoNordeste.Domain.Core.Restaurants.Restaurant
+                {
+                    Id = RaizesDoNordesteversitarioId,
+                    Name = "Raízes do Nordeste - Unidade Teste",
+                    Description = "Unidade Teste",
+                    Phone = new Phone("(81) 99999-9999"),
+                    Email = new Email("contato@raizes.com"),
+                    Cnpj = new Cnpj("12345678000195")
+                });
+            }
 
             _context.SaveChanges();
         }
