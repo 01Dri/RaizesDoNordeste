@@ -49,7 +49,7 @@ namespace RaizesDoNordeste.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List(CancellationToken cancellation)
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
             var result = await _listHandler.HandleAsync(cancellation);
             return result.IsSuccess ? Ok(result) : Error("Erro ao listar produtos", result);

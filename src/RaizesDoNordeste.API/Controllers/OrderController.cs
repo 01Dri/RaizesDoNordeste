@@ -57,7 +57,7 @@ public class OrderController : RaizesDoNordesteController
 
     [HttpGet]
     [RolesAuthorize(RoleType.Professional, RoleType.Manager, RoleType.Owner, RoleType.Admin)]
-    public async Task<IActionResult> List(
+    public async Task<IActionResult> Get(
         [FromQuery] OrderStatus? status,
         [FromQuery(Name = "canalPedido")] OrderChannel? canalPedido,
         CancellationToken cancellationToken)

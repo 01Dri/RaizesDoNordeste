@@ -3,9 +3,6 @@ using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Restaurants.DTO;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Restaurants
 {
@@ -21,7 +18,6 @@ namespace RaizesDoNordeste.Application.UseCases.Restaurants
         public async Task<Result<ListRestaurantsResponseDto>> HandleAsync(CancellationToken cancellation = default)
         {
             var restaurants = await _context.Restaurants
-                .Where(r => r.Active)
                 .Select(r => new RestaurantDto
                 {
                     Id = r.Id,
