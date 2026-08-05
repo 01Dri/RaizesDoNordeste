@@ -1,11 +1,9 @@
-using System;
 using RaizesDoNordeste.Domain.UseCases;
 
 namespace RaizesDoNordeste.Domain.Core.Restaurants.DTO
 {
-    public class RestaurantDto : IUseCaseResponse
+    public sealed class CreateRestaurantDto : IUseCaseRequest
     {
-        public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         public string Phone { get; set; } = null!;
@@ -18,6 +16,5 @@ namespace RaizesDoNordeste.Domain.Core.Restaurants.DTO
         public string AddressState { get; set; } = null!;
         public string AddressZipCode { get; set; } = null!;
         public string? AddressComplement { get; set; }
-        public Error? ErrorResponse { get; set; }
     }
 }

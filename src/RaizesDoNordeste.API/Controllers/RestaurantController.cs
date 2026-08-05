@@ -13,18 +13,30 @@ namespace RaizesDoNordeste.API.Controllers
     public class RestaurantController : RaizesDoNordesteController
     {
         private readonly IUseCaseHandler<ListRestaurantsResponseDto> _listHandler;
+        private readonly IUseCaseHandler<CreateRestaurantDto, RestaurantDto> _createHandler;
 
-        public RestaurantController(IUseCaseHandler<ListRestaurantsResponseDto> listHandler)
+        public RestaurantController(
+            IUseCaseHandler<ListRestaurantsResponseDto> listHandler,
+            IUseCaseHandler<CreateRestaurantDto, RestaurantDto> createHandler)
         {
             _listHandler = listHandler;
+            _createHandler = createHandler;
         }
 
         [HttpGet]
-        [RolesAuthorize(RoleType.Admin)]
+        [RolesAuthorize(RoleType.Admin, RoleType.Owner)]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
             var result = await _listHandler.HandleAsync(cancellation);
             return result.IsSuccess ? Ok(result) : Error("Erro ao obter unidades", result);
+        }
+
+        [HttpPost]
+        [RolesAuthorize(RoleType.Admin, RoleType.Owner)]
+        public async Task<IActionResult> Create([FromBody] CreateRestaurantDto dto, CancellationToken cancellation)
+        {
+            var result = await _createHandler.HandleAsync(dto, cancellation);
+            return result.IsSuccess ? Created($"/unidades/{result.Data?.Id}", result) : Error("Erro ao cadastrar unidade", result);
         }
     }
 }

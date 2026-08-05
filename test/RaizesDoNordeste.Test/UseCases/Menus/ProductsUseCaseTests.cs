@@ -223,7 +223,8 @@ namespace RaizesDoNordeste.Test.UseCases.Menus
             });
 
             var dbItem = await _context.MenuItems.FindAsync(170L);
-            Assert.That(dbItem, Is.Null);
+            Assert.That(dbItem, Is.Not.Null);
+            Assert.That(dbItem!.Active, Is.False);
         }
 
         [Test]

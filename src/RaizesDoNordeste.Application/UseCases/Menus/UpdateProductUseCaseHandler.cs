@@ -1,3 +1,4 @@
+using System.Net;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Application.Extensions;
@@ -32,12 +33,19 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
 
             var item = await _context.MenuItems
                 .Include(i => i.Menu)
-                .Where(i => i.Menu.RestaurantId == _currentUser.RestaurantId)
                 .FirstOrDefaultAsync(i => i.Id == parameter.Id, cancellation);
 
             if (item == null)
             {
                 return Result<ProductResponseDto>.FailureNotFound("Produto não encontrado.");
+            }
+
+            if (item.Menu.RestaurantId != _currentUser.RestaurantId)
+            {
+                return Result<ProductResponseDto>.Failure(
+                    new Error("Você não tem permissão para alterar produtos de outro restaurante."),
+                    HttpStatusCode.Forbidden
+                );
             }
 
             item.Title = parameter.Title;
@@ -48,6 +56,7 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
             item.DisplayOrder = parameter.DisplayOrder;
             item.PreparationTimeInMinutes = parameter.PreparationTimeInMinutes;
             item.IsFeatured = parameter.IsFeatured;
+            item.Active = true;
 
             await _context.SaveChangesAsync(cancellation);
 

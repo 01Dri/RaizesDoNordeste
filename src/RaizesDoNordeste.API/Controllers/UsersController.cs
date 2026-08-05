@@ -2,19 +2,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaizesDoNordeste.Domain.Core.Accounts.DTO;
 using RaizesDoNordeste.Domain.UseCases;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.API.Controllers
 {
     [ApiController]
     [Route("usuarios")]
-    public class UsuariosController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto> _createAccountHandler;
         private readonly IUseCaseHandler<UserProfileResponseDto> _getProfileHandler;
 
-        public UsuariosController(
+        public UsersController(
             IUseCaseHandler<CreateAccountDto, CreateAccountUseCaseResponseDto> createAccountHandler,
             IUseCaseHandler<UserProfileResponseDto> getProfileHandler)
         {

@@ -20,13 +20,18 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
 
         public async Task<Result<DeleteProductResponseDto>> HandleAsync(DeleteProductDto parameter, CancellationToken cancellation = default)
         {
-            var rowsAffected = await _context.MenuItems
-                .Where(i => i.Id == parameter.Id &&
-                            i.Menu.RestaurantId == _currentUser.RestaurantId)
-                .ExecuteUpdateAsync(setters => setters
-                        .SetProperty(i => i.Active, false),
-                    cancellation);
-            return rowsAffected == 0 ? Result<DeleteProductResponseDto>.FailureNotFound("Produto não encontrado.") : Result<DeleteProductResponseDto>.Success(new DeleteProductResponseDto { Success = true });
+            var item = await _context.MenuItems
+                .Include(i => i.Menu)
+                .FirstOrDefaultAsync(i => i.Id == parameter.Id && i.Menu.RestaurantId == _currentUser.RestaurantId, cancellation);
+
+            if (item == null)
+            {
+                return Result<DeleteProductResponseDto>.FailureNotFound("Produto não encontrado.");
+            }
+
+            item.Active = false;
+            await _context.SaveChangesAsync(cancellation);
+            return Result<DeleteProductResponseDto>.Success(new DeleteProductResponseDto { Success = true });
         }
     }
 }

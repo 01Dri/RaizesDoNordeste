@@ -43,9 +43,22 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
                         Quantity = x.Quantity
                     }).ToImmutableList()
                 })
-                .FirstOrDefaultAsync(o => o.Id == parameter.Id && o.RestaurantId == _currentUser.RestaurantId, cancellation);
+                .FirstOrDefaultAsync(o => o.Id == parameter.Id, cancellation);
 
-            return order == null ? Result<OrderResponseDto>.FailureNotFound("Pedido não encontrado.") : Result<OrderResponseDto>.Success(order);
+            if (order == null)
+            {
+                return Result<OrderResponseDto>.FailureNotFound("Pedido não encontrado.");
+            }
+
+            if (order.RestaurantId != _currentUser.RestaurantId)
+            {
+                return Result<OrderResponseDto>.Failure(
+                    new Error("Você não tem permissão para visualizar pedidos de outro restaurante."),
+                    System.Net.HttpStatusCode.Forbidden
+                );
+            }
+
+            return Result<OrderResponseDto>.Success(order);
         }
     }
 }

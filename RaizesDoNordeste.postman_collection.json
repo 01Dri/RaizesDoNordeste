@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "8907865c-60db-465c-9c71-3dfbd60a9202",
 		"name": "Raizes do Nordeste - API",
-		"description": "Coleção de testes para a API do projeto acadêmico da rede de lanchonetes Raízes do Nordeste. Contém fluxos principais, simulação de pagamento, controle de estoque e tratamento de erros.",
+		"description": "Coleção completa e atualizada de testes para a API do projeto acadêmico da rede de lanchonetes Raízes do Nordeste. Contém todos os endpoints de Autenticação, Usuários, Unidades, Cardápio, Produtos, Pedidos, Pagamento, Estoque, Fidelidade e Worker Mock.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -19,6 +19,9 @@
 									"var jsonData = pm.response.json();",
 									"if (jsonData.isSuccess && jsonData.data && jsonData.data.token) {",
 									"    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+									"    if (jsonData.data.refreshToken) {",
+									"        pm.collectionVariables.set(\"refreshToken\", jsonData.data.refreshToken);",
+									"    }",
 									"    console.log(\"Token salvo na variável: \" + jsonData.data.token);",
 									"}"
 								],
@@ -53,6 +56,9 @@
 									"var jsonData = pm.response.json();",
 									"if (jsonData.isSuccess && jsonData.data && jsonData.data.token) {",
 									"    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+									"    if (jsonData.data.refreshToken) {",
+									"        pm.collectionVariables.set(\"refreshToken\", jsonData.data.refreshToken);",
+									"    }",
 									"}"
 								],
 								"type": "text/javascript"
@@ -61,15 +67,16 @@
 					],
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"admin@raizesdonordeste.com\",\n  \"password\": \"somehashedpassword\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"email\": \"admin@raizesdonordeste.com\",\n  \"password\": \"somehashedpassword\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/auth/login",
@@ -103,15 +110,16 @@
 					],
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"somehashedpassword\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"somehashedpassword\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/auth/login",
@@ -131,15 +139,16 @@
 					"name": "Login - Credenciais Inválidas (Erro 401)",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"admin@raizesdonordeste.com\",\n  \"password\": \"senha_incorreta\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"email\": \"admin@raizesdonordeste.com\",\n  \"password\": \"senha_incorreta\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/auth/login",
@@ -154,6 +163,81 @@
 						"description": "Cenário de erro (401) com senha incorreta."
 					},
 					"response": []
+				},
+				{
+					"name": "Renovar Token (Refresh Token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.isSuccess && jsonData.data && jsonData.data.token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+									"    if (jsonData.data.refreshToken) {",
+									"        pm.collectionVariables.set(\"refreshToken\", jsonData.data.refreshToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Renova o token JWT de acesso utilizando um Refresh Token ativo."
+					},
+					"response": []
+				},
+				{
+					"name": "Realizar Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Invalida o Refresh Token do usuário encerrando a sessão."
+					},
+					"response": []
 				}
 			]
 		},
@@ -164,15 +248,16 @@
 					"name": "Cadastrar Novo Usuário (Cliente)",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"cliente@raizesdonordeste.com\",\n  \"password\": \"somehashedpassword\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"email\": \"novocliente@raizesdonordeste.com\",\n  \"password\": \"Senha@123456\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/usuarios",
@@ -218,6 +303,39 @@
 			"name": "Unidades e Cardápio",
 			"item": [
 				{
+					"name": "Cadastrar Nova Unidade (Restaurante)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Raízes do Nordeste - Unidade Recife\",\n  \"description\": \"Unidade de atendimento no centro de Recife\",\n  \"phone\": \"81988887777\",\n  \"email\": \"recife@raizesdonordeste.com\",\n  \"cnpj\": \"11222333000181\",\n  \"addressStreet\": \"Rua do Sol\",\n  \"addressNumber\": \"100\",\n  \"addressDistrict\": \"Santo Antônio\",\n  \"addressCity\": \"Recife\",\n  \"addressState\": \"PE\",\n  \"addressZipCode\": \"50010000\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/unidades",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unidades"
+							]
+						},
+						"description": "Cadastra uma nova franquia/unidade da rede Raízes do Nordeste (Requer perfil Admin/Owner)."
+					},
+					"response": []
+				},
+				{
 					"name": "Listar Unidades (Restaurantes)",
 					"request": {
 						"method": "GET",
@@ -260,7 +378,103 @@
 					"response": []
 				},
 				{
-					"name": "Listar Produtos (Cardápio da Unidade)",
+					"name": "Criar Cardápio (Menu)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Cardápio Principal\",\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cardapio",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cardapio"
+							]
+						},
+						"description": "Cria um novo cardápio (menu) para a unidade de restaurante informada."
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Cardápio da Unidade do Usuário",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cardapio/usuario-atual",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cardapio",
+								"usuario-atual"
+							]
+						},
+						"description": "Obtém o cardápio e itens associados à unidade do usuário atualmente autenticado."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Produtos",
+			"item": [
+				{
+					"name": "Cadastrar Produto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Tapioca de Carne de Sol\",\n  \"description\": \"Tapioca recheada com carne de sol e queijo coalho\",\n  \"price\": 18.50,\n  \"menuId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/produtos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"produtos"
+							]
+						},
+						"description": "Cadastra um novo produto no cardápio de uma unidade."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Produtos",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -279,7 +493,126 @@
 								"produtos"
 							]
 						},
-						"description": "Exibe o cardápio e produtos cadastrados para a unidade na qual o usuário está logado."
+						"description": "Exibe os produtos cadastrados para a unidade na qual o usuário está logado."
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Produto por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/produtos/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"produtos",
+								"1"
+							]
+						},
+						"description": "Consulta os detalhes de um produto específico informando seu ID numérico."
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Produto",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Tapioca de Carne de Sol Especial\",\n  \"description\": \"Tapioca recheada com carne de sol, queijo coalho e manteiga de garrafa\",\n  \"price\": 21.00\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/produtos/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"produtos",
+								"1"
+							]
+						},
+						"description": "Atualiza os dados de um produto existente no cardápio."
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir Produto",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/produtos/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"produtos",
+								"1"
+							]
+						},
+						"description": "Remove um produto do cardápio."
+					},
+					"response": []
+				},
+				{
+					"name": "Vincular Ingrediente ao Produto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"stockIngredientId\": 1,\n  \"quantityUseToOrder\": 0.250\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/produtos/1/ingredientes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"produtos",
+								"1",
+								"ingredientes"
+							]
+						},
+						"description": "Associa um ingrediente de estoque a um item de produto do cardápio indicando a quantidade consumida por pedido."
 					},
 					"response": []
 				}
@@ -289,16 +622,18 @@
 			"name": "Pedidos",
 			"item": [
 				{
-					"name": "Criar Pedido com Sucesso (Canal Válido)",
+					"name": "Criar Pedido com Sucesso (Canal Válido TOTEM)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"var jsonData = pm.response.json();",
-									"if (jsonData.id) {",
-									"    pm.collectionVariables.set(\"orderId\", jsonData.id);",
-									"    console.log(\"ID do pedido criado salvo: \" + jsonData.id);",
+									"if (jsonData.data && jsonData.data.publicId) {",
+									"    pm.collectionVariables.set(\"orderId\", jsonData.data.publicId);",
+									"    console.log(\"PublicId do pedido criado salvo: \" + jsonData.data.publicId);",
+									"} else if (jsonData.publicId) {",
+									"    pm.collectionVariables.set(\"orderId\", jsonData.publicId);",
 									"}"
 								],
 								"type": "text/javascript"
@@ -312,27 +647,27 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"canalPedido\": \"TOTEM\",\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 1\n    }\n  ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\",\n  \"channel\": 1,\n  \"items\": [\n    {\n      \"menuItemId\": 1,\n      \"quantity\": 1\n    }\n  ]\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/pedidos",
+							"raw": "{{baseUrl}}/pedido",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"pedidos"
+								"pedido"
 							]
 						},
-						"description": "Cria um novo pedido para o X-Burger via canal TOTEM. Salva automaticamente o ID do pedido gerado em 'orderId'."
+						"description": "Cria um novo pedido via canal TOTEM (channel: 1). Salva automaticamente o ID público do pedido gerado em 'orderId'."
 					},
 					"response": []
 				},
@@ -345,32 +680,32 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"canalPedido\": \"CANAL_INEXISTENTE\",\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 1\n    }\n  ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\",\n  \"channel\": 99,\n  \"items\": [\n    {\n      \"menuItemId\": 1,\n      \"quantity\": 1\n    }\n  ]\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/pedidos",
+							"raw": "{{baseUrl}}/pedido",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"pedidos"
+								"pedido"
 							]
 						},
-						"description": "Cenário de erro (400/422). O canal de pedido deve obedecer o enum correto, retornando validação de erro."
+						"description": "Cenário de erro (400 Bad Request). O canal do pedido deve ser válido (APP=0, TOTEM=1, BALCAO=2, PICKUP=3, WEB=4)."
 					},
 					"response": []
 				},
 				{
-					"name": "Criar Pedido - Sem Estoque (Erro 400)",
+					"name": "Criar Pedido - Sem Estoque (Erro 409)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -378,27 +713,27 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"canalPedido\": \"APP\",\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 99999\n    }\n  ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\",\n  \"channel\": 0,\n  \"items\": [\n    {\n      \"menuItemId\": 1,\n      \"quantity\": 99999\n    }\n  ]\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/pedidos",
+							"raw": "{{baseUrl}}/pedido",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"pedidos"
+								"pedido"
 							]
 						},
-						"description": "Cenário de erro (400). Tenta criar um pedido com quantidade muito superior ao estoque físico de ingredientes do produto."
+						"description": "Cenário de erro (409 Conflict). Tenta criar um pedido com quantidade superior ao estoque físico de insumos."
 					},
 					"response": []
 				},
@@ -414,12 +749,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/pedidos",
+							"raw": "{{baseUrl}}/pedido",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"pedidos"
+								"pedido"
 							]
 						},
 						"description": "Obtém todos os pedidos efetuados na unidade corrente."
@@ -438,21 +773,46 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/pedidos?canalPedido=TOTEM",
+							"raw": "{{baseUrl}}/pedido?canalPedido=1",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"pedidos"
+								"pedido"
 							],
 							"query": [
 								{
 									"key": "canalPedido",
-									"value": "TOTEM"
+									"value": "1"
 								}
 							]
 						},
-						"description": "Lista os pedidos filtrando pelo canal de venda usando a propriedade requerida canalPedido no query param."
+						"description": "Lista os pedidos filtrando pelo canal de venda usando a propriedade requerida canalPedido (1 = TOTEM)."
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Pedido por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pedido/{{orderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pedido",
+								"{{orderId}}"
+							]
+						},
+						"description": "Obtém os detalhes completos de um pedido específico por seu PublicId (GUID)."
 					},
 					"response": []
 				},
@@ -468,20 +828,20 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/pedidos",
+							"raw": "{{baseUrl}}/pedido",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"pedidos"
+								"pedido"
 							]
 						},
-						"description": "Cenário de erro (403 - Forbidden). Um token de perfil Customer (cliente comum) não possui perfil de funcionário autorizado a gerenciar ou listar pedidos."
+						"description": "Cenário de erro (403 Forbidden). Um token de perfil Customer não possui perfil autorizado a gerenciar ou listar pedidos."
 					},
 					"response": []
 				},
 				{
-					"name": "Alterar Status para Ready (Cozinha -> Pronto)",
+					"name": "Alterar Status do Pedido (ex: Cozinha -> Pronto)",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -489,28 +849,29 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"status\": 2\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"status\": 2\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/pedidos/status",
+							"raw": "{{baseUrl}}/pedido/status/{{orderId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"pedidos",
-								"status"
+								"pedido",
+								"status",
+								"{{orderId}}"
 							]
 						},
-						"description": "Altera o status do pedido para Ready (Status 2 no enum, que representa Pronto) para viabilizar o fluxo de pagamento."
+						"description": "Altera o status do pedido informando o id da rota (Status 2 no Enum = Ready/Pronto)."
 					},
 					"response": []
 				}
@@ -528,25 +889,25 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"paymentMethod\": {\n    \"method\": 0\n  }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"paymentMethod\": {\n    \"method\": 0\n  }\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/pagamento/Order/{{orderId}}",
+							"raw": "{{baseUrl}}/pagamento/pedido/{{orderId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"pagamento",
-								"Order",
+								"pedido",
 								"{{orderId}}"
 							]
 						},
@@ -560,6 +921,11 @@
 						"method": "POST",
 						"header": [
 							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
 								"key": "X-Uninter-Signature",
 								"value": "UNINTER_MOCK_SIGNATURE",
 								"type": "text"
@@ -567,12 +933,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"transactionId\": \"trans_12345abcde\",\n  \"orderId\": \"{{orderId}}\",\n  \"status\": \"Approved\",\n  \"amount\": 29.90\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"transactionId\": \"trans_12345abcde\",\n  \"orderId\": \"{{orderId}}\",\n  \"status\": \"Approved\",\n  \"amount\": 29.90\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/pagamento/webhook",
@@ -584,7 +945,7 @@
 								"webhook"
 							]
 						},
-						"description": "Webhook do gateway mock informando aprovação de pagamento Pix. Envia assinatura correta para bypassar autenticação do Webhook."
+						"description": "Webhook do gateway mock informando aprovação de pagamento Pix com assinatura de autenticação."
 					},
 					"response": []
 				}
@@ -593,6 +954,39 @@
 		{
 			"name": "Estoque",
 			"item": [
+				{
+					"name": "Criar Estoque da Unidade",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\",\n  \"items\": [\n    {\n      \"name\": \"Carne de Sol\",\n      \"unit\": 3,\n      \"quantity\": 50.0\n    },\n    {\n      \"name\": \"Manteiga de Garrafa\",\n      \"unit\": 5,\n      \"quantity\": 10.0\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/estoque",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estoque"
+							]
+						},
+						"description": "Cria o registro de estoque com insumos iniciais para uma unidade da rede."
+					},
+					"response": []
+				},
 				{
 					"name": "Consultar Estoque Atual",
 					"request": {
@@ -613,7 +1007,33 @@
 								"estoque"
 							]
 						},
-						"description": "Visualiza as quantidades atuais de ingredientes de estoque na unidade ativa."
+						"description": "Visualiza as quantidades atuais de ingredientes de estoque na unidade ativa do usuário logado."
+					},
+					"response": []
+				},
+				{
+					"name": "Consultar Estoque por Unidade Específica",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/estoque/unidade/9a88024d-2618-4e25-87f5-35217f7a7c8a",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estoque",
+								"unidade",
+								"9a88024d-2618-4e25-87f5-35217f7a7c8a"
+							]
+						},
+						"description": "Consultar o estoque de uma unidade informando seu ID (GUID) de restaurante."
 					},
 					"response": []
 				},
@@ -626,16 +1046,16 @@
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"stockIngredientId\": 1,\n  \"quantity\": 50,\n  \"type\": 0,\n  \"description\": \"Entrada de mercadoria fornecedor\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n  \"stockIngredientId\": 1,\n  \"quantity\": 50,\n  \"type\": 0,\n  \"description\": \"Entrada de mercadoria fornecedor\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/estoque/movimentacao",
@@ -648,6 +1068,132 @@
 							]
 						},
 						"description": "Realiza uma movimentação manual de estoque (tipo 0 = Input/Entrada, tipo 1 = Output/Saída, tipo 2 = Loss/Desperdício, tipo 3 = Consumption)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Programa de Fidelidade",
+			"item": [
+				{
+					"name": "Aderir ao Programa de Fidelidade",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/loyality",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"loyality"
+							]
+						},
+						"description": "Registra o aceite do cliente e sua entrada no programa de pontos e fidelização da rede."
+					},
+					"response": []
+				},
+				{
+					"name": "Sair do Programa de Fidelidade",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/loyality",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"loyality"
+							]
+						},
+						"description": "Cancela a participação do cliente no programa de fidelidade."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Worker de Pagamentos (Mock - Porta 5200)",
+			"item": [
+				{
+					"name": "Health Check do Worker",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5200/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5200",
+							"path": [
+								"health"
+							]
+						},
+						"description": "Verifica se o serviço background Worker de Pagamentos está em execução saudável."
+					},
+					"response": []
+				},
+				{
+					"name": "Enfileirar Pagamento no Worker",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionId\": \"trans_12345abcde\",\n  \"orderId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"amount\": 29.90\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5200/payments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5200",
+							"path": [
+								"payments"
+							]
+						},
+						"description": "Envia um item de pagamento para a fila em memória do Worker de Pagamentos."
 					},
 					"response": []
 				}
@@ -687,6 +1233,11 @@
 		},
 		{
 			"key": "token_cliente",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
 			"value": "",
 			"type": "string"
 		},

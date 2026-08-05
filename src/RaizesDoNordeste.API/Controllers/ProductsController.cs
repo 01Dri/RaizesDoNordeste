@@ -17,19 +17,32 @@ namespace RaizesDoNordeste.API.Controllers
         private readonly IUseCaseHandler<DeleteProductDto, DeleteProductResponseDto> _deleteHandler;
         private readonly IUseCaseHandler<GetProductByIdQueryDto, ProductResponseDto> _getByIdHandler;
         private readonly IUseCaseHandler<ListProductsResponseDto> _listHandler;
+        private readonly IUseCaseHandler<AddMenuItemIngredientDto, AddMenuItemIngredientResponseDto> _addIngredientHandler;
 
         public ProductsController(
             IUseCaseHandler<CreateProductDto, ProductResponseDto> createHandler,
             IUseCaseHandler<UpdateProductDto, ProductResponseDto> updateHandler,
             IUseCaseHandler<DeleteProductDto, DeleteProductResponseDto> deleteHandler,
             IUseCaseHandler<GetProductByIdQueryDto, ProductResponseDto> getByIdHandler,
-            IUseCaseHandler<ListProductsResponseDto> listHandler)
+            IUseCaseHandler<ListProductsResponseDto> listHandler,
+            IUseCaseHandler<AddMenuItemIngredientDto, AddMenuItemIngredientResponseDto> addIngredientHandler)
         {
             _createHandler = createHandler;
+            
             _updateHandler = updateHandler;
             _deleteHandler = deleteHandler;
             _getByIdHandler = getByIdHandler;
             _listHandler = listHandler;
+            _addIngredientHandler = addIngredientHandler;
+        }
+
+        [HttpPost("{menuItemId:long}/ingredientes")]
+        [RolesAuthorize(RoleType.Manager, RoleType.Owner, RoleType.Admin)]
+        public async Task<IActionResult> AddIngredient([FromRoute] long menuItemId, [FromBody] AddMenuItemIngredientDto dto, CancellationToken cancellation)
+        {
+            dto.MenuItemId = menuItemId;
+            var result = await _addIngredientHandler.HandleAsync(dto, cancellation);
+            return result.IsSuccess ? Created($"/produtos/{menuItemId}/ingredientes/{result.Data?.Id}", result) : Error("Erro ao vincular ingrediente ao produto", result);
         }
 
         [HttpPost]

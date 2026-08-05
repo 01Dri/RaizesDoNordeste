@@ -8,10 +8,6 @@ using RaizesDoNordeste.Domain.Core.Stocks.DTO;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
 using RaizesDoNordeste.Domain.ValuesObjects;
-using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaizesDoNordeste.Application.UseCases.Stocks
 {
@@ -38,6 +34,7 @@ namespace RaizesDoNordeste.Application.UseCases.Stocks
 
             var item = await _context.StockIngredients
                 .Include(si => si.Stock)
+                .Where(si => si.Stock.RestaurantId == _currentUser.RestaurantId)
                 .FirstOrDefaultAsync(si => si.Id == parameter.StockIngredientId, cancellation);
 
             if (item == null)
@@ -45,12 +42,6 @@ namespace RaizesDoNordeste.Application.UseCases.Stocks
                 return Result<StockMovementResponseDto>.FailureNotFound("Ingrediente de estoque não encontrado.");
             }
 
-            if (item.Stock == null || item.Stock.RestaurantId != _currentUser.RestaurantId)
-            {
-                return Result<StockMovementResponseDto>.Failure(new Error("Você não tem permissão para movimentar estoque deste restaurante."), HttpStatusCode.Forbidden);
-            }
-
-            // Adjust quantity
             switch (parameter.Type)
             {
                 case StockMovementType.Entry:
@@ -60,13 +51,15 @@ namespace RaizesDoNordeste.Application.UseCases.Stocks
                 case StockMovementType.Loss:
                     if (item.Quantity < parameter.Quantity)
                     {
-                        return Result<StockMovementResponseDto>.Failure(new Error("Estoque insuficiente para esta saída."), HttpStatusCode.BadRequest);
+                        return Result<StockMovementResponseDto>.Failure(new Error("Estoque insuficiente para esta saída."));
                     }
                     item.Quantity -= parameter.Quantity;
                     break;
                 case StockMovementType.Adjustment:
                     item.Quantity += parameter.Quantity;
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             var movement = new StockIngredientMovement
