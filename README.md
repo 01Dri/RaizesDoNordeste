@@ -34,11 +34,11 @@ A partir da raiz do repositório, execute:
 docker-compose up --build
 ```
 
-#### 2. Endereços dos Serviços
+#### 2. Endereços dos Serviços (Portas Fixas)
 - **API Principal (`raizes-api`)**:
-  - URL Base: `http://localhost:8080`
-  - Documentação (Scalar/Swagger): `http://localhost:8080/scalar/v1`
-  - JSON OpenAPI: `http://localhost:8080/openapi/v1.json`
+  - URL Base: `http://localhost:5269` (ou `http://localhost:8080`)
+  - Documentação (Scalar/Swagger): `http://localhost:5269/scalar/v1`
+  - JSON OpenAPI: `http://localhost:5269/openapi/v1.json`
 - **Worker de Pagamento (`payment-worker`)**:
   - URL Base: `http://localhost:5200`
   - Health Check: `http://localhost:5200/health`
@@ -51,7 +51,7 @@ docker-compose down
 
 ---
 
-### 💻 OPÇÃO 2: Executando Individualmente via .NET CLI (`dotnet run`)
+### 💻 OPÇÃO 2: Executando Individualmente via .NET CLI / Visual Studio (`dotnet run`)
 
 Para rodar os serviços individualmente na sua máquina local sem Docker:
 
@@ -61,13 +61,13 @@ O banco SQLite (`app.db`) possui dados de Seed pré-configurados. Antes da prime
 dotnet ef database update --project src/RaizesDoNordeste.Data/RaizesDoNordeste.Data.csproj --startup-project src/RaizesDoNordeste.API/RaizesDoNordeste.API.csproj
 ```
 
-#### 2. Iniciar a API Principal (Terminal 1)
+#### 2. Iniciar a API Principal (Terminal 1 ou Visual Studio)
 A partir da raiz do repositório, execute:
 ```bash
 dotnet run --project src/RaizesDoNordeste.API/RaizesDoNordeste.API.csproj
 ```
-- A API estará disponível em `https://localhost:7081` (ou `http://localhost:5269`).
-- Documentação Scalar em: `https://localhost:7081/scalar/v1`.
+- A API estará disponível fixamente em `http://localhost:5269` (ou `https://localhost:7081`).
+- Documentação Scalar em: `http://localhost:5269/scalar/v1`.
 
 #### 3. Iniciar o Worker de Pagamento (Terminal 2)
 Em uma nova janela de terminal, execute:

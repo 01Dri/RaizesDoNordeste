@@ -5,10 +5,11 @@ services:
       dockerfile: Dockerfile.api
     container_name: raizes-api
     ports:
-      - "8080:8080"
+      - "5269:5269"
+      - "8080:5269"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=http://+:5269
       - WorkerUrl=http://worker:5200
     depends_on:
       - worker

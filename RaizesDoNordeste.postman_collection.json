@@ -320,7 +320,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Raízes do Nordeste - Unidade Recife\",\n  \"description\": \"Unidade de atendimento no centro de Recife\",\n  \"phone\": \"81988887777\",\n  \"email\": \"recife@raizesdonordeste.com\",\n  \"cnpj\": \"11222333000181\",\n  \"addressStreet\": \"Rua do Sol\",\n  \"addressNumber\": \"100\",\n  \"addressDistrict\": \"Santo Antônio\",\n  \"addressCity\": \"Recife\",\n  \"addressState\": \"PE\",\n  \"addressZipCode\": \"50010000\"\n}"
+							"raw": "{\n  \"name\": \"Raízes do Nordeste - Unidade Recife\",\n  \"description\": \"Unidade de atendimento no centro de Recife\",\n  \"phone\": \"81988887777\",\n  \"email\": \"recife@raizesdonordeste.com\",\n  \"cnpj\": \"12345678000276\",\n  \"addressStreet\": \"Rua do Sol\",\n  \"addressNumber\": \"100\",\n  \"addressDistrict\": \"Santo Antônio\",\n  \"addressCity\": \"Recife\",\n  \"addressState\": \"PE\",\n  \"addressZipCode\": \"50010000\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/unidades",
@@ -331,7 +331,7 @@
 								"unidades"
 							]
 						},
-						"description": "Cadastra uma nova franquia/unidade da rede Raízes do Nordeste (Requer perfil Admin/Owner)."
+						"description": "Cadastra uma nova franquia/unidade da rede Raízes do Nordeste (Requer perfil Admin ou Owner)."
 					},
 					"response": []
 				},
