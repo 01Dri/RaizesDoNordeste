@@ -15,26 +15,26 @@ namespace RaizesDoNordeste.API.Controllers
         private readonly IUseCaseHandler<StockMovementRequestDto, StockMovementResponseDto> _movementHandler;
         private readonly IUseCaseHandler<GetStockByRestaurantQueryDto, StockResponseDto> _getByRestaurantHandler;
         private readonly IUseCaseHandler<StockResponseDto> _getCurrentUserStockHandler;
-        private readonly IUseCaseHandler<CreateStockRequestDto, StockResponseDto> _createStockHandler;
+        private readonly IUseCaseHandler<AddStockIngredientDto, StockIngredientResponseDto> _addIngredientHandler;
 
         public StockController(
             IUseCaseHandler<StockMovementRequestDto, StockMovementResponseDto> movementHandler,
             IUseCaseHandler<GetStockByRestaurantQueryDto, StockResponseDto> getByRestaurantHandler,
             IUseCaseHandler<StockResponseDto> getCurrentUserStockHandler,
-            IUseCaseHandler<CreateStockRequestDto, StockResponseDto> createStockHandler)
+            IUseCaseHandler<AddStockIngredientDto, StockIngredientResponseDto> addIngredientHandler)
         {
             _movementHandler = movementHandler;
             _getByRestaurantHandler = getByRestaurantHandler;
             _getCurrentUserStockHandler = getCurrentUserStockHandler;
-            _createStockHandler = createStockHandler;
+            _addIngredientHandler = addIngredientHandler;
         }
 
-        [HttpPost]
-        [RolesAuthorize(RoleType.Manager, RoleType.Owner, RoleType.Admin)]
-        public async Task<IActionResult> Create([FromBody] CreateStockRequestDto dto, CancellationToken cancellation)
+        [HttpPost("ingredientes")]
+        [RolesAuthorize(RoleType.Professional, RoleType.Manager, RoleType.Owner, RoleType.Admin)]
+        public async Task<IActionResult> AddIngredient([FromBody] AddStockIngredientDto dto, CancellationToken cancellation)
         {
-            var result = await _createStockHandler.HandleAsync(dto, cancellation);
-            return result.IsSuccess ? Created($"/estoque/unidade/{result.Data?.RestaurantId}", result) : Error("Erro ao criar estoque para a unidade", result);
+            var result = await _addIngredientHandler.HandleAsync(dto, cancellation);
+            return result.IsSuccess ? Created($"/estoque", result) : Error("Erro ao cadastrar ingrediente no estoque", result);
         }
 
         [HttpPost("movimentacao")]

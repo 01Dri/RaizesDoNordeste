@@ -23,6 +23,7 @@ namespace RaizesDoNordeste.Application.UseCases.Restaurants.Menus
                  .Where(x => x.RestaurantId == _currentUser.RestaurantId)
                  .Select(x => new MenuResponseDto
                  {
+                     Id = x.Id,
                      Name = x.Name,
                      RestaurantName = x.Restaurant.Name,
                      RestaurantId = x.RestaurantId.Value,

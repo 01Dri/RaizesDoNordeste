@@ -9,6 +9,7 @@ namespace RaizesDoNordeste.API.Controllers;
 
 [ApiController]
 [Route("cardapio")]
+[Route("menu")]
 [Authorize]
 public class MenuController : RaizesDoNordesteController
 {

@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Data;
 using RaizesDoNordeste.Domain.Core.Menus.DTO;
@@ -21,23 +22,9 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
         public async Task<Result<ProductResponseDto>> HandleAsync(GetProductByIdQueryDto parameter, CancellationToken cancellation = default)
         {
             var item = await _context.MenuItems
-                .Where(x => x.Id == parameter.Id && x.Menu.RestaurantId == _currentUser.RestaurantId)
-                .Select(item => new ProductResponseDto()
-                {
-                    Id = item.Id,
-                    PublicId = item.PublicId,
-                    Title = item.Title,
-                    Description = item.Description,
-                    Price = item.Price,
-                    ImageUrl = item.ImageUrl,
-                    IsAvailable = item.IsAvailable,
-                    DisplayOrder = item.DisplayOrder,
-                    PreparationTimeInMinutes = item.PreparationTimeInMinutes,
-                    IsFeatured = item.IsFeatured,
-                    MenuId = item.MenuId ?? 0L
-
-                }).FirstOrDefaultAsync(cancellation);
-                
+                .Include(x => x.Ingredients)
+                    .ThenInclude(ing => ing.StockIngredient)
+                .FirstOrDefaultAsync(x => x.Id == parameter.Id && x.Menu != null && x.Menu.RestaurantId == _currentUser.RestaurantId, cancellation);
 
             if (item == null)
             {
@@ -56,7 +43,14 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
                 DisplayOrder = item.DisplayOrder,
                 PreparationTimeInMinutes = item.PreparationTimeInMinutes,
                 IsFeatured = item.IsFeatured,
-                MenuId = item.MenuId
+                MenuId = item.MenuId ?? 0L,
+                Ingredients = item.Ingredients.Select(ing => new ProductIngredientResponseDto
+                {
+                    Id = ing.Id ?? 0L,
+                    StockIngredientId = ing.StockIngredientId ?? 0L,
+                    StockIngredientName = ing.StockIngredient?.Name ?? string.Empty,
+                    QuantityUseToOrder = ing.QuantityUseToOrder
+                }).ToList()
             };
 
             return Result<ProductResponseDto>.Success(response);

@@ -4,6 +4,7 @@ namespace RaizesDoNordeste.Domain.Core.Menus.DTO;
 
 public sealed class MenuResponseDto : IUseCaseResponse
 {
+    public long Id { get; set; }
     public string Name { init; get; }
     public string RestaurantName { init; get; }
     public Guid RestaurantId { init; get; }

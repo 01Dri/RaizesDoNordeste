@@ -8,9 +8,10 @@ using RaizesDoNordeste.Domain.UseCases;
 namespace RaizesDoNordeste.API.Controllers
 {
     [ApiController]
+    [Route("cardapio/itens")]
     [Route("produtos")]
     [Authorize]
-    public class ProductsController : RaizesDoNordesteController
+    public class MenuItemController : RaizesDoNordesteController
     {
         private readonly IUseCaseHandler<CreateProductDto, ProductResponseDto> _createHandler;
         private readonly IUseCaseHandler<UpdateProductDto, ProductResponseDto> _updateHandler;
@@ -19,7 +20,7 @@ namespace RaizesDoNordeste.API.Controllers
         private readonly IUseCaseHandler<ListProductsResponseDto> _listHandler;
         private readonly IUseCaseHandler<AddMenuItemIngredientDto, AddMenuItemIngredientResponseDto> _addIngredientHandler;
 
-        public ProductsController(
+        public MenuItemController(
             IUseCaseHandler<CreateProductDto, ProductResponseDto> createHandler,
             IUseCaseHandler<UpdateProductDto, ProductResponseDto> updateHandler,
             IUseCaseHandler<DeleteProductDto, DeleteProductResponseDto> deleteHandler,
@@ -28,12 +29,20 @@ namespace RaizesDoNordeste.API.Controllers
             IUseCaseHandler<AddMenuItemIngredientDto, AddMenuItemIngredientResponseDto> addIngredientHandler)
         {
             _createHandler = createHandler;
-            
             _updateHandler = updateHandler;
             _deleteHandler = deleteHandler;
             _getByIdHandler = getByIdHandler;
             _listHandler = listHandler;
             _addIngredientHandler = addIngredientHandler;
+        }
+
+        [HttpPost("{publicMenuItemId:guid}/ingredientes")]
+        [RolesAuthorize(RoleType.Manager, RoleType.Owner, RoleType.Admin)]
+        public async Task<IActionResult> AddIngredientByPublicId([FromRoute] Guid publicMenuItemId, [FromBody] AddMenuItemIngredientDto dto, CancellationToken cancellation)
+        {
+            dto.PublicMenuItemId = publicMenuItemId;
+            var result = await _addIngredientHandler.HandleAsync(dto, cancellation);
+            return result.IsSuccess ? Created($"/cardapio/itens/{publicMenuItemId}/ingredientes/{result.Data?.Id}", result) : Error("Erro ao vincular ingrediente ao item do cardápio", result);
         }
 
         [HttpPost("{menuItemId:long}/ingredientes")]
@@ -42,7 +51,7 @@ namespace RaizesDoNordeste.API.Controllers
         {
             dto.MenuItemId = menuItemId;
             var result = await _addIngredientHandler.HandleAsync(dto, cancellation);
-            return result.IsSuccess ? Created($"/produtos/{menuItemId}/ingredientes/{result.Data?.Id}", result) : Error("Erro ao vincular ingrediente ao produto", result);
+            return result.IsSuccess ? Created($"/cardapio/itens/{menuItemId}/ingredientes/{result.Data?.Id}", result) : Error("Erro ao vincular ingrediente ao item do cardápio", result);
         }
 
         [HttpPost]
@@ -52,7 +61,7 @@ namespace RaizesDoNordeste.API.Controllers
             var result = await _createHandler.HandleAsync(dto, cancellation);
             if (!result.IsSuccess)
             {
-                return Error("Erro ao cadastrar produto", result);
+                return Error("Erro ao cadastrar item no cardápio", result);
             }
 
             return CreatedAtAction(
@@ -65,14 +74,14 @@ namespace RaizesDoNordeste.API.Controllers
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
             var result = await _listHandler.HandleAsync(cancellation);
-            return result.IsSuccess ? Ok(result) : Error("Erro ao listar produtos", result);
+            return result.IsSuccess ? Ok(result) : Error("Erro ao listar itens do cardápio", result);
         }
 
         [HttpGet("{id:long}")]
         public async Task<IActionResult> GetById([FromRoute] long id, CancellationToken cancellation)
         {
             var result = await _getByIdHandler.HandleAsync(new GetProductByIdQueryDto(id), cancellation);
-            return result.IsSuccess ? Ok(result) : Error("Erro ao obter produto", result);
+            return result.IsSuccess ? Ok(result) : Error("Erro ao obter item do cardápio", result);
         }
 
         [HttpPut("{id:long}")]
@@ -81,7 +90,7 @@ namespace RaizesDoNordeste.API.Controllers
         {
             dto.Id = id;
             var result = await _updateHandler.HandleAsync(dto, cancellation);
-            return result.IsSuccess ? Ok(result) : Error("Erro ao atualizar produto", result);
+            return result.IsSuccess ? Ok(result) : Error("Erro ao atualizar item do cardápio", result);
         }
 
         [HttpDelete("{id:long}")]
@@ -89,7 +98,7 @@ namespace RaizesDoNordeste.API.Controllers
         public async Task<IActionResult> Delete([FromRoute] long id, CancellationToken cancellation)
         {
             var result = await _deleteHandler.HandleAsync(new DeleteProductDto(id), cancellation);
-            return result.IsSuccess ? Ok(result) : Error("Erro ao excluir produto", result);
+            return result.IsSuccess ? Ok(result) : Error("Erro ao excluir item do cardápio", result);
         }
     }
 }

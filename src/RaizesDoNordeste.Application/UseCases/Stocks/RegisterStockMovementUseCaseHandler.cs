@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RaizesDoNordeste.Application.Extensions;
@@ -32,10 +36,22 @@ namespace RaizesDoNordeste.Application.UseCases.Stocks
                 return validationResult.ToResultFailure<StockMovementResponseDto>();
             }
 
-            var item = await _context.StockIngredients
-                .Include(si => si.Stock)
-                .Where(si => si.Stock.RestaurantId == _currentUser.RestaurantId)
-                .FirstOrDefaultAsync(si => si.Id == parameter.StockIngredientId, cancellation);
+            StockIngredient? item = null;
+
+            if (parameter.PublicStockIngredientId.HasValue && parameter.PublicStockIngredientId.Value != Guid.Empty)
+            {
+                item = await _context.StockIngredients
+                    .Include(si => si.Stock)
+                    .Where(si => si.Stock.RestaurantId == _currentUser.RestaurantId)
+                    .FirstOrDefaultAsync(si => si.PublicId == parameter.PublicStockIngredientId.Value, cancellation);
+            }
+            else if (parameter.StockIngredientId > 0)
+            {
+                item = await _context.StockIngredients
+                    .Include(si => si.Stock)
+                    .Where(si => si.Stock.RestaurantId == _currentUser.RestaurantId)
+                    .FirstOrDefaultAsync(si => si.Id == parameter.StockIngredientId, cancellation);
+            }
 
             if (item == null)
             {
@@ -78,6 +94,7 @@ namespace RaizesDoNordeste.Application.UseCases.Stocks
             {
                 Id = movement.Id ?? 0L,
                 StockIngredientId = movement.StockIngredientId,
+                PublicStockIngredientId = item.PublicId,
                 IngredientName = item.Name,
                 QuantityMoved = movement.Quantity,
                 NewStockQuantity = item.Quantity,

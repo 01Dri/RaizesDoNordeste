@@ -1,3 +1,4 @@
+using System;
 using FluentValidation;
 using RaizesDoNordeste.Domain.Core.Stocks.DTO;
 
@@ -7,8 +8,9 @@ namespace RaizesDoNordeste.Application.UseCases.Stocks.Validations
     {
         public StockMovementRequestDtoValidator()
         {
-            RuleFor(x => x.StockIngredientId)
-                .GreaterThan(0).WithMessage("ID do ingrediente de estoque inválido.");
+            RuleFor(x => x)
+                .Must(x => (x.PublicStockIngredientId.HasValue && x.PublicStockIngredientId != Guid.Empty) || x.StockIngredientId > 0)
+                .WithMessage("O identificador do ingrediente de estoque (PublicId ou ID) é obrigatório.");
 
             RuleFor(x => x.Quantity)
                 .GreaterThan(0).WithMessage("Quantidade deve ser maior que zero.");

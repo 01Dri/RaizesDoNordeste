@@ -8,7 +8,6 @@ using RaizesDoNordeste.Domain.Core.Ingredients.Enums;
 using RaizesDoNordeste.Domain.Core.Menus;
 using RaizesDoNordeste.Domain.Core.Orders;
 using RaizesDoNordeste.Domain.Core.Orders.DTO;
-using RaizesDoNordeste.Domain.Core.Payments;
 using RaizesDoNordeste.Domain.Core.Stocks;
 using RaizesDoNordeste.Domain.Core.Users;
 using RaizesDoNordeste.Domain.UseCases;
@@ -78,6 +77,11 @@ public sealed class CreateOrderUseCaseHandler : IUseCaseHandler<CreateOrderDto, 
                         Item = x,
                     })
             });
+        }
+
+        if (menuItems.Any(x => x.Ingredients.Count == 0))
+        {
+            return Result<OrderResponseDto>.Failure(new Error("Alguns itens do cardápio está sem ingredientes"));
         }
         
         var menuItemsConsumption = BuildOrderStockConsumption(menuItems, parameter);

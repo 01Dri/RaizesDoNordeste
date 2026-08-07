@@ -24,7 +24,7 @@ namespace RaizesDoNordeste.API.Controllers
         }
 
         [HttpPost]
-        [RolesAuthorize(RoleType.Manager)]
+        [RolesAuthorize(RoleType.Manager, RoleType.Admin)]
         public async Task<IActionResult> Join([FromBody] LoyalityJoinRequestDto dto, CancellationToken cancellationToken)
         {
             var result = await _joinHandler.HandleAsync(dto, cancellationToken);

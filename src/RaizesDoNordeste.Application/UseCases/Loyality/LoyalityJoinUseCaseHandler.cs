@@ -24,10 +24,11 @@ namespace RaizesDoNordeste.Application.UseCases.Loyality
 
         public async Task<Result<LoyalityJoinResponseDto>> HandleAsync(LoyalityJoinRequestDto parameter, CancellationToken cancellation = default)
         {
-            if (!_currentUser.InRole(RoleType.Manager))
+            if (!_currentUser.InRole(RoleType.Manager) && !_currentUser.InRole(RoleType.Admin))
             {
-                return Result<LoyalityJoinResponseDto>.Failure(new Error("Apenas o gerente pode incluir clientes no programa de fidelidade."));
+                return Result<LoyalityJoinResponseDto>.Failure(new Error("Apenas o gerente ou admin pode incluir clientes no programa de fidelidade."));
             }
+            
 
             var accountExists = await _context.Accounts
                 .AnyAsync(x => x.Id == parameter.CustomerAccountId, cancellation);

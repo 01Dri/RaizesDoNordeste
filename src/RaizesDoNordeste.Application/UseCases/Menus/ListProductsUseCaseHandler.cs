@@ -35,7 +35,14 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
                     DisplayOrder = i.DisplayOrder,
                     PreparationTimeInMinutes = i.PreparationTimeInMinutes,
                     IsFeatured = i.IsFeatured,
-                    MenuId = i.MenuId ?? 0L
+                    MenuId = i.MenuId ?? 0L,
+                    Ingredients = i.Ingredients.Select(ing => new ProductIngredientResponseDto
+                    {
+                        Id = ing.Id ?? 0L,
+                        StockIngredientId = ing.StockIngredientId ?? 0L,
+                        StockIngredientName = ing.StockIngredient.Name,
+                        QuantityUseToOrder = ing.QuantityUseToOrder
+                    }).ToList()
                 })
                 .ToListAsync(cancellation);
 

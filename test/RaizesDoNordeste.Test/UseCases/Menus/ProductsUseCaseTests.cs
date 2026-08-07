@@ -278,5 +278,52 @@ namespace RaizesDoNordeste.Test.UseCases.Menus
                 Assert.That(result.Data.Products.Any(p => p.Id == 191L), Is.False);
             });
         }
+
+        [Test]
+        public async Task Create_WithIngredients_ShouldLinkOrRegisterIngredientsInStock()
+        {
+            // Arrange
+            var dto = new CreateProductDto
+            {
+                Title = "Tapioca Completa",
+                Description = "Tapioca com carne de sol e queijo novo",
+                Price = 22.50m,
+                Ingredients = new List<ProductIngredientInputDto>
+                {
+                    new ProductIngredientInputDto
+                    {
+                        StockIngredientId = 1L, // Existing seeded ingredient
+                        QuantityUseToOrder = 0.2m
+                    },
+                    new ProductIngredientInputDto
+                    {
+                        Name = "Queijo Coalho Novo",
+                        Unit = RaizesDoNordeste.Domain.Core.Ingredients.Enums.IngredientUnit.Kilogram,
+                        QuantityUseToOrder = 0.15m,
+                        InitialStockQuantity = 30m
+                    }
+                }
+            };
+
+            // Act
+            var result = await _createHandler.HandleAsync(dto, CancellationToken.None);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.Data, Is.Not.Null);
+                Assert.That(result.Data.Ingredients, Is.Not.Null);
+                Assert.That(result.Data.Ingredients.Count, Is.EqualTo(2));
+
+                var firstIng = result.Data.Ingredients.FirstOrDefault(i => i.StockIngredientId == 1L);
+                Assert.That(firstIng, Is.Not.Null);
+                Assert.That(firstIng.QuantityUseToOrder, Is.EqualTo(0.2m));
+
+                var newIng = result.Data.Ingredients.FirstOrDefault(i => i.StockIngredientName == "Queijo Coalho Novo");
+                Assert.That(newIng, Is.Not.Null);
+                Assert.That(newIng.QuantityUseToOrder, Is.EqualTo(0.15m));
+            });
+        }
     }
 }

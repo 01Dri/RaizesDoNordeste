@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "8907865c-60db-465c-9c71-3dfbd60a9202",
 		"name": "Raizes do Nordeste - API",
-		"description": "Coleção completa e atualizada de testes para a API do projeto acadêmico da rede de lanchonetes Raízes do Nordeste. Contém todos os endpoints de Autenticação, Usuários, Unidades, Cardápio, Produtos, Pedidos, Pagamento, Estoque, Fidelidade e Worker Mock.",
+		"description": "Coleção completa e atualizada de testes para a API do projeto acadêmico da rede de lanchonetes Raízes do Nordeste. Contém todos os endpoints de Autenticação, Usuários, Unidades, Cardápio (Menu), Itens do Cardápio (Menu Items), Pedidos, Pagamento, Estoque, Fidelidade e Worker Mock.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -257,7 +257,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"novocliente@raizesdonordeste.com\",\n  \"password\": \"Senha@123456\"\n}"
+							"raw": "{\n  \"email\": \"novocliente@raizesdonordeste.com\",\n  \"password\": \"Senha@123456\",\n  \"birthDate\": \"1995-05-15T00:00:00Z\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/usuarios",
@@ -300,7 +300,7 @@
 			]
 		},
 		{
-			"name": "Unidades e Cardápio",
+			"name": "Unidades e Cardápio (Menu)",
 			"item": [
 				{
 					"name": "Cadastrar Nova Unidade (Restaurante)",
@@ -331,7 +331,7 @@
 								"unidades"
 							]
 						},
-						"description": "Cadastra uma nova franquia/unidade da rede Raízes do Nordeste (Requer perfil Admin ou Owner)."
+						"description": "Cadastra uma nova franquia/unidade da rede Raízes do Nordeste (Cria o estoque da unidade automaticamente)."
 					},
 					"response": []
 				},
@@ -438,10 +438,10 @@
 			]
 		},
 		{
-			"name": "Produtos",
+			"name": "Itens do Cardápio (Menu Items)",
 			"item": [
 				{
-					"name": "Cadastrar Produto",
+					"name": "Cadastrar Item no Cardápio",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -458,23 +458,24 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Tapioca de Carne de Sol\",\n  \"description\": \"Tapioca recheada com carne de sol e queijo coalho\",\n  \"price\": 18.50,\n  \"menuId\": 1\n}"
+							"raw": "{\n  \"title\": \"Tapioca de Carne de Sol\",\n  \"description\": \"Tapioca recheada com carne de sol e queijo coalho\",\n  \"price\": 18.50,\n  \"imageUrl\": \"https://example.com/tapioca.jpg\",\n  \"isAvailable\": true,\n  \"displayOrder\": 1,\n  \"preparationTimeInMinutes\": 15,\n  \"isFeatured\": true,\n  \"ingredients\": [\n    {\n      \"stockIngredientId\": 1,\n      \"quantityUseToOrder\": 0.250\n    },\n    {\n      \"name\": \"Queijo Coalho Novo\",\n      \"unit\": 3,\n      \"quantityUseToOrder\": 0.100,\n      \"initialStockQuantity\": 50.0\n    }\n  ]\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/produtos",
+							"raw": "{{baseUrl}}/cardapio/itens",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"produtos"
+								"cardapio",
+								"itens"
 							]
 						},
-						"description": "Cadastra um novo produto no cardápio de uma unidade."
+						"description": "Cadastra um novo item no cardápio (menu item) da unidade, permitindo vincular ingredientes de estoque ou criar novos insumos."
 					},
 					"response": []
 				},
 				{
-					"name": "Listar Produtos",
+					"name": "Listar Itens do Cardápio",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -485,20 +486,21 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/produtos",
+							"raw": "{{baseUrl}}/cardapio/itens",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"produtos"
+								"cardapio",
+								"itens"
 							]
 						},
-						"description": "Exibe os produtos cadastrados para a unidade na qual o usuário está logado."
+						"description": "Exibe os itens do cardápio cadastrados para a unidade do usuário logado."
 					},
 					"response": []
 				},
 				{
-					"name": "Obter Produto por ID",
+					"name": "Obter Item do Cardápio por ID",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -509,21 +511,22 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/produtos/1",
+							"raw": "{{baseUrl}}/cardapio/itens/1",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"produtos",
+								"cardapio",
+								"itens",
 								"1"
 							]
 						},
-						"description": "Consulta os detalhes de um produto específico informando seu ID numérico."
+						"description": "Consulta os detalhes de um item do cardápio específico informando seu ID numérico."
 					},
 					"response": []
 				},
 				{
-					"name": "Atualizar Produto",
+					"name": "Atualizar Item do Cardápio",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -540,24 +543,25 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Tapioca de Carne de Sol Especial\",\n  \"description\": \"Tapioca recheada com carne de sol, queijo coalho e manteiga de garrafa\",\n  \"price\": 21.00\n}"
+							"raw": "{\n  \"title\": \"Tapioca de Carne de Sol Especial\",\n  \"description\": \"Tapioca recheada com carne de sol, queijo coalho e manteiga de garrafa\",\n  \"price\": 21.00,\n  \"imageUrl\": \"https://example.com/tapioca.jpg\",\n  \"isAvailable\": true,\n  \"displayOrder\": 1,\n  \"preparationTimeInMinutes\": 15,\n  \"isFeatured\": true\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/produtos/1",
+							"raw": "{{baseUrl}}/cardapio/itens/1",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"produtos",
+								"cardapio",
+								"itens",
 								"1"
 							]
 						},
-						"description": "Atualiza os dados de um produto existente no cardápio."
+						"description": "Atualiza os dados de um item do cardápio existente."
 					},
 					"response": []
 				},
 				{
-					"name": "Excluir Produto",
+					"name": "Excluir Item do Cardápio",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -568,21 +572,22 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/produtos/1",
+							"raw": "{{baseUrl}}/cardapio/itens/1",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"produtos",
+								"cardapio",
+								"itens",
 								"1"
 							]
 						},
-						"description": "Remove um produto do cardápio."
+						"description": "Remove um item do cardápio."
 					},
 					"response": []
 				},
 				{
-					"name": "Vincular Ingrediente ao Produto",
+					"name": "Vincular Ingrediente Existente ao Item do Cardápio (por PublicId)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -599,20 +604,57 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"stockIngredientId\": 1,\n  \"quantityUseToOrder\": 0.250\n}"
+							"raw": "{\n  \"publicStockIngredientId\": \"11111111-1111-1111-1111-111111111111\",\n  \"quantityUseToOrder\": 0.250\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/produtos/1/ingredientes",
+							"raw": "{{baseUrl}}/cardapio/itens/9a88024d-2618-4e25-87f5-35217f7a7c9b/ingredientes",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"produtos",
-								"1",
+								"cardapio",
+								"itens",
+								"9a88024d-2618-4e25-87f5-35217f7a7c9b",
 								"ingredientes"
 							]
 						},
-						"description": "Associa um ingrediente de estoque a um item de produto do cardápio indicando a quantidade consumida por pedido."
+						"description": "Associa um ingrediente de estoque existente pelo seu PublicId (GUID) a um item do cardápio identificado pelo seu PublicId (GUID)."
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar Novo Ingrediente e Vincular ao Item do Cardápio (por PublicId)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Manteiga de Garrafa Especial\",\n  \"unit\": 1,\n  \"quantityUseToOrder\": 0.050,\n  \"initialStockQuantity\": 10.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cardapio/itens/9a88024d-2618-4e25-87f5-35217f7a7c9b/ingredientes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cardapio",
+								"itens",
+								"9a88024d-2618-4e25-87f5-35217f7a7c9b",
+								"ingredientes"
+							]
+						},
+						"description": "Cadastra um novo ingrediente direto no estoque da unidade e o vincula ao item do cardápio identificado pelo seu PublicId (GUID)."
 					},
 					"response": []
 				}
@@ -656,7 +698,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\",\n  \"channel\": 1,\n  \"items\": [\n    {\n      \"menuItemId\": 1,\n      \"quantity\": 1\n    }\n  ]\n}"
+							"raw": "{\n  \"canalPedido\": 1,\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 1\n    }\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/pedido",
@@ -667,7 +709,7 @@
 								"pedido"
 							]
 						},
-						"description": "Cria um novo pedido via canal TOTEM (channel: 1). Salva automaticamente o ID público do pedido gerado em 'orderId'."
+						"description": "Cria um novo pedido enviando 'canalPedido' (1=TOTEM) e 'publicMenuItemId' (GUID do item). Salva o publicId do pedido criado em 'orderId'."
 					},
 					"response": []
 				},
@@ -689,7 +731,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\",\n  \"channel\": 99,\n  \"items\": [\n    {\n      \"menuItemId\": 1,\n      \"quantity\": 1\n    }\n  ]\n}"
+							"raw": "{\n  \"canalPedido\": 99,\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 1\n    }\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/pedido",
@@ -700,7 +742,7 @@
 								"pedido"
 							]
 						},
-						"description": "Cenário de erro (400 Bad Request). O canal do pedido deve ser válido (APP=0, TOTEM=1, BALCAO=2, PICKUP=3, WEB=4)."
+						"description": "Cenário de erro (400 Bad Request). O canal do pedido deve ser um valor válido (APP=0, TOTEM=1, BALCAO=2, PICKUP=3, WEB=4)."
 					},
 					"response": []
 				},
@@ -722,7 +764,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\",\n  \"channel\": 0,\n  \"items\": [\n    {\n      \"menuItemId\": 1,\n      \"quantity\": 99999\n    }\n  ]\n}"
+							"raw": "{\n  \"canalPedido\": 0,\n  \"items\": [\n    {\n      \"publicMenuItemId\": \"9a88024d-2618-4e25-87f5-35217f7a7c9b\",\n      \"quantity\": 99999\n    }\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/pedido",
@@ -733,7 +775,7 @@
 								"pedido"
 							]
 						},
-						"description": "Cenário de erro (409 Conflict). Tenta criar um pedido com quantidade superior ao estoque físico de insumos."
+						"description": "Cenário de erro (409 Conflict). Tenta criar um pedido com quantidade superior ao saldo do estoque de insumos."
 					},
 					"response": []
 				},
@@ -955,7 +997,7 @@
 			"name": "Estoque",
 			"item": [
 				{
-					"name": "Criar Estoque da Unidade",
+					"name": "Cadastrar Ingrediente no Estoque",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -972,18 +1014,53 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"restaurantId\": \"9a88024d-2618-4e25-87f5-35217f7a7c8a\",\n  \"items\": [\n    {\n      \"name\": \"Carne de Sol\",\n      \"unit\": 3,\n      \"quantity\": 50.0\n    },\n    {\n      \"name\": \"Manteiga de Garrafa\",\n      \"unit\": 5,\n      \"quantity\": 10.0\n    }\n  ]\n}"
+							"raw": "{\n  \"name\": \"Farinha de Mandioca Nova\",\n  \"unit\": 3,\n  \"quantity\": 50.0\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/estoque",
+							"raw": "{{baseUrl}}/estoque/ingredientes",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"estoque"
+								"estoque",
+								"ingredientes"
 							]
 						},
-						"description": "Cria o registro de estoque com insumos iniciais para uma unidade da rede."
+						"description": "Cadastra um novo insumo de ingrediente direto no estoque da unidade do usuário logado (Unit: 0=Gram, 1=Milliliter, 2=Unit, 3=Kilogram, 4=Liter, 5=Bottle)."
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Entrada/Movimentação de Estoque",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"stockIngredientId\": 1,\n  \"quantity\": 50,\n  \"type\": 0,\n  \"description\": \"Entrada de mercadoria fornecedor\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/estoque/movimentacao",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estoque",
+								"movimentacao"
+							]
+						},
+						"description": "Realiza uma movimentação manual de estoque para controlar a quantidade de um insumo (tipo 0 = Entrada/Abastecimento, tipo 1 = Saída, tipo 2 = Desperdício, tipo 3 = Consumo)."
 					},
 					"response": []
 				},
@@ -1034,40 +1111,6 @@
 							]
 						},
 						"description": "Consultar o estoque de uma unidade informando seu ID (GUID) de restaurante."
-					},
-					"response": []
-				},
-				{
-					"name": "Registrar Entrada/Movimentação de Estoque",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"stockIngredientId\": 1,\n  \"quantity\": 50,\n  \"type\": 0,\n  \"description\": \"Entrada de mercadoria fornecedor\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/estoque/movimentacao",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"estoque",
-								"movimentacao"
-							]
-						},
-						"description": "Realiza uma movimentação manual de estoque (tipo 0 = Input/Entrada, tipo 1 = Output/Saída, tipo 2 = Loss/Desperdício, tipo 3 = Consumption)."
 					},
 					"response": []
 				}

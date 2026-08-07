@@ -1,4 +1,6 @@
+using RaizesDoNordeste.Domain.Core.Stocks.DTO;
 using RaizesDoNordeste.Domain.UseCases;
+using System.Collections.Generic;
 
 namespace RaizesDoNordeste.Domain.Core.Restaurants.DTO
 {
@@ -16,5 +18,6 @@ namespace RaizesDoNordeste.Domain.Core.Restaurants.DTO
         public string AddressState { get; set; } = null!;
         public string AddressZipCode { get; set; } = null!;
         public string? AddressComplement { get; set; }
+        public List<CreateStockIngredientItemDto>? StockItems { get; set; }
     }
 }

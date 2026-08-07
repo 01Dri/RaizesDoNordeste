@@ -112,17 +112,17 @@ A coleção de testes contendo todos os cenários (positivos e negativos) está 
 | **Usuários** | `POST` | `/usuarios` | Público | Cadastro de novo usuário (`Customer`) |
 | **Usuários** | `GET` | `/usuarios/perfil` | Autenticado | Consulta dados do perfil do usuário autenticado |
 | **Unidades** | `GET` | `/unidades` | Admin/Owner | Lista restaurantes e unidades da rede |
-| **Unidades** | `POST` | `/unidades` | Admin/Owner | Cadastra uma nova unidade/franquia |
+| **Unidades** | `POST` | `/unidades` | Admin/Owner | Cadastra unidade/franquia (cria estoque da unidade automaticamente) |
 | **Cardápio** | `POST` | `/cardapio` | Admin/Gerente/Owner | Cria um novo cardápio (menu) para uma unidade |
 | **Cardápio** | `GET` | `/cardapio/usuario-atual` | Autenticado | Consulta o cardápio da unidade do usuário logado |
-| **Produtos** | `POST` | `/produtos` | Admin/Gerente/Owner | Cadastra um novo produto no cardápio |
-| **Produtos** | `GET` | `/produtos` | Autenticado | Consulta lista de produtos da unidade |
-| **Produtos** | `GET` | `/produtos/{id}` | Autenticado | Obtém detalhes de um produto por ID |
-| **Produtos** | `PUT` | `/produtos/{id}` | Admin/Gerente/Owner | Atualiza um produto |
-| **Produtos** | `DELETE` | `/produtos/{id}` | Admin/Gerente/Owner | Remove um produto |
-| **Produtos** | `POST` | `/produtos/{menuItemId}/ingredientes` | Admin/Gerente/Owner | Vincula ingrediente de estoque ao produto |
-| **Estoque** | `POST` | `/estoque` | Admin/Gerente/Owner | Criação de estoque e insumos iniciais |
-| **Estoque** | `POST` | `/estoque/movimentacao` | Admin/Gerente/Profissional | Registra entrada/saída/desperdício de insumos |
+| **Cardápio (Itens)** | `POST` | `/cardapio/itens` | Admin/Gerente/Owner | Cadastra item no cardápio com ingredientes (vínculo por ID ou insumo novo) |
+| **Cardápio (Itens)** | `GET` | `/cardapio/itens` | Autenticado | Consulta lista de itens do cardápio da unidade |
+| **Cardápio (Itens)** | `GET` | `/cardapio/itens/{id}` | Autenticado | Obtém detalhes de um item do cardápio por ID |
+| **Cardápio (Itens)** | `PUT` | `/cardapio/itens/{id}` | Admin/Gerente/Owner | Atualiza um item do cardápio |
+| **Cardápio (Itens)** | `DELETE` | `/cardapio/itens/{id}` | Admin/Gerente/Owner | Remove um item do cardápio |
+| **Cardápio (Itens)** | `POST` | `/cardapio/itens/{menuItemId}/ingredientes` | Admin/Gerente/Owner | Vincula ingrediente de estoque ao item do cardápio |
+| **Estoque** | `POST` | `/estoque/ingredientes` | Admin/Gerente/Profissional | Cadastra novo insumo/ingrediente direto no estoque da unidade |
+| **Estoque** | `POST` | `/estoque/movimentacao` | Admin/Gerente/Profissional | Controle de quantidade / movimentação (Entrada, Saída, Desperdício) |
 | **Estoque** | `GET` | `/estoque` | Admin/Gerente/Profissional | Consulta o estoque da unidade logada |
 | **Estoque** | `GET` | `/estoque/unidade/{restaurantId}` | Admin/Gerente/Owner | Consulta estoque de unidade específica por GUID |
 | **Pedidos** | `POST` | `/pedido` | Autenticado | Criação de pedido com validação de estoque e `canalPedido` |

@@ -1,5 +1,5 @@
-using RaizesDoNordeste.Domain.UseCases;
 using System;
+using RaizesDoNordeste.Domain.UseCases;
 
 namespace RaizesDoNordeste.Domain.Core.Stocks.DTO
 {
@@ -7,6 +7,7 @@ namespace RaizesDoNordeste.Domain.Core.Stocks.DTO
     {
         public long Id { get; init; }
         public long StockIngredientId { get; init; }
+        public Guid PublicStockIngredientId { get; init; }
         public string IngredientName { get; init; } = null!;
         public decimal QuantityMoved { get; init; }
         public decimal NewStockQuantity { get; init; }

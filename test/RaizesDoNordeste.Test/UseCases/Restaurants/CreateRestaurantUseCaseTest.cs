@@ -96,5 +96,33 @@ namespace RaizesDoNordeste.Test.UseCases.Restaurants
             Assert.That(result.IsSuccess, Is.False);
             Assert.That(result.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Conflict));
         }
+
+        [Test]
+        public async Task HandleAsync_DuplicateEmail_ShouldReturnConflict()
+        {
+            // Arrange - Email from seeded builder: central@raizesdonordeste.com
+            var dto = new CreateRestaurantDto
+            {
+                Name = "Raízes do Nordeste - Duplicada Email",
+                Description = "Teste duplicado email",
+                Phone = "11988887777",
+                Email = "cantina@raizesdonordeste.com",
+                Cnpj = "12.345.678/0002-76",
+                AddressStreet = "Rua Teste",
+                AddressNumber = "1",
+                AddressDistrict = "Bairro",
+                AddressCity = "São Paulo",
+                AddressState = "SP",
+                AddressZipCode = "01001000"
+            };
+
+            // Act
+            var result = await _handler.HandleAsync(dto, CancellationToken.None);
+
+            // Assert
+            Assert.That(result.IsSuccess, Is.False);
+            Assert.That(result.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Conflict));
+            Assert.That(result.ErrorData?.Message, Contains.Substring("e-mail"));
+        }
     }
 }

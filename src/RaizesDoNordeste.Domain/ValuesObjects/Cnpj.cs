@@ -1,6 +1,9 @@
-﻿namespace RaizesDoNordeste.Domain.ValuesObjects
+using System;
+using System.Linq;
+
+namespace RaizesDoNordeste.Domain.ValuesObjects
 {
-    public sealed class Cnpj
+    public sealed class Cnpj : IEquatable<Cnpj>
     {
         public string Value { get; }
 
@@ -46,6 +49,24 @@
         {
             return new string(value.Where(char.IsDigit).ToArray());
         }
+
+        public bool Equals(Cnpj? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Value == other.Value;
+        }
+
+        public override bool Equals(object? obj) => Equals(obj as Cnpj);
+
+        public override int GetHashCode() => Value.GetHashCode();
+
+        public static bool operator ==(Cnpj? left, Cnpj? right)
+        {
+            if (left is null) return right is null;
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Cnpj? left, Cnpj? right) => !(left == right);
     }
 }
-

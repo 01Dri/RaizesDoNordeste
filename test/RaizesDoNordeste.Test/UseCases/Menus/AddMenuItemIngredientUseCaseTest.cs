@@ -144,5 +144,65 @@ namespace RaizesDoNordeste.Test.UseCases.Menus
                 Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             });
         }
+
+        [Test]
+        public async Task AddIngredient_ShouldCreateNewStockIngredient_WhenNameIsProvided()
+        {
+            // Arrange
+            var dto = new AddMenuItemIngredientDto
+            {
+                MenuItemId = 1L,
+                Name = "Manteiga de Garrafa Especial",
+                Unit = IngredientUnit.Milliliter,
+                QuantityUseToOrder = 0.050m,
+                InitialStockQuantity = 10.0m
+            };
+
+            // Act
+            var result = await _handler.HandleAsync(dto, CancellationToken.None);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.Data, Is.Not.Null);
+                Assert.That(result.Data!.StockIngredientName, Is.EqualTo("Manteiga de Garrafa Especial"));
+                Assert.That(result.Data.QuantityUseToOrder, Is.EqualTo(0.050m));
+            });
+
+            var newIngredientInStock = await _context.StockIngredients
+                .FirstOrDefaultAsync(x => x.Name == "Manteiga de Garrafa Especial");
+            Assert.That(newIngredientInStock, Is.Not.Null);
+            Assert.That(newIngredientInStock!.Quantity, Is.EqualTo(10.0m));
+        }
+
+        [Test]
+        public async Task AddIngredient_ShouldReturnSuccess_WhenUsingPublicIds()
+        {
+            // Arrange - MenuItem 1 has PublicId 9a88024d-2618-4e25-87f5-35217f7a7c9b
+            // StockIngredient 1 has PublicId 11111111-1111-1111-1111-111111111111 (seeded in test DB)
+            var menuItem = await _context.MenuItems.FirstAsync(x => x.Id == 1L);
+            var stockIngredient = await _context.StockIngredients.FirstAsync(x => x.Id == 1L);
+
+            var dto = new AddMenuItemIngredientDto
+            {
+                PublicMenuItemId = menuItem.PublicId,
+                PublicStockIngredientId = stockIngredient.PublicId,
+                QuantityUseToOrder = 0.300m
+            };
+
+            // Act
+            var result = await _handler.HandleAsync(dto, CancellationToken.None);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.Data, Is.Not.Null);
+                Assert.That(result.Data!.PublicMenuItemId, Is.EqualTo(menuItem.PublicId));
+                Assert.That(result.Data.PublicStockIngredientId, Is.EqualTo(stockIngredient.PublicId));
+                Assert.That(result.Data.QuantityUseToOrder, Is.EqualTo(0.300m));
+            });
+        }
     }
 }
