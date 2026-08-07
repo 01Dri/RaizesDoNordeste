@@ -53,13 +53,7 @@ namespace UninterPayment.Worker
 
                         try
                         {
-                            var requestMessage = new HttpRequestMessage(HttpMethod.Post, payment.WebhookUrl)
-                            {
-                                Content = JsonContent.Create(payload)
-                            };
-                            requestMessage.Headers.Add("X-UninterPayment-Key", "UninterSecretWebhookToken123!");
-
-                            var response = await _httpClient.SendAsync(requestMessage, stoppingToken);
+                            var response = await SendWebhookAsync(payment.WebhookUrl, payload, stoppingToken);
 
                             if (response.IsSuccessStatusCode)
                             {
@@ -73,7 +67,40 @@ namespace UninterPayment.Worker
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "Failed to call webhook at {WebhookUrl} for Order {OrderId}", payment.WebhookUrl, payment.OrderId);
+                            bool retried = false;
+                            if (payment.WebhookUrl.Contains("localhost:5269") || payment.WebhookUrl.Contains("127.0.0.1:5269"))
+                            {
+                                var dockerWebhookUrl = payment.WebhookUrl
+                                    .Replace("localhost:5269", "raizes-api:5269")
+                                    .Replace("127.0.0.1:5269", "raizes-api:5269");
+
+                                _logger.LogInformation("Retrying webhook for Order {OrderId} using Docker container network address ({DockerWebhookUrl})...", payment.OrderId, dockerWebhookUrl);
+
+                                try
+                                {
+                                    var response = await SendWebhookAsync(dockerWebhookUrl, payload, stoppingToken);
+                                    if (response.IsSuccessStatusCode)
+                                    {
+                                        _logger.LogInformation("Webhook notified successfully for Order {OrderId} via container network.", payment.OrderId);
+                                        retried = true;
+                                    }
+                                    else
+                                    {
+                                        string errorText = await response.Content.ReadAsStringAsync(stoppingToken);
+                                        _logger.LogWarning("Retry webhook returned status {StatusCode}: {Error}", response.StatusCode, errorText);
+                                        retried = true;
+                                    }
+                                }
+                                catch (Exception retryEx)
+                                {
+                                    _logger.LogError(retryEx, "Retry failed for webhook at {DockerWebhookUrl} for Order {OrderId}", dockerWebhookUrl, payment.OrderId);
+                                }
+                            }
+
+                            if (!retried)
+                            {
+                                _logger.LogError(ex, "Failed to call webhook at {WebhookUrl} for Order {OrderId}", payment.WebhookUrl, payment.OrderId);
+                            }
                         }
                     }
                     else
@@ -90,6 +117,16 @@ namespace UninterPayment.Worker
                     _logger.LogError(ex, "Error occurred in worker execution loop.");
                 }
             }
+        }
+
+        private async Task<HttpResponseMessage> SendWebhookAsync(string url, WebhookPayload payload, CancellationToken stoppingToken)
+        {
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = JsonContent.Create(payload)
+            };
+            requestMessage.Headers.Add("X-UninterPayment-Key", "UninterSecretWebhookToken123!");
+            return await _httpClient.SendAsync(requestMessage, stoppingToken);
         }
 
         private class WebhookPayload

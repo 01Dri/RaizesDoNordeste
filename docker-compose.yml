@@ -8,9 +8,10 @@ services:
       - "5269:5269"
       - "8080:5269"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5269
       - WorkerUrl=http://worker:5200
+      - PaymentSettings__WebhookUrl=http://raizes-api:5269/pagamento/webhook
     depends_on:
       - worker
     networks:
@@ -24,7 +25,7 @@ services:
     ports:
       - "5200:5200"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5200
     networks:
       - raizes-network

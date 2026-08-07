@@ -61,6 +61,12 @@ public sealed class PaymentUseCaseHandler : IUseCaseHandler<PaymentRequestDto, P
             return Result<PaymentResponseDto>.FailureNotFound("Pedido não encontrado");
         }
 
+        if (await _dbContext.PaymentOrders
+                .AnyAsync(x => x.OrderId == order.Id, cancellation))
+        {
+            return Result<PaymentResponseDto>.Failure(new Error("Já existe um pagamento para esse pedido."));
+        }
+        
         if (order.Status != OrderStatus.Ready)
         {
             return Result<PaymentResponseDto>.Failure(new Error("O pedido precisa estar pronto para ser pago."));

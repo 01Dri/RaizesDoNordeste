@@ -40,7 +40,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 builder.Services.AddPatterns();
 
-
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -66,8 +65,6 @@ builder.Services
         };
     });
 
-
-
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -78,23 +75,14 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
 }
 
-if (app.Environment.IsDevelopment())
+app.MapOpenApi();
+app.MapScalarApiReference(options => 
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference(options => 
-    {
-        options.WithTitle("RaizesDoNordeste API");
-        options.WithTheme(ScalarTheme.BluePlanet);
-        options.WithDarkMode(true);
-        options.WithHttpBearerAuthentication(new HttpBearerOptions());
-    });
-
-}
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+    options.WithTitle("RaizesDoNordeste API");
+    options.WithTheme(ScalarTheme.BluePlanet);
+    options.WithDarkMode(true);
+    options.WithHttpBearerAuthentication(new HttpBearerOptions());
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -102,10 +90,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-// Source - https://stackoverflow.com/a/79785013
-// Posted by Kevin Argueta, modified by community. See post 'Timeline' for change history
-// Retrieved 2026-06-06, License - CC BY-SA 4.0
-
-

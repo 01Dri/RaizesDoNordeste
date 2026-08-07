@@ -91,7 +91,7 @@ A coleção de testes contendo todos os cenários (positivos e negativos) está 
 - `RaizesDoNordeste.postman_collection.json`
 
 **Ordem recomendada de execução no Postman:**
-1. **Login do Desenvolvedor / Admin**: `GET /auth/desenvolvedor` ou `POST /auth/login` com `admin@raizesdonordeste.com` e `somehashedpassword`.
+1. **Login do Desenvolvedor / Admin**: `GET /auth/desenvolvedor` ou `POST /auth/login` com `admin@raizesdonordeste.com` e `somehashedpassword` (Salva o token JWT na variável da coleção).
 2. **Login do Cliente**: `POST /auth/login` com `cliente@raizesdonordeste.com` e `somehashedpassword`.
 3. **Listar Unidades**: `GET /unidades` (Recupera o `restaurantId`).
 4. **Criar Pedido (Multicanal)**: `POST /pedido` enviando `canalPedido` (`0=APP`, `1=TOTEM`, `2=BALCAO`, `3=PICKUP`, `4=WEB`).
