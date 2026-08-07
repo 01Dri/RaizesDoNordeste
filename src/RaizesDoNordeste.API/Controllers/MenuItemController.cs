@@ -17,7 +17,7 @@ namespace RaizesDoNordeste.API.Controllers
         private readonly IUseCaseHandler<UpdateProductDto, ProductResponseDto> _updateHandler;
         private readonly IUseCaseHandler<DeleteProductDto, DeleteProductResponseDto> _deleteHandler;
         private readonly IUseCaseHandler<GetProductByIdQueryDto, ProductResponseDto> _getByIdHandler;
-        private readonly IUseCaseHandler<ListProductsResponseDto> _listHandler;
+        private readonly IUseCaseHandler<ListProductsQueryDto, ListProductsResponseDto> _listHandler;
         private readonly IUseCaseHandler<AddMenuItemIngredientDto, AddMenuItemIngredientResponseDto> _addIngredientHandler;
 
         public MenuItemController(
@@ -25,7 +25,7 @@ namespace RaizesDoNordeste.API.Controllers
             IUseCaseHandler<UpdateProductDto, ProductResponseDto> updateHandler,
             IUseCaseHandler<DeleteProductDto, DeleteProductResponseDto> deleteHandler,
             IUseCaseHandler<GetProductByIdQueryDto, ProductResponseDto> getByIdHandler,
-            IUseCaseHandler<ListProductsResponseDto> listHandler,
+            IUseCaseHandler<ListProductsQueryDto, ListProductsResponseDto> listHandler,
             IUseCaseHandler<AddMenuItemIngredientDto, AddMenuItemIngredientResponseDto> addIngredientHandler)
         {
             _createHandler = createHandler;
@@ -71,9 +71,12 @@ namespace RaizesDoNordeste.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(CancellationToken cancellation)
+        public async Task<IActionResult> Get(
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 10,
+            CancellationToken cancellation = default)
         {
-            var result = await _listHandler.HandleAsync(cancellation);
+            var result = await _listHandler.HandleAsync(new ListProductsQueryDto(page, limit), cancellation);
             return result.IsSuccess ? Ok(result) : Error("Erro ao listar itens do cardápio", result);
         }
 

@@ -60,9 +60,11 @@ public class OrderController : RaizesDoNordesteController
     public async Task<IActionResult> Get(
         [FromQuery] OrderStatus? status,
         [FromQuery(Name = "canalPedido")] OrderChannel? canalPedido,
-        CancellationToken cancellationToken)
+        [FromQuery] int page = 1,
+        [FromQuery] int limit = 10,
+        CancellationToken cancellationToken = default)
     {
-        var queryDto = new ListOrdersQueryDto(status, canalPedido);
+        var queryDto = new ListOrdersQueryDto(status, canalPedido, page, limit);
         var result = await _listOrdersHandler.HandleAsync(queryDto, cancellationToken);
         return result.IsSuccess ? Ok(result.Data) : Error("Falha ao obter lista de pedidos", result);
     }

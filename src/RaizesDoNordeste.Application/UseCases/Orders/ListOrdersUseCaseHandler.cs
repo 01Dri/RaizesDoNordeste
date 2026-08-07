@@ -21,6 +21,9 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
 
         public async Task<Result<ListOrdersResponseDto>> HandleAsync(ListOrdersQueryDto parameter, CancellationToken cancellation = default)
         {
+            var page = parameter.Page < 1 ? 1 : parameter.Page;
+            var limit = parameter.Limit < 1 ? 10 : (parameter.Limit > 100 ? 100 : parameter.Limit);
+
             var query = _dbContext.Orders
                 .Where(o => o.RestaurantId == _currentUser.RestaurantId);
 
@@ -34,12 +37,17 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
                 query = query.Where(o => o.Channel == parameter.Channel.Value);
             }
 
+            var totalItems = await query.CountAsync(cancellation);
+
             var orders = await query
                 .OrderByDescending(o => o.CreatedAt)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .Select(order => new OrderResponseDto
                 {
                     Id = order.PublicId,
                     CreatedAt = order.CreatedAt,
+                    RestaurantId = order.RestaurantId,
                     UpdatedAt = order.UpdatedAt,
                     AccountId = order.AccountId.GetValueOrDefault(),
                     AccountEmail = order.Account != null && order.Account.Email != null ? order.Account.Email.Value : "",
@@ -60,7 +68,10 @@ namespace RaizesDoNordeste.Application.UseCases.Orders
 
             return Result<ListOrdersResponseDto>.Success(new ListOrdersResponseDto
             {
-                Orders = orders
+                Orders = orders,
+                Page = page,
+                Limit = limit,
+                TotalItems = totalItems
             });
         }
     }

@@ -6,7 +6,7 @@ using RaizesDoNordeste.Domain.ValuesObjects;
 
 namespace RaizesDoNordeste.Application.UseCases.Restaurants
 {
-    public sealed class ListRestaurantsUseCase : IUseCaseHandler<ListRestaurantsResponseDto>
+    public sealed class ListRestaurantsUseCase : IUseCaseHandler<ListRestaurantsQueryDto, ListRestaurantsResponseDto>, IUseCaseHandler<ListRestaurantsResponseDto>
     {
         private readonly ApplicationDbContext _context;
 
@@ -15,9 +15,20 @@ namespace RaizesDoNordeste.Application.UseCases.Restaurants
             _context = context;
         }
 
-        public async Task<Result<ListRestaurantsResponseDto>> HandleAsync(CancellationToken cancellation = default)
+        public Task<Result<ListRestaurantsResponseDto>> HandleAsync(CancellationToken cancellation = default)
+            => HandleAsync(new ListRestaurantsQueryDto(1, 10), cancellation);
+
+        public async Task<Result<ListRestaurantsResponseDto>> HandleAsync(ListRestaurantsQueryDto query, CancellationToken cancellation = default)
         {
+            var page = query.Page < 1 ? 1 : query.Page;
+            var limit = query.Limit < 1 ? 10 : (query.Limit > 100 ? 100 : query.Limit);
+
+            var totalItems = await _context.Restaurants.CountAsync(cancellation);
+
             var restaurants = await _context.Restaurants
+                .OrderBy(r => r.Name)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .Select(r => new RestaurantDto
                 {
                     Id = r.Id,
@@ -38,7 +49,10 @@ namespace RaizesDoNordeste.Application.UseCases.Restaurants
 
             return Result<ListRestaurantsResponseDto>.Success(new ListRestaurantsResponseDto
             {
-                Restaurants = restaurants
+                Restaurants = restaurants,
+                Page = page,
+                Limit = limit,
+                TotalItems = totalItems
             });
         }
     }

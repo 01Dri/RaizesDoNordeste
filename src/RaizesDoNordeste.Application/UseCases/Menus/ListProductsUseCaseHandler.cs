@@ -7,7 +7,7 @@ using RaizesDoNordeste.Domain.ValuesObjects;
 
 namespace RaizesDoNordeste.Application.UseCases.Menus
 {
-    public sealed class ListProductsUseCaseHandler : IUseCaseHandler<ListProductsResponseDto>
+    public sealed class ListProductsUseCaseHandler : IUseCaseHandler<ListProductsQueryDto, ListProductsResponseDto>, IUseCaseHandler<ListProductsResponseDto>
     {
         private readonly ApplicationDbContext _context;
         private readonly ICurrentUser _currentUser;
@@ -18,11 +18,23 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
             _currentUser = currentUser;
         }
 
-        public async Task<Result<ListProductsResponseDto>> HandleAsync(CancellationToken cancellation = default)
+        public Task<Result<ListProductsResponseDto>> HandleAsync(CancellationToken cancellation = default)
+            => HandleAsync(new ListProductsQueryDto(1, 10), cancellation);
+
+        public async Task<Result<ListProductsResponseDto>> HandleAsync(ListProductsQueryDto query, CancellationToken cancellation = default)
         {
-            var products = await _context.MenuItems
-                .Where(i => i.Menu != null && i.Menu.RestaurantId == _currentUser.RestaurantId)
+            var page = query.Page < 1 ? 1 : query.Page;
+            var limit = query.Limit < 1 ? 10 : (query.Limit > 100 ? 100 : query.Limit);
+
+            var baseQuery = _context.MenuItems
+                .Where(i => i.Menu != null && i.Menu.RestaurantId == _currentUser.RestaurantId);
+
+            var totalItems = await baseQuery.CountAsync(cancellation);
+
+            var products = await baseQuery
                 .OrderBy(i => i.DisplayOrder)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .Select(i => new ProductResponseDto
                 {
                     Id = i.Id,
@@ -48,7 +60,10 @@ namespace RaizesDoNordeste.Application.UseCases.Menus
 
             return Result<ListProductsResponseDto>.Success(new ListProductsResponseDto
             {
-                Products = products
+                Products = products,
+                Page = page,
+                Limit = limit,
+                TotalItems = totalItems
             });
         }
     }

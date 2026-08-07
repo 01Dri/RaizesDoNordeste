@@ -12,11 +12,11 @@ namespace RaizesDoNordeste.API.Controllers
     [Authorize]
     public class RestaurantController : RaizesDoNordesteController
     {
-        private readonly IUseCaseHandler<ListRestaurantsResponseDto> _listHandler;
+        private readonly IUseCaseHandler<ListRestaurantsQueryDto, ListRestaurantsResponseDto> _listHandler;
         private readonly IUseCaseHandler<CreateRestaurantDto, RestaurantDto> _createHandler;
 
         public RestaurantController(
-            IUseCaseHandler<ListRestaurantsResponseDto> listHandler,
+            IUseCaseHandler<ListRestaurantsQueryDto, ListRestaurantsResponseDto> listHandler,
             IUseCaseHandler<CreateRestaurantDto, RestaurantDto> createHandler)
         {
             _listHandler = listHandler;
@@ -25,9 +25,12 @@ namespace RaizesDoNordeste.API.Controllers
 
         [HttpGet]
         [RolesAuthorize(RoleType.Admin, RoleType.Owner)]
-        public async Task<IActionResult> Get(CancellationToken cancellation)
+        public async Task<IActionResult> Get(
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 10,
+            CancellationToken cancellation = default)
         {
-            var result = await _listHandler.HandleAsync(cancellation);
+            var result = await _listHandler.HandleAsync(new ListRestaurantsQueryDto(page, limit), cancellation);
             return result.IsSuccess ? Ok(result) : Error("Erro ao obter unidades", result);
         }
 
