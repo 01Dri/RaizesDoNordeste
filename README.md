@@ -8,6 +8,7 @@ A aplicação atende múltiplos canais de atendimento (App, Totem, Balcão, Pick
 
 ## 🚀 Requisitos e Tecnologias
 
+- **Repositório GitHub**: [https://github.com/01Dri/RaizesDoNordeste](https://github.com/01Dri/RaizesDoNordeste)
 - **Linguagem / Framework**: .NET 10 / C# 13
 - **ORM / Persistência**: Entity Framework Core 10 (SQLite)
 - **Segurança**: Authentication JWT Bearer + Refresh Tokens + Hashing de Senha BCrypt (Cost Factor 11)
